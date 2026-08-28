@@ -44,9 +44,13 @@
       justify-content: space-between;
       cursor: pointer;
       gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      background: #fff;
+      width: 100%;
     }
     .method img { height: 28px; width: 28px; object-fit: contain; flex-shrink: 0; }
-    .method-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .method-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; text-align: left; }
     .method-info > div { overflow: hidden; text-overflow: ellipsis; }
     .method-info small { display: block; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .discount { background: #fff3e0; color: #e65100; font-size: 0.75em; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
@@ -117,42 +121,43 @@
     <div>Order will be closed in: <span class="timer" id="countdown">08:00</span></div>
   </div>
 
-  <h2>₹6528.99</h2>
+  <h2>₹3600</h2>
   <p style="text-align:center; color:#555; margin: 5px 0 15px; font-size: 0.9em;">The amount you need to pay</p>
 
   <div class="section-title">Method 1 (Mostly used) <span class="discount">Discounted</span></div>
-  <div class="method" onclick="openModal('qrModal')">
+  
+  <a href="paytmmp://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR" class="method" onclick="openApp(event, 'paytmmp://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR', 'upi://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR')">
     <div class="method-info">
       <img src="paytm.png" alt="Paytm">
-      <div><strong>Paytm</strong><small>Discounted price ₹6528.99</small></div>
+      <div><strong>Paytm</strong><small>Discounted price ₹3600</small></div>
     </div>
     <img src="click here.png" alt="Click" style="height:20px; width:auto;">
-  </div>
+  </a>
 
-  <div class="method" onclick="openModal('qrModal')">
+  <a href="phonepe://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR" class="method" onclick="openApp(event, 'phonepe://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR', 'upi://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR')">
     <div class="method-info">
       <img src="phonepe.png" alt="PhonePe">
       <div><strong>PhonePe</strong><small>Convenient and fastest</small></div>
     </div>
     <img src="click here.png" alt="Click" style="height:20px; width:auto;">
-  </div>
+  </a>
 
   <div class="section-title">Method 2</div>
-  <div class="method" onclick="openModal('qrModal')">
+  <div class="method" onclick="openModal('qrModal')" style="cursor: pointer;">
     <div class="method-info">
       <img src="QR.png" alt="QR">
       <strong>QR Code</strong>
     </div>
-    <button class="pay-btn">PAY</button>
+    <button class="pay-btn" type="button">PAY</button>
   </div>
 
   <div class="section-title">Method 3</div>
-  <div class="method" onclick="openModal('upiModal')">
+  <div class="method" onclick="openModal('upiModal')" style="cursor: pointer;">
     <div class="method-info">
       <img src="upi.png" alt="UPI">
       <strong>Manual Transfer</strong>
     </div>
-    <button class="pay-btn">PAY</button>
+    <button class="pay-btn" type="button">PAY</button>
   </div>
 
   <div class="reminder">
@@ -165,11 +170,10 @@
   </div>
 </div>
 
-<!-- QR Modal -->
 <div class="modal" id="qrModal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('qrModal')">&times;</span>
-    <h2 style="font-size: 24px;">₹6528.99 <small style="color:#888; font-size: 0.7em;"><s>₹6528.99</s></small></h2>
+    <h2 style="font-size: 24px;">₹3600 <small style="color:#888; font-size: 0.7em;"><s>₹3600</s></small></h2>
     <p style="font-size: 0.9em;">Use Mobile Scan code to pay</p>
     <img src="QR.png" alt="QR Code">
     <input type="text" class="utr-input" id="utrQr" placeholder="Enter UTR (Optional)">
@@ -177,11 +181,10 @@
   </div>
 </div>
 
-<!-- UPI Modal -->
 <div class="modal" id="upiModal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('upiModal')">&times;</span>
-    <h2 style="font-size: 24px;">₹6528.99</h2>
+    <h2 style="font-size: 24px;">₹3600</h2>
     <p style="font-size: 0.9em;">Copy the UPI ID and pay</p>
     <input type="text" value="arka018@axl" id="upiId" class="utr-input" readonly>
     <button onclick="copyUPI()" class="submit-btn" style="margin-bottom: 10px;">Copy UPI ID</button>
@@ -204,6 +207,19 @@
 
   function openModal(id) { document.getElementById(id).style.display = "flex"; }
   function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+  // Smart App Intent Handler with Fallback
+  function openApp(event, appScheme, fallbackScheme) {
+    event.preventDefault();
+    
+    // Try opening the specific app scheme first
+    window.location.href = appScheme;
+
+    // Fallback to standard UPI intent if specific app scheme doesn't trigger immediately
+    setTimeout(function() {
+      window.location.href = fallbackScheme;
+    }, 1500);
+  }
 
   function copyUPI() {
     var upi = document.getElementById("upiId");
