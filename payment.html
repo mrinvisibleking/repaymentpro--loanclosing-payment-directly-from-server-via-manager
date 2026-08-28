@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loan Repay</title>
+  <title>Sampat Loan Repay</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 10px; }
@@ -82,7 +82,7 @@
   <div class="reminder">
     <h3 style="margin: 10px 0 5px; font-size: 1em;">Important Reminder</h3>
     <ol>
-      <li>Please make sure you have submit UTR here for closing.</li>
+      <li>Please make sure you have submit UTR here for closing Sampat Loan.</li>
       <li class="highlight">Don't pay for the same link repeatedly.</li>
       <li>Please select the payment method you need and make sure your phone has the corresponding wallet software installed.</li>
     </ol>
@@ -113,20 +113,29 @@
 </div>
 
 <script>
-  // Parse parameters from URL
   const urlParams = new URLSearchParams(window.location.search);
+  const linkId = urlParams.get('id');
   const paramAmount = urlParams.get('amount') || '3600';
   const paramUpi = urlParams.get('upi') || 'arka018@axl';
 
   const amt = parseFloat(paramAmount);
   const discountedAmt = (amt > 2 ? amt - 1.7 : amt).toFixed(2);
 
-  // Update DOM elements dynamically
   document.getElementById('displayAmount').textContent = '₹' + amt;
   document.getElementById('modalQrAmount').textContent = '₹' + discountedAmt;
   document.getElementById('modalUpiAmount').textContent = '₹' + amt;
   document.getElementById('paytmDiscountText').textContent = 'Discounted price ₹' + discountedAmt;
   document.getElementById('upiId').value = paramUpi;
+
+  // Mark Link as Visited in LocalStorage
+  if (linkId) {
+    let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+    let currentItem = history.find(item => item.id === linkId);
+    if (currentItem) {
+      currentItem.visited = true;
+      localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+    }
+  }
 
   const paytmUrl = `paytmmp://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${discountedAmt}&cu=INR`;
   const phonepeUrl = `phonepe://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${amt}&cu=INR`;
@@ -160,6 +169,17 @@
   function copyUPI() {
     var upi = document.getElementById("upiId");
     upi.select(); upi.setSelectionRange(0, 99999);
+    
+    // Mark Copied status in LocalStorage
+    if (linkId) {
+      let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+      let currentItem = history.find(item => item.id === linkId);
+      if (currentItem) {
+        currentItem.copied = true;
+        localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+      }
+    }
+
     navigator.clipboard.writeText(upi.value).then(() => {
       alert("UPI ID copied: " + upi.value);
     }).catch(() => {
@@ -171,6 +191,15 @@
   function submitUTR(type) {
     let utr = type === 'qr' ? document.getElementById("utrQr").value : document.getElementById("utrUpi").value;
     if (utr) {
+      // Mark UTR Submitted status in LocalStorage
+      if (linkId) {
+        let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+        let currentItem = history.find(item => item.id === linkId);
+        if (currentItem) {
+          currentItem.status = 'UTR: ' + utr;
+          localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+        }
+      }
       window.location.href = "https://github.com/mrinvisibleking/repaymentpro--loanclosing-payment-directly-from-server-via-manager";
     } else {
       alert("Please enter UTR before submitting.");
