@@ -1,0 +1,17 @@
+# Files and patterns to encrypt with git-crypt.
+# Edit these lines to match exact paths you want encrypted.
+# Example: to encrypt everything under features/copilot/plans, keep the line below.
+features/copilot/plans/** filter=git-crypt diff=git-crypt
+
+# Common secret patterns (customize/remove as needed)
+secrets/** filter=git-crypt diff=git-crypt
+config/*.yml filter=git-crypt diff=git-crypt
+*.env filter=git-crypt diff=git-crypt
+*.key filter=git-crypt diff=git-crypt
+*.pem filter=git-crypt diff=git-crypt
+*.p12 filter=git-crypt diff=git-crypt
+*.crt filter=git-crypt diff=git-crypt
+private/** filter=git-crypt diff=git-crypt
+
+# If you truly want everything encrypted (not recommended), uncomment:
+# * filter=git-crypt diff=git-crypt
