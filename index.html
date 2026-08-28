@@ -3,242 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sampat Loan Repay</title>
+  <title>Sampat Loan Repay - Generator</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      margin: 0;
-      padding: 10px;
-    }
-    .container {
-      max-width: 480px;
-      width: 100%;
-      margin: 10px auto;
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .header { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .header img { height: 35px; max-width: 100%; object-fit: contain; }
-    .timer { color: red; font-weight: bold; font-size: 1.1em; }
-    h2 { text-align: center; color: #0070f3; font-size: clamp(24px, 6vw, 32px); margin: 10px 0; }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 10px; }
+    .container { max-width: 480px; width: 100%; margin: 20px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .section-title { margin: 15px 0 10px; font-weight: bold; color: #444; font-size: 0.95em; }
-    .method {
-      border: 1px solid #ddd;
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      gap: 10px;
-      text-decoration: none;
-      color: inherit;
-      background: #fff;
-      width: 100%;
-    }
-    .method img { height: 28px; width: 28px; object-fit: contain; flex-shrink: 0; }
-    .method-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; text-align: left; }
-    .method-info > div { overflow: hidden; text-overflow: ellipsis; }
-    .method-info small { display: block; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .discount { background: #fff3e0; color: #e65100; font-size: 0.75em; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
-    .pay-btn { background: #0070f3; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; flex-shrink: 0; font-size: 0.9em; }
-    .reminder { margin-top: 20px; font-size: 0.85em; color: #333; }
-    .reminder ol { padding-left: 20px; margin: 5px 0; }
-    .reminder li { margin-bottom: 6px; }
-    .highlight { color: red; font-weight: bold; }
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-      padding: 15px;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .modal-content img {
-      max-width: 100%;
-      height: auto;
-      width: 200px;
-    }
-    .close {
-      position: absolute;
-      top: 10px; right: 15px;
-      font-size: 24px;
-      cursor: pointer;
-    }
-    .utr-input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1em;
-    }
-    .submit-btn {
-      background: #0070f3;
-      color: white;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1em;
-    }
+    .utr-input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
+    .submit-btn { background: #0070f3; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 1em; margin-top: 10px; }
+    #generatedLinkContainer { margin-top: 20px; display: none; word-break: break-all; background: #f1f1f1; padding: 10px; border-radius: 6px; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <img src="upi.png" alt="UPI Logo">
-    <div>Order will be closed in: <span class="timer" id="countdown">08:00</span></div>
-  </div>
-
-  <h2>₹3600</h2>
-  <p style="text-align:center; color:#555; margin: 5px 0 15px; font-size: 0.9em;">The amount you need to pay</p>
-
-  <div class="section-title">Method 1 (Mostly used) <span class="discount">Discounted</span></div>
+<div class="container" id="adminView">
+  <h2>Payment Link Generator</h2>
+  <div class="section-title">Amount (₹)</div>
+  <input type="number" class="utr-input" id="inputAmount" placeholder="Enter amount">
   
-  <a href="paytmmp://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR" class="method" onclick="openApp(event, 'paytmmp://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR', 'upi://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR')">
-    <div class="method-info">
-      <img src="paytm.png" alt="Paytm">
-      <div><strong>Paytm</strong><small>Discounted price ₹3600</small></div>
-    </div>
-    <img src="click here.png" alt="Click" style="height:20px; width:auto;">
-  </a>
-
-  <a href="phonepe://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR" class="method" onclick="openApp(event, 'phonepe://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR', 'upi://pay?pa=arka018@axl&pn=ALOCHAYA%20DIGITAL%20PARISHEBA&mc=0000&mode=02&purpose=00&am=3600&cu=INR')">
-    <div class="method-info">
-      <img src="phonepe.png" alt="PhonePe">
-      <div><strong>PhonePe</strong><small>Convenient and fastest</small></div>
-    </div>
-    <img src="click here.png" alt="Click" style="height:20px; width:auto;">
-  </a>
-
-  <div class="section-title">Method 2</div>
-  <div class="method" onclick="openModal('qrModal')" style="cursor: pointer;">
-    <div class="method-info">
-      <img src="QR.png" alt="QR">
-      <strong>QR Code</strong>
-    </div>
-    <button class="pay-btn" type="button">PAY</button>
-  </div>
-
-  <div class="section-title">Method 3</div>
-  <div class="method" onclick="openModal('upiModal')" style="cursor: pointer;">
-    <div class="method-info">
-      <img src="upi.png" alt="UPI">
-      <strong>Manual Transfer</strong>
-    </div>
-    <button class="pay-btn" type="button">PAY</button>
-  </div>
-
-  <div class="reminder">
-    <h3 style="margin: 10px 0 5px; font-size: 1em;">Important Reminder</h3>
-    <ol>
-      <li>Please make sure you have submit UTR here for closing Sampat Loan.</li>
-      <li class="highlight">Don't pay for the same link repeatedly.</li>
-      <li>Please select the payment method you need and make sure your phone has the corresponding wallet software installed.</li>
-    </ol>
-  </div>
-</div>
-
-<div class="modal" id="qrModal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('qrModal')">&times;</span>
-    <h2 style="font-size: 24px;">₹3600 <small style="color:#888; font-size: 0.7em;"><s>₹3600</s></small></h2>
-    <p style="font-size: 0.9em;">Use Mobile Scan code to pay</p>
-    <img src="QR.png" alt="QR Code">
-    <input type="text" class="utr-input" id="utrQr" placeholder="Enter UTR (Optional)">
-    <button class="submit-btn" onclick="submitUTR('qr')">Submit UTR</button>
-  </div>
-</div>
-
-<div class="modal" id="upiModal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('upiModal')">&times;</span>
-    <h2 style="font-size: 24px;">₹3600</h2>
-    <p style="font-size: 0.9em;">Copy the UPI ID and pay</p>
-    <input type="text" value="arka018@axl" id="upiId" class="utr-input" readonly>
-    <button onclick="copyUPI()" class="submit-btn" style="margin-bottom: 10px;">Copy UPI ID</button>
-    <input type="text" class="utr-input" id="utrUpi" placeholder="Enter UTR number">
-    <button class="submit-btn" onclick="submitUTR('upi')">Submit UTR</button>
+  <div class="section-title">UPI ID</div>
+  <input type="text" class="utr-input" id="inputUpi" placeholder="Enter UPI ID">
+  
+  <button class="submit-btn" onclick="generateLink()">Generate Link</button>
+  <button class="submit-btn" style="background:#6c757d;" onclick="resetForm()">Reset</button>
+  
+  <div id="generatedLinkContainer">
+    <strong>Generated Link:</strong><br>
+    <a id="outputLink" href="#" target="_blank"></a>
   </div>
 </div>
 
 <script>
-  let timeLeft = 8 * 60;
-  const countdown = document.getElementById("countdown");
-  function updateTimer() {
-    let minutes = Math.floor(timeLeft / 60);
-    let seconds = timeLeft % 60;
-    countdown.textContent = 
-      `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-    if (timeLeft > 0) { timeLeft--; } else { countdown.textContent = "Expired"; }
-  }
-  setInterval(updateTimer, 1000);
-
-  function openModal(id) { document.getElementById(id).style.display = "flex"; }
-  function closeModal(id) { document.getElementById(id).style.display = "none"; }
-
-  // Smart App Intent Handler with Fallback
-  function openApp(event, appScheme, fallbackScheme) {
-    event.preventDefault();
-    
-    // Try opening the specific app scheme first
-    window.location.href = appScheme;
-
-    // Fallback to standard UPI intent if specific app scheme doesn't trigger immediately
-    setTimeout(function() {
-      window.location.href = fallbackScheme;
-    }, 1500);
-  }
-
-  function copyUPI() {
-    var upi = document.getElementById("upiId");
-    upi.select(); upi.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(upi.value).then(() => {
-      alert("UPI ID copied: " + upi.value);
-    }).catch(() => {
-      document.execCommand("copy");
-      alert("UPI ID copied: " + upi.value);
-    });
-  }
-
-  function submitUTR(type) {
-    let utr = type === 'qr' ? document.getElementById("utrQr").value : document.getElementById("utrUpi").value;
-    if (utr) {
-      alert("UTR submitted: " + utr + " (simulated)");
-    } else {
-      alert("Please enter UTR before submitting.");
+  function generateLink() {
+    const amt = document.getElementById('inputAmount').value;
+    const upi = document.getElementById('inputUpi').value;
+    if (!amt || !upi) {
+      alert('Please fill out both Amount and UPI ID.');
+      return;
     }
+    const currentUrl = window.location.href.split('?')[0];
+    const targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + 'payment.html';
+    const generatedUrl = `${targetUrl}?amount=${encodeURIComponent(amt)}&upi=${encodeURIComponent(upi)}`;
+    
+    const outputLink = document.getElementById('outputLink');
+    outputLink.href = generatedUrl;
+    outputLink.textContent = generatedUrl;
+    document.getElementById('generatedLinkContainer').style.display = 'block';
+  }
+
+  function resetForm() {
+    document.getElementById('inputAmount').value = '';
+    document.getElementById('inputUpi').value = '';
+    document.getElementById('generatedLinkContainer').style.display = 'none';
   }
 </script>
 
