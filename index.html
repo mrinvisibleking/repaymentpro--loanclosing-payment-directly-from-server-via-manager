@@ -8,6 +8,7 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex items-center justify-center font-sans relative">
 
+    <!-- ================= 1. LANDING PAGE ================= -->
     <div id="landing-page" class="text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full mx-4 z-10">
         <h1 class="text-3xl font-bold mb-6 text-indigo-400">Welcome</h1>
         <button onclick="openSecretModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-6 rounded-xl transition duration-300 shadow-lg cursor-pointer">
@@ -15,6 +16,7 @@
         </button>
     </div>
 
+    <!-- ================= 2. SECRET CODE POPUP MODAL ================= -->
     <div id="secret-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-md w-full shadow-2xl relative">
             <h2 class="text-2xl font-bold mb-4 text-indigo-400">Enter Secret Code</h2>
@@ -33,6 +35,7 @@
         </div>
     </div>
 
+    <!-- ================= 3. ADMIN DASHBOARD LOGIN ================= -->
     <div id="admin-login-page" class="hidden text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full mx-4 z-10">
         <h2 class="text-2xl font-bold mb-2 text-indigo-400">Admin Dashboard</h2>
         <p class="text-slate-400 text-sm mb-6">Enter your admin credentials to access the system</p>
@@ -58,11 +61,12 @@
         </form>
     </div>
 
-    <div id="d3repayon-container" class="hidden fixed inset-0 w-full min-h-screen bg-slate-900 z-50 overflow-y-auto p-6 flex flex-col items-center justify-start">
-        <div class="max-w-xl w-full bg-white text-slate-900 p-6 rounded-xl shadow-xl mt-10">
+    <!-- ================= 4. D3REPAYON CONTENT CONTAINER ================= -->
+    <div id="d3repayon-container" class="hidden fixed inset-0 w-full min-h-screen bg-slate-900 z-50 overflow-y-auto p-4 flex flex-col items-center justify-start">
+        <div class="max-w-2xl w-full bg-white text-slate-900 p-6 rounded-xl shadow-xl mt-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold text-slate-800">Admin Dashboard - Repayment Panel</h2>
-                <button onclick="logoutDashboard()" class="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Logout</button>
+                <button onclick="logoutDashboard()" class="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg cursor-pointer">Logout</button>
             </div>
             
             <div class="mb-4">
@@ -76,14 +80,37 @@
             </div>
 
             <button onclick="generateLink()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg mb-3 cursor-pointer">Generate & Track Link</button>
-            <button onclick="clearHistory()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer">Clear History</button>
+            <button onclick="clearHistory()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer mb-6">Clear History</button>
+
+            <!-- History Table Section -->
+            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 text-xs uppercase border-b border-slate-200">
+                            <th class="p-3">Details</th>
+                            <th class="p-3">Copy Link</th>
+                            <th class="p-3">Visited?</th>
+                            <th class="p-3">UPI Copied?</th>
+                            <th class="p-3">Status / UTR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="text-sm text-slate-700">
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-slate-400">No history available</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
         const CORRECT_SECRET_CODE = "hridoy21upiadmin";
         const CORRECT_ADMIN_USER = "hridoy221upi";
         const CORRECT_ADMIN_PASS = "indiarmayrechudi420bar";
+
+        let linkHistory = [];
 
         function openSecretModal() {
             document.getElementById('secret-modal').classList.remove('hidden');
@@ -121,7 +148,7 @@
                 document.getElementById('admin-login-page').classList.add('hidden');
                 document.getElementById('d3repayon-container').classList.remove('hidden');
             } else {
-                errorElement.classList.remove('hidden');
+                errorElement.classList.error ? errorElement.classList.remove('hidden') : errorElement.classList.remove('hidden');
             }
         }
 
@@ -135,17 +162,48 @@
         function generateLink() {
             const amount = document.getElementById('input-amount').value;
             const upi = document.getElementById('input-upi').value;
+
             if(!amount || !upi) {
                 alert("Please fill in both Amount and UPI ID");
                 return;
             }
-            alert("Link generated successfully!");
+
+            const newItem = {
+                details: `₹${amount} (${upi})`,
+                link: `#pay-${Math.random().toString(36.substring(7))}`,
+                visited: "No",
+                copied: "No",
+                status: "Pending"
+            };
+
+            linkHistory.unshift(newItem);
+            renderHistory();
+
+            document.getElementById('input-amount').value = '';
+            document.getElementById('input-upi').value = '';
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('history-table-body');
+            if(linkHistory.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No history available</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = linkHistory.map((item, index) => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-3 font-medium">${item.details}</td>
+                    <td class="p-3"><button onclick="navigator.clipboard.writeText('${item.link}'); alert('Link copied!');" class="text-blue-600 underline text-xs">Copy</button></td>
+                    <td class="p-3 text-xs"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${item.visited}</span></td>
+                    <td class="p-3 text-xs"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${item.copied}</span></td>
+                    <td class="p-3 text-xs"><span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded">${item.status}</span></td>
+                </tr>
+            `).join('');
         }
 
         function clearHistory() {
-            document.getElementById('input-amount').value = '';
-            document.getElementById('input-upi').value = '';
-            alert("History cleared!");
+            linkHistory = [];
+            renderHistory();
         }
     </script>
 </body>
