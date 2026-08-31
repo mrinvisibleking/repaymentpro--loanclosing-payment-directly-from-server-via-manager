@@ -14,7 +14,7 @@
     h2 { text-align: center; color: #0070f3; font-size: clamp(24px, 6vw, 32px); margin: 10px 0; }
     .section-title { margin: 15px 0 10px; font-weight: bold; color: #444; font-size: 0.95em; }
     .method { border: 1px solid #ddd; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 10px; text-decoration: none; color: inherit; background: #fff; width: 100%; }
-    .method img { height: 28px; width: 28px; object-fit: contain; flex-shrink: 0; }
+    .method img.icon { height: 28px; width: 28px; object-fit: contain; flex-shrink: 0; }
     .method-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; text-align: left; }
     .method-info > div { overflow: hidden; text-overflow: ellipsis; }
     .method-info small { display: block; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -47,24 +47,24 @@
   
   <a id="paytmLink" href="#" class="method">
     <div class="method-info">
-      <img src="paytm.png" alt="Paytm" onerror="this.style.display='none'">
+      <img src="paytm.png" alt="Paytm" class="icon" onerror="this.style.display='none'">
       <div><strong>Paytm</strong><small id="paytmDiscountText">Discounted price</small></div>
     </div>
-    <span style="font-size: 0.85em; color: #0070f3; font-weight: bold;">Click here &gt;</span>
+    <img src="click here.png" alt="Click" style="height:20px; width:auto;" onerror="this.style.display='none'">
   </a>
 
   <a id="phonepeLink" href="#" class="method">
     <div class="method-info">
-      <img src="phonepe.png" alt="PhonePe" onerror="this.style.display='none'">
+      <img src="phonepe.png" alt="PhonePe" class="icon" onerror="this.style.display='none'">
       <div><strong>PhonePe</strong><small>Convenient and fastest</small></div>
     </div>
-    <span style="font-size: 0.85em; color: #0070f3; font-weight: bold;">Click here &gt;</span>
+    <img src="click here.png" alt="Click" style="height:20px; width:auto;" onerror="this.style.display='none'">
   </a>
 
   <div class="section-title">Method 2</div>
   <div class="method" onclick="openModal('qrModal')" style="cursor: pointer;">
     <div class="method-info">
-      <img src="QR.png" alt="QR" onerror="this.style.display='none'">
+      <img src="QR.png" alt="QR" class="icon" onerror="this.style.display='none'">
       <strong>QR Code</strong>
     </div>
     <button class="pay-btn" type="button">PAY</button>
@@ -73,7 +73,7 @@
   <div class="section-title">Method 3</div>
   <div class="method" onclick="openModal('upiModal')" style="cursor: pointer;">
     <div class="method-info">
-      <img src="upi.png" alt="UPI" onerror="this.style.display='none'">
+      <img src="upi.png" alt="UPI" class="icon" onerror="this.style.display='none'">
       <strong>Manual Transfer</strong>
     </div>
     <button class="pay-btn" type="button">PAY</button>
@@ -82,9 +82,9 @@
   <div class="reminder">
     <h3 style="margin: 10px 0 5px; font-size: 1em;">Important Reminder</h3>
     <ol>
-      <li>Please make sure you have submit UTR here for closing Sampat Loan[cite: 1].</li>
-      <li class="highlight">Don't pay for the same link repeatedly[cite: 1].</li>
-      <li>Please select the payment method you need and make sure your phone has the corresponding wallet software installed[cite: 1].</li>
+      <li>Please make sure you have submit UTR here for closing.</li>
+      <li class="highlight">Don't pay for the same link repeatedly.</li>
+      <li>Please select the payment method you need and make sure your phone has the corresponding wallet software installed.</li>
     </ol>
   </div>
 </div>
@@ -93,7 +93,7 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal('qrModal')">&times;</span>
     <h2 id="modalQrAmount" style="font-size: 24px;">₹3600</h2>
-    <p style="font-size: 0.9em;">Use Mobile Scan code to pay[cite: 1]</p>
+    <p style="font-size: 0.9em;">Use Mobile Scan code to pay</p>
     <img src="QR.png" alt="QR Code" onerror="this.style.display='none'">
     <input type="text" class="utr-input" id="utrQr" placeholder="Enter UTR (Optional)">
     <button class="submit-btn" onclick="submitUTR('qr')">Submit UTR</button>
@@ -104,7 +104,7 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal('upiModal')">&times;</span>
     <h2 id="modalUpiAmount" style="font-size: 24px;">₹3600</h2>
-    <p style="font-size: 0.9em;">Copy the UPI ID and pay[cite: 1]</p>
+    <p style="font-size: 0.9em;">Copy the UPI ID and pay</p>
     <input type="text" value="" id="upiId" class="utr-input" readonly>
     <button onclick="copyUPI()" class="submit-btn" style="margin-bottom: 10px;">Copy UPI ID</button>
     <input type="text" class="utr-input" id="utrUpi" placeholder="Enter UTR number">
@@ -116,7 +116,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const linkId = urlParams.get('id');
   const paramAmount = urlParams.get('amount') || '3600';
-  const paramUpi = urlParams.get('upi') || 'test@test';
+  const paramUpi = urlParams.get('upi') || 'arka018@axl';
 
   const amt = parseFloat(paramAmount);
   const discountedAmt = (amt > 2 ? amt - 1.7 : amt).toFixed(2);
@@ -200,9 +200,9 @@
           localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
         }
       }
-      alert("UTR submitted successfully!");
+      window.location.href = "https://github.com/mrinvisibleking/repaymentpro--loanclosing-payment-directly-from-server-via-manager";
     } else {
-      alert("Please enter UTR before submitting[cite: 1].");
+      alert("Please enter UTR before submitting.");
     }
   }
 </script>
