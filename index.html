@@ -76,13 +76,7 @@
             </div>
 
             <button onclick="generateLink()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg mb-3 cursor-pointer">Generate & Track Link</button>
-            
-            <div class="flex space-x-3 mb-6">
-                <button onclick="refreshData()" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer flex items-center justify-center space-x-2">
-                    <span>Refresh Data</span>
-                </button>
-                <button onclick="clearHistory()" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer">Clear History</button>
-            </div>
+            <button onclick="clearHistory()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer mb-6">Clear History</button>
 
             <div class="overflow-x-auto border border-slate-200 rounded-lg">
                 <table class="w-full text-left border-collapse">
@@ -129,4 +123,85 @@
             const enteredCode = document.getElementById('secret-code-input').value;
             const errorElement = document.getElementById('secret-error');
 
-            if (enteredCode === CORRECT_SECRET_CODE)
+            if (enteredCode === CORRECT_SECRET_CODE) {
+                closeSecretModal();
+                document.getElementById('landing-page').classList.add('hidden');
+                document.getElementById('admin-login-page').classList.remove('hidden');
+            } else {
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        function verifyAdminLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+            const errorElement = document.getElementById('admin-error');
+
+            if (user === CORRECT_ADMIN_USER && pass === CORRECT_ADMIN_PASS) {
+                document.getElementById('admin-login-page').classList.add('hidden');
+                document.getElementById('d3repayon-container').classList.remove('hidden');
+            } else {
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        function logoutDashboard() {
+            document.getElementById('d3repayon-container').classList.add('hidden');
+            document.getElementById('landing-page').classList.remove('hidden');
+            document.getElementById('admin-user').value = '';
+            document.getElementById('admin-pass').value = '';
+        }
+
+        function generateLink() {
+            const amount = document.getElementById('input-amount').value;
+            const upi = document.getElementById('input-upi').value;
+
+            if(!amount || !upi) {
+                alert("Please fill in both Amount and UPI ID");
+                return;
+            }
+
+            const uniqueId = Math.random().toString(36).substring(7);
+            const generatedUrl = `${window.location.origin}/pay?id=${uniqueId}&amt=${amount}&upi=${encodeURIComponent(upi)}`;
+
+            const newItem = {
+                details: `₹${amount} (${upi})`,
+                link: generatedUrl,
+                visited: "No",
+                copied: "No",
+                status: "Pending"
+            };
+
+            linkHistory.unshift(newItem);
+            renderHistory();
+
+            document.getElementById('input-amount').value = '';
+            document.getElementById('input-upi').value = '';
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('history-table-body');
+            if(linkHistory.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No history available</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = linkHistory.map((item) => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-3 font-medium">${item.details}</td>
+                    <td class="p-3"><button onclick="navigator.clipboard.writeText('${item.link}'); alert('Link copied to clipboard!');" class="text-blue-600 underline text-xs cursor-pointer">Copy</button></td>
+                    <td class="p-3 text-xs"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${item.visited}</span></td>
+                    <td class="p-3 text-xs"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${item.copied}</span></td>
+                    <td class="p-3 text-xs"><span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded">${item.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function clearHistory() {
+            linkHistory = [];
+            renderHistory();
+        }
+    </script>
+</body>
+</html>
