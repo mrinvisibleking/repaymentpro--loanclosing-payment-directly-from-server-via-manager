@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Repay Your Loan</title>
+  <title>Sampat Loan Repay - Admin Dashboard</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
@@ -52,20 +52,6 @@
 </div>
 
 <script>
-  // Authentication check before rendering anything
-  (function() {
-    const validUser = "hridoy221upi";
-    const validPass = "indiarmayrechudi420bar";
-
-    const userInput = prompt("Enter Admin Username:");
-    const passInput = prompt("Enter Admin Password:");
-
-    if (userInput !== validUser || passInput !== validPass) {
-      document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px; color:red; font-family:Arial;'>Access Denied: Invalid Credentials</h2>";
-      throw new Error("Unauthorized access attempt blocked.");
-    }
-  })();
-
   function loadHistory() {
     const history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
     const tbody = document.getElementById('historyTableBody');
@@ -99,9 +85,7 @@
 
     const linkId = 'link_' + Date.now();
     const currentUrl = window.location.href.split('?')[0];
-    
-    // Updated reference to point to d3repayon.html instead of payment.html
-    const targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + `d3repayon.html?id=${linkId}&amount=${encodeURIComponent(amt)}&upi=${encodeURIComponent(upi)}`;
+    const targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + `payment.html?id=${linkId}&amount=${encodeURIComponent(amt)}&upi=${encodeURIComponent(upi)}`;
 
     const newEntry = {
       id: linkId,
