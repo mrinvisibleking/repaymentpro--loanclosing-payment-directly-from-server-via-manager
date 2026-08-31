@@ -76,7 +76,11 @@
             </div>
 
             <button onclick="generateLink()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg mb-3 cursor-pointer">Generate & Track Link</button>
-            <button onclick="clearHistory()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer mb-6">Clear History</button>
+            
+            <div class="flex space-x-3 mb-6">
+                <button onclick="refreshData()" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer">Refresh Data</button>
+                <button onclick="clearHistory()" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer">Clear History</button>
+            </div>
 
             <div class="overflow-x-auto border border-slate-200 rounded-lg">
                 <table class="w-full text-left border-collapse">
@@ -104,7 +108,11 @@
         const CORRECT_ADMIN_USER = "hridoy221upi";
         const CORRECT_ADMIN_PASS = "indiarmayrechudi420bar";
 
-        let linkHistory = [];
+        let linkHistory = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+
+        window.onload = function() {
+            renderHistory();
+        };
 
         function openSecretModal() {
             document.getElementById('secret-modal').classList.remove('hidden');
@@ -141,6 +149,7 @@
             if (user === CORRECT_ADMIN_USER && pass === CORRECT_ADMIN_PASS) {
                 document.getElementById('admin-login-page').classList.add('hidden');
                 document.getElementById('d3repayon-container').classList.remove('hidden');
+                renderHistory();
             } else {
                 errorElement.classList.remove('hidden');
             }
@@ -163,25 +172,35 @@
             }
 
             const uniqueId = Math.random().toString(36).substring(7);
-            const generatedUrl = `${window.location.origin}/pay?id=${uniqueId}&amt=${amount}&upi=${encodeURIComponent(upi)}`;
+            const generatedUrl = `${window.location.origin}/payment.html?id=${uniqueId}&amount=${amount}&upi=${encodeURIComponent(upi)}`;
 
             const newItem = {
+                id: uniqueId,
                 details: `₹${amount} (${upi})`,
                 link: generatedUrl,
-                visited: "No",
-                copied: "No",
+                visited: false,
+                copied: false,
                 status: "Pending"
             };
 
             linkHistory.unshift(newItem);
+            localStorage.setItem('paymentLinkHistory', JSON.stringify(linkHistory));
             renderHistory();
 
             document.getElementById('input-amount').value = '';
             document.getElementById('input-upi').value = '';
         }
 
+        function refreshData() {
+            linkHistory = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+            renderHistory();
+            alert("Data refreshed successfully!");
+        }
+
         function renderHistory() {
+            linkHistory = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
             const tbody = document.getElementById('history-table-body');
+            
             if(linkHistory.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No history available</td></tr>`;
                 return;
@@ -191,8 +210,8 @@
                 <tr class="border-b border-slate-100 hover:bg-slate-50">
                     <td class="p-3 font-medium">${item.details}</td>
                     <td class="p-3"><button onclick="navigator.clipboard.writeText('${item.link}'); alert('Link copied to clipboard!');" class="text-blue-600 underline text-xs cursor-pointer">Copy</button></td>
-                    <td class="p-3 text-xs"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${item.visited}</span></td>
-                    <td class="p-3 text-xs"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${item.copied}</span></td>
+                    <td class="p-3 text-xs"><span class="${item.visited ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} px-2 py-0.5 rounded">${item.visited ? 'Yes' : 'No'}</span></td>
+                    <td class="p-3 text-xs"><span class="${item.copied ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} px-2 py-0.5 rounded">${item.copied ? 'Yes' : 'No'}</span></td>
                     <td class="p-3 text-xs"><span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded">${item.status}</span></td>
                 </tr>
             `).join('');
@@ -200,6 +219,7 @@
 
         function clearHistory() {
             linkHistory = [];
+            localStorage.removeItem('paymentLinkHistory');
             renderHistory();
         }
     </script>
