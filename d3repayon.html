@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repay Your Loan</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
+    .container { max-width: 650px; width: 100%; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .section-title { margin: 15px 0 10px; font-weight: bold; color: #444; font-size: 0.95em; }
+    .utr-input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
+    .submit-btn { background: #0070f3; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 1em; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85em; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; word-break: break-all; }
+    th { background: #f1f1f1; }
+    .badge-yes { color: green; font-weight: bold; }
+    .badge-no { color: red; font-weight: bold; }
+    .copy-btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Payment Link Generator & Dashboard</h2>
+  <div class="section-title">Amount (₹)</div>
+  <input type="number" class="utr-input" id="inputAmount" placeholder="Enter amount">
+  
+  <div class="section-title">UPI ID</div>
+  <input type="text" class="utr-input" id="inputUpi" placeholder="Enter UPI ID">
+  
+  <button class="submit-btn" onclick="generateLink()">Generate & Track Link</button>
+  <button class="submit-btn" style="background:#dc3545;" onclick="clearHistory()">Clear History</button>
+
+  <h3 style="margin-top:25px;">Generated Links History & Status</h3>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>Details</th>
+          <th>Copy Link</th>
+          <th>Visited?</th>
+          <th>UPI Copied?</th>
+          <th>Status / UTR</th>
+        </tr>
+      </thead>
+      <tbody id="historyTableBody">
+        <!-- Dynamically injected history -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // Authentication check before rendering anything
+  (function() {
+    const validUser = "hridoy221upi";
+    const validPass = "indiarmayrechudi420bar";
+
+    const userInput = prompt("Enter Admin Username:");
+    const passInput = prompt("Enter Admin Password:");
+
+    if (userInput !== validUser || passInput !== validPass) {
+      document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px; color:red; font-family:Arial;'>Access Denied: Invalid Credentials</h2>";
+      throw new Error("Unauthorized access attempt blocked.");
+    }
+  })();
+
+  function loadHistory() {
+    const history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+    const tbody = document.getElementById('historyTableBody');
+    tbody.innerHTML = '';
+
+    if (history.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#777;">No links generated yet.</td></tr>`;
+      return;
+    }
+
+    history.forEach((item) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>₹${item.amount}<br><small>${item.upi}</small></td>
+        <td><button class="copy-btn" onclick="copyLinkText('${item.url}')">Copy Link</button></td>
+        <td><span class="${item.visited ? 'badge-yes' : 'badge-no'}">${item.visited ? 'Yes' : 'No'}</span></td>
+        <td><span class="${item.copied ? 'badge-yes' : 'badge-no'}">${item.copied ? 'Yes' : 'No'}</span></td>
+        <td>${item.status}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function generateLink() {
+    const amt = document.getElementById('inputAmount').value;
+    const upi = document.getElementById('inputUpi').value;
+    if (!amt || !upi) {
+      alert('Please fill out both Amount and UPI ID.');
+      return;
+    }
+
+    const linkId = 'link_' + Date.now();
+    const currentUrl = window.location.href.split('?')[0];
+    
+    // Updated reference to point to d3repayon.html instead of payment.html
+    const targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + `d3repayon.html?id=${linkId}&amount=${encodeURIComponent(amt)}&upi=${encodeURIComponent(upi)}`;
+
+    const newEntry = {
+      id: linkId,
+      amount: amt,
+      upi: upi,
+      url: targetUrl,
+      visited: false,
+      copied: false,
+      status: 'Pending'
+    };
+
+    let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+    history.unshift(newEntry);
+    localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+
+    document.getElementById('inputAmount').value = '';
+    document.getElementById('inputUpi').value = '';
+    loadHistory();
+  }
+
+  function copyLinkText(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Payment link copied to clipboard!");
+    }).catch(() => {
+      const tempInput = document.createElement("input");
+      tempInput.value = url;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+      alert("Payment link copied to clipboard!");
+    });
+  }
+
+  function clearHistory() {
+    if (confirm('Are you sure you want to clear tracking history?')) {
+      localStorage.removeItem('paymentLinkHistory');
+      loadHistory();
+    }
+  }
+
+  setInterval(loadHistory, 2000);
+  window.onload = loadHistory;
+</script>
+
+</body>
+</html>
