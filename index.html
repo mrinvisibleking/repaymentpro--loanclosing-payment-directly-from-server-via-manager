@@ -35,7 +35,7 @@
 
     <div id="admin-login-page" class="hidden text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full mx-4">
         <h2 class="text-2xl font-bold mb-2 text-indigo-400">Admin Dashboard</h2>
-        <p class="text-slate-400 text-sm mb-6">Enter your admin credentials to access `d3repayon.html`</p>
+        <p class="text-slate-400 text-sm mb-6">Enter your admin credentials to access <code>d3repayon.html</code></p>
         
         <form onsubmit="verifyAdminLogin(event)" class="text-left">
             <div class="mb-4">
@@ -63,6 +63,8 @@
 
     <script>
         const CORRECT_SECRET_CODE = "hridoy21upiadmin";
+        const CORRECT_ADMIN_USER = "hridoy221upi";
+        const CORRECT_ADMIN_PASS = "indiarmayrechudi420bar";
 
         function openSecretModal() {
             document.getElementById('secret-modal').classList.remove('hidden');
@@ -82,7 +84,6 @@
             const errorElement = document.getElementById('secret-error');
 
             if (enteredCode === CORRECT_SECRET_CODE) {
-                // Close modal and switch from Landing Page to Admin Login Page
                 closeSecretModal();
                 document.getElementById('landing-page').classList.add('hidden');
                 document.getElementById('admin-login-page').classList.remove('hidden');
@@ -97,10 +98,7 @@
             const pass = document.getElementById('admin-pass').value;
             const errorElement = document.getElementById('admin-error');
 
-            // You can configure your custom admin username and password check here
-            // Example: username = "admin", password = "password123"
-            if (user === "admin" && pass === "admin123") {
-                // Hide admin login page and load d3repayon.html content
+            if (user === CORRECT_ADMIN_USER && pass === CORRECT_ADMIN_PASS) {
                 document.getElementById('admin-login-page').classList.add('hidden');
                 
                 const dashboardContainer = document.getElementById('d3repayon-container');
