@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repayment Successful - RepayNow</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f2f5f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card-container {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .header-banner {
+      background: linear-gradient(90deg, #fbf267 0%, #f7931e 100%);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      padding: 24px 20px 48px;
+      text-align: center;
+    }
+
+    .user-name {
+      font-size: 20px;
+      font-weight: 500;
+      color: #222222;
+      margin-bottom: 4px;
+    }
+
+    .user-mobile {
+      font-size: 14px;
+      color: #555555;
+    }
+
+    .success-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 30px 20px 25px;
+      text-align: center;
+      margin-top: -30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .icon-container {
+      width: 52px;
+      height: 52px;
+      background-color: #e8f8f0;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 16px;
+    }
+
+    .check-icon {
+      width: 28px;
+      height: 28px;
+      background-color: #10d078;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .status-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2b2b2b;
+      margin-bottom: 8px;
+    }
+
+    .status-subtext {
+      font-size: 13px;
+      color: #999999;
+      line-height: 1.4;
+    }
+
+    .info-card {
+      background: #ffffff;
+      border-radius: 20px;
+      margin-top: 12px;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .info-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .info-column.right {
+      text-align: right;
+    }
+
+    .divider {
+      position: absolute;
+      left: 50%;
+      top: 20%;
+      bottom: 20%;
+      width: 1px;
+      background-color: #eef1f5;
+    }
+
+    .label {
+      font-size: 14px;
+      color: #9ba3af;
+    }
+
+    .value {
+      font-size: 22px;
+      font-weight: 600;
+      color: #f15a24;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card-container">
+    <div class="header-banner">
+      <div class="user-name" id="userName">Hridoy Khan</div>
+      <div class="user-mobile">Mobile Number: <span id="userMobile">982****564</span></div>
+    </div>
+
+    <div class="success-card">
+      <div class="icon-container">
+        <div class="check-icon">✓</div>
+      </div>
+      <div class="status-title">Repayment Successful</div>
+      <div class="status-subtext">
+        Your loan has been fully settled.<br>
+        Thank you for repaying on time!
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-column">
+        <span class="label">Payable Amount</span>
+        <span class="value" id="payableAmount">₹ 1254</span>
+      </div>
+      <div class="divider"></div>
+      <div class="info-column right">
+        <span class="label">Repayment Date</span>
+        <span class="value" id="repaymentDate">--/--/----</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramName = urlParams.get('name') || 'Customer Name';
+    const paramMobile = urlParams.get('mobile') || 'Mobile Number';
+    const paramAmount = urlParams.get('amount') || '0';
+
+    document.getElementById('userName').textContent = paramName;
+    document.getElementById('userMobile').textContent = paramMobile;
+    document.getElementById('payableAmount').textContent = '₹ ' + paramAmount;
+
+    // Daily Live Date generator
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+
+    document.getElementById('repaymentDate').textContent = `${day}/${month}/${year}`;
+  </script>
+
+</body>
+</html>
