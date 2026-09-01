@@ -1,211 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Repayment Successful - RepayNow</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      background-color: #f2f5f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 16px;
-    }
-
-    .card-container {
-      width: 100%;
-      max-width: 480px; /* ডেসকটপ ও ট্যাবলেটে নিখুঁত লুকের জন্য */
-      margin: 0 auto;
-    }
-
-    /* Top Gradient Banner */
-    .header-banner {
-      background: linear-gradient(90deg, #fbf267 0%, #f7931e 100%);
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      padding: 24px 16px 48px;
-      text-align: center;
-    }
-
-    .user-name {
-      font-size: clamp(18px, 4vw, 22px);
-      font-weight: 600;
-      color: #222222;
-      margin-bottom: 4px;
-      word-break: break-word;
-    }
-
-    .user-mobile {
-      font-size: clamp(13px, 3vw, 15px);
-      color: #444444;
-    }
-
-    /* Main Success Card */
-    .success-card {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 24px 16px 20px;
-      text-align: center;
-      margin-top: -30px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    }
-
-    .icon-container {
-      width: 50px;
-      height: 50px;
-      background-color: #e8f8f0;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 0 auto 14px;
-    }
-
-    .check-icon {
-      width: 28px;
-      height: 28px;
-      background-color: #10d078;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: bold;
-    }
-
-    .status-title {
-      font-size: clamp(18px, 4vw, 22px);
-      font-weight: 600;
-      color: #2b2b2b;
-      margin-bottom: 8px;
-    }
-
-    .status-subtext {
-      font-size: clamp(12px, 2.8vw, 14px);
-      color: #888888;
-      line-height: 1.4;
-    }
-
-    /* Bottom Info Card */
-    .info-card {
-      background: #ffffff;
-      border-radius: 20px;
-      margin-top: 12px;
-      padding: 18px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    }
-
-    .info-column {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      flex: 1;
-    }
-
-    .info-column.right {
-      text-align: right;
-    }
-
-    .divider {
-      width: 1px;
-      height: 36px;
-      background-color: #eef1f5;
-      margin: 0 12px;
-    }
-
-    .label {
-      font-size: clamp(12px, 2.8vw, 14px);
-      color: #9ba3af;
-      white-space: nowrap;
-    }
-
-    .value {
-      font-size: clamp(18px, 4.5vw, 22px);
-      font-weight: 600;
-      color: #f15a24;
-      white-space: nowrap;
-    }
-
-    /* Extra small mobile device responsiveness */
-    @media (max-width: 360px) {
-      .info-card {
-        padding: 16px 12px;
-      }
-      .divider {
-        margin: 0 6px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center font-sans relative">
 
-  <div class="card-container">
-    <!-- Top Header -->
-    <div class="header-banner">
-      <div class="user-name" id="userName">Hridoy Khan</div>
-      <div class="user-mobile">Mobile Number: <span id="userMobile">982****564</span></div>
+    <div id="landing-page" class="text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full mx-4 z-10">
+        <h1 class="text-3xl font-bold mb-6 text-indigo-400">Welcome</h1>
+        <button onclick="openSecretModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-6 rounded-xl transition duration-300 shadow-lg cursor-pointer">
+            Contact With Manager
+        </button>
     </div>
 
-    <!-- Success Card -->
-    <div class="success-card">
-      <div class="icon-container">
-        <div class="check-icon">✓</div>
-      </div>
-      <div class="status-title">Repayment Successful</div>
-      <div class="status-subtext">
-        Your loan has been fully settled.<br>
-        Thank you for repaying on time!
-      </div>
+    <div id="secret-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-md w-full shadow-2xl relative">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-400">Enter Secret Code</h2>
+            <p class="text-slate-400 text-sm mb-6">Please enter the security code to proceed further.</p>
+            
+            <form onsubmit="verifySecretCode(event)">
+                <input type="password" id="secret-code-input" placeholder="Enter secret code..." required
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white mb-4 focus:outline-none focus:border-indigo-500">
+                <div id="secret-error" class="text-red-400 text-sm mb-4 hidden">Incorrect secret code. Try again.</div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeSecretModal()" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-xl transition duration-300 cursor-pointer">Cancel</button>
+                    <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl transition duration-300 cursor-pointer">Submit</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- Payment Details -->
-    <div class="info-card">
-      <div class="info-column">
-        <span class="label">Payable Amount</span>
-        <span class="value" id="payableAmount">₹ 1254</span>
-      </div>
-      <div class="divider"></div>
-      <div class="info-column right">
-        <span class="label">Repayment Date</span>
-        <span class="value" id="repaymentDate">--/--/----</span>
-      </div>
+    <div id="admin-login-page" class="hidden text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full mx-4 z-10">
+        <h2 class="text-2xl font-bold mb-2 text-indigo-400">Admin Dashboard</h2>
+        <p class="text-slate-400 text-sm mb-6">Enter your admin credentials to access the system</p>
+        
+        <form onsubmit="verifyAdminLogin(event)" class="text-left">
+            <div class="mb-4">
+                <label class="block text-slate-400 text-sm mb-2">Admin Username</label>
+                <input type="text" id="admin-user" required placeholder="Username"
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-slate-400 text-sm mb-2">Admin Password</label>
+                <input type="password" id="admin-pass" required placeholder="Password"
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <div id="admin-error" class="text-red-400 text-sm mb-4 hidden">Invalid username or password.</div>
+            
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-6 rounded-xl transition duration-300 shadow-lg cursor-pointer">
+                Login to Dashboard
+            </button>
+        </form>
     </div>
-  </div>
 
-  <script>
-    // URL Params থেকে Data পড়া
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramName = urlParams.get('name') || 'Customer Name';
-    const paramMobile = urlParams.get('mobile') || 'Mobile Number';
-    const paramAmount = urlParams.get('amount') || '0';
+    <div id="d3repayon-container" class="hidden fixed inset-0 w-full min-h-screen bg-slate-900 z-50 overflow-y-auto p-4 flex flex-col items-center justify-start">
+        <div class="max-w-2xl w-full bg-white text-slate-900 p-6 rounded-xl shadow-xl mt-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-slate-800">Admin Dashboard - Repayment Panel</h2>
+                <button onclick="logoutDashboard()" class="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg cursor-pointer">Logout</button>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1">Customer Name</label>
+                <input type="text" id="input-name" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-black" placeholder="Enter Customer Name">
+            </div>
 
-    // UI তে কাস্টমারের তথ্য বসানো
-    document.getElementById('userName').textContent = paramName;
-    document.getElementById('userMobile').textContent = paramMobile;
-    document.getElementById('payableAmount').textContent = '₹ ' + paramAmount;
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1">Mobile Number</label>
+                <input type="text" id="input-mobile" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-black" placeholder="Enter Mobile Number">
+            </div>
 
-    // আজকের তারিখ স্বয়ংক্রিয়ভাবে (DD/MM/YYYY) সেটিং
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1">Amount (₹)</label>
+                <input type="number" id="input-amount" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-black" placeholder="Enter amount">
+            </div>
 
-    document.getElementById('repaymentDate').textContent = `${day}/${month}/${year}`;
-  </script>
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1">UPI ID</label>
+                <input type="text" id="input-upi" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-black" placeholder="Enter UPI ID">
+            </div>
 
+            <button onclick="generateLink()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg mb-3 cursor-pointer">Generate & Track Link</button>
+            
+            <div class="flex space-x-3 mb-6">
+                <button onclick="refreshData()" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer">Refresh Data</button>
+                <button onclick="clearHistory()" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-lg cursor-pointer">Clear History</button>
+            </div>
+
+            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 text-xs uppercase border-b border-slate-200">
+                            <th class="p-3">Details</th>
+                            <th class="p-3">Copy Link</th>
+                            <th class="p-3">Visited?</th>
+                            <th class="p-3">UPI Copied?</th>
+                            <th class="p-3">Status / UTR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="text-sm text-slate-700">
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-slate-400">No history available</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_SECRET_CODE = "hridoy21upiadmin";
+        const CORRECT_ADMIN_USER = "hridoy221upi";
+        const CORRECT_ADMIN_PASS = "indiarmayrechudi420bar";
+
+        let linkHistory = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+
+        window.onload = function() {
+            renderHistory();
+        };
+
+        function openSecretModal() {
+            document.getElementById('secret-modal').classList.remove('hidden');
+            document.getElementById('secret-modal').classList.add('flex');
+        }
+
+        function closeSecretModal() {
+            document.getElementById('secret-modal').classList.remove('flex');
+            document.getElementById('secret-modal').classList.add('hidden');
+            document.getElementById('secret-code-input').value = '';
+            document.getElementById('secret-error').classList.add('hidden');
+        }
+
+        function verifySecretCode(event) {
+            event.preventDefault();
+            const enteredCode = document.getElementById('secret-code-input').value;
+            const errorElement = document.getElementById('secret-error');
+
+            if (enteredCode === CORRECT_SECRET_CODE) {
+                closeSecretModal();
+                document.getElementById('landing-page').classList.add('hidden');
+                document.getElementById('admin-login-page').classList.remove('hidden');
+            } else {
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        function verifyAdminLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+            const errorElement = document.getElementById('admin-error');
+
+            if (user === CORRECT_ADMIN_USER && pass === CORRECT_ADMIN_PASS) {
+                document.getElementById('admin-login-page').classList.add('hidden');
+                document.getElementById('d3repayon-container').classList.remove('hidden');
+                renderHistory();
+            } else {
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        function logoutDashboard() {
+            document.getElementById('d3repayon-container').classList.add('hidden');
+            document.getElementById('landing-page').classList.remove('hidden');
+            document.getElementById('admin-user').value = '';
+            document.getElementById('admin-pass').value = '';
+        }
+
+        function generateLink() {
+            const name = document.getElementById('input-name').value;
+            const mobile = document.getElementById('input-mobile').value;
+            const amount = document.getElementById('input-amount').value;
+            const upi = document.getElementById('input-upi').value;
+
+            if(!name || !mobile || !amount || !upi) {
+                alert("Please fill in all fields (Name, Mobile, Amount, and UPI ID)");
+                return;
+            }
+
+            const uniqueId = Math.random().toString(36).substring(7);
+            const generatedUrl = `${window.location.origin}/payment.html?id=${uniqueId}&amount=${amount}&upi=${encodeURIComponent(upi)}&name=${encodeURIComponent(name)}&mobile=${encodeURIComponent(mobile)}`;
+
+            const newItem = {
+                id: uniqueId,
+                details: `${name} (${mobile}) - ₹${amount}`,
+                link: generatedUrl,
+                visited: false,
+                copied: false,
+                status: "Pending"
+            };
+
+            linkHistory.unshift(newItem);
+            localStorage.setItem('paymentLinkHistory', JSON.stringify(linkHistory));
+            renderHistory();
+
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-mobile').value = '';
+            document.getElementById('input-amount').value = '';
+            document.getElementById('input-upi').value = '';
+        }
+
+        function refreshData() {
+            linkHistory = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+            renderHistory();
+            alert("Data refreshed successfully!");
+        }
+
+        function renderHistory() {
+            linkHistory = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+            const tbody = document.getElementById('history-table-body');
+            
+            if(linkHistory.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No history available</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = linkHistory.map((item) => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-3 font-medium">${item.details}</td>
+                    <td class="p-3"><button onclick="navigator.clipboard.writeText('${item.link}'); alert('Link copied to clipboard!');" class="text-blue-600 underline text-xs cursor-pointer">Copy</button></td>
+                    <td class="p-3 text-xs"><span class="${item.visited ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} px-2 py-0.5 rounded">${item.visited ? 'Yes' : 'No'}</span></td>
+                    <td class="p-3 text-xs"><span class="${item.copied ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} px-2 py-0.5 rounded">${item.copied ? 'Yes' : 'No'}</span></td>
+                    <td class="p-3 text-xs"><span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded">${item.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function clearHistory() {
+            linkHistory = [];
+            localStorage.removeItem('paymentLinkHistory');
+            renderHistory();
+        }
+    </script>
 </body>
 </html>
