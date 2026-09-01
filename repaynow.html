@@ -23,7 +23,7 @@
 
     .card-container {
       width: 100%;
-      max-width: 900px; /* ডেসকটপে বড় হওয়ার জন্য width বাড়ানো হলো */
+      max-width: 900px;
       margin: 0 auto;
     }
 
@@ -186,18 +186,34 @@
   </div>
 
   <script>
-    // URL Params থেকে Data পড়া
+    // মোবাইল নম্বর হাইড (Mask) করার ফাংশন (প্রথম ২টি এবং শেষ ২টি রেখে মাঝের ডিজিটগুলো স্টার করা)
+    function maskMobileNumber(mobile) {
+      if (!mobile) return '';
+      const str = String(mobile).trim();
+      if (str.length <= 4) return str;
+      
+      const firstTwo = str.substring(0, 2);
+      const lastTwo = str.substring(str.length - 2);
+      const middleStars = '*'.repeat(str.length - 4);
+      
+      return firstTwo + middleStars + lastTwo;
+    }
+
+    // URL Params থেকে Data পড়া
     const urlParams = new URLSearchParams(window.location.search);
-    const paramName = urlParams.get('name') || 'Ridhika Shen';
-    const paramMobile = urlParams.get('mobile') || '9267839403';
+    const paramName = urlParams.get('name') || 'Rashmika Mondal';
+    const paramMobile = urlParams.get('mobile') || '9123412342';
     const paramAmount = urlParams.get('amount') || '3014';
 
     // UI তে কাস্টমারের তথ্য বসানো
     document.getElementById('userName').textContent = paramName;
-    document.getElementById('userMobile').textContent = paramMobile;
-    document.getElementById('payableAmount').textContent = '₹ ' + paramAmount;
+    document.getElementById('userMobile').textContent = maskMobileNumber(paramMobile);
+    
+    // অ্যামাউন্ট ২ দশমিক ঘরসহ দেখানো (যেমন: ₹ 3014.00)
+    const formattedAmount = parseFloat(paramAmount).toFixed(2);
+    document.getElementById('payableAmount').textContent = '₹ ' + formattedAmount;
 
-    // আজকের তারিখ স্বয়ংক্রিয়ভাবে (DD/MM/YYYY) সেটিং
+    // আজকের তারিখ স্বয়ংক্রিয়ভাবে (DD/MM/YYYY) সেটিং
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
