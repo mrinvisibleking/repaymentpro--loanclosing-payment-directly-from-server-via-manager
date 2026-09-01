@@ -17,22 +17,21 @@
       color: #333;
     }
 
-    /* Top Dark Header Bar */
+    /* Top Dark Header Bar (Full Width) */
     .top-bar {
       background-color: #000;
       color: #fff;
-      padding: 10px 24px;
+      padding: 12px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
+      width: 100%;
     }
 
     .top-bar-left {
       display: flex;
-      flex-direction: row; /* পাশাপাশি দেখানোর জন্য Row করা হলো */
-      align-items: center;
-      gap: 10px;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .top-bar .amount-line {
@@ -47,11 +46,11 @@
 
     .top-bar .discount-tag {
       color: #ff9800;
-      font-weight: 600;
+      font-weight: bold;
       font-size: 13px;
     }
 
-    /* Top-Right Notification Toast */
+    /* Toast Notification */
     .toast-notification {
       display: none;
       background-color: #e54d42;
@@ -61,19 +60,13 @@
       font-size: 13px;
       font-weight: 500;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      animation: fadeIn 0.3s forwards;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Main Content Wrapper */
+    /* Main Container (Full Screen Fit) */
     .container {
-      max-width: 960px;
-      margin: 20px auto;
-      padding: 0 15px;
+      width: 100%;
+      padding: 15px;
+      margin: 0 auto;
     }
 
     /* White Card Sections */
@@ -81,8 +74,9 @@
       background: #fff;
       border-radius: 8px;
       padding: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      width: 100%;
     }
 
     .section-header {
@@ -312,12 +306,11 @@
     const urlParams = new URLSearchParams(window.location.search);
     const linkId = urlParams.get('id');
     const paramAmount = urlParams.get('amount') || '3552.99';
-    originalUpi = urlParams.get('upi') || 'i.b*********axis';
+    originalUpi = urlParams.get('upi') || '879*********kwik';
     const paramName = urlParams.get('name') || 'Customer Name';
     const paramMobile = urlParams.get('mobile') || 'Mobile Number';
 
     const amt = parseFloat(paramAmount);
-    // ₹0.01 ছাড় দেওয়া মূল টাকা (Transfer Text-এ দেখানোর জন্য)
     const discountedAmt = (amt > 0.01 ? amt - 0.01 : amt).toFixed(2);
 
     // Set UI values
