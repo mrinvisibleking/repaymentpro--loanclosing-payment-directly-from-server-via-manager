@@ -95,7 +95,7 @@
     <h2 id="modalQrAmount" style="font-size: 24px;">₹3600</h2>
     <p style="font-size: 0.9em;">Use Mobile Scan code to pay</p>
     <img src="QR.png" alt="QR Code" onerror="this.style.display='none'">
-    <input type="text" class="utr-input" id="utrQr" placeholder="Enter UTR (Optional)">
+    <input type="text" class="utr-input" id="utrQr" placeholder="Enter 12-digit UTR" maxlength="12" inputmode="numeric">
     <button class="submit-btn" onclick="submitUTR('qr')">Submit UTR</button>
   </div>
 </div>
@@ -107,7 +107,7 @@
     <p style="font-size: 0.9em;">Copy the UPI ID and pay</p>
     <input type="text" value="" id="upiId" class="utr-input" readonly>
     <button onclick="copyUPI()" class="submit-btn" style="margin-bottom: 10px;">Copy UPI ID</button>
-    <input type="text" class="utr-input" id="utrUpi" placeholder="Enter UTR number">
+    <input type="text" class="utr-input" id="utrUpi" placeholder="Enter 12-digit UTR number" maxlength="12" inputmode="numeric">
     <button class="submit-btn" onclick="submitUTR('upi')">Submit UTR</button>
   </div>
 </div>
@@ -189,8 +189,12 @@
   }
 
   function submitUTR(type) {
-    let utr = type === 'qr' ? document.getElementById("utrQr").value : document.getElementById("utrUpi").value;
-    if (utr) {
+    let utr = type === 'qr' ? document.getElementById("utrQr").value.trim() : document.getElementById("utrUpi").value.trim();
+    
+    // exact 12 digit numeric validation
+    const utrRegex = /^\d{12}$/;
+
+    if (utrRegex.test(utr)) {
       if (linkId) {
         let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
         let currentItem = history.find(item => item.id === linkId);
@@ -202,7 +206,7 @@
       // Redirecting to repaynow.html page with parameters
       window.location.href = `repaynow.html?name=${encodeURIComponent(paramName)}&mobile=${encodeURIComponent(paramMobile)}&amount=${encodeURIComponent(amt)}`;
     } else {
-      alert("Please enter UTR before submitting.");
+      alert("Please enter a valid 12-digit numeric UTR number.");
     }
   }
 </script>
