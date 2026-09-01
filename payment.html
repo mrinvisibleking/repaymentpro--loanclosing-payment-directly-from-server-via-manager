@@ -21,7 +21,7 @@
     .top-bar {
       background-color: #000;
       color: #fff;
-      padding: 12px 24px;
+      padding: 10px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -30,9 +30,14 @@
 
     .top-bar-left {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .top-bar .amount-line {
       font-size: 14px;
+      color: #fff;
     }
 
     .top-bar .amount {
@@ -43,9 +48,10 @@
     .top-bar .discount-tag {
       color: #ff9800;
       font-weight: 600;
+      font-size: 13px;
     }
 
-    /* Top-Right Notification Toast (Screen Shot Matching) */
+    /* Top-Right Notification Toast */
     .toast-notification {
       display: none;
       background-color: #e54d42;
@@ -214,7 +220,7 @@
   <!-- Top Dark Bar -->
   <div class="top-bar">
     <div class="top-bar-left">
-      <div>Amount Payable: <span class="amount" id="topAmount">₹0.00</span></div>
+      <div class="amount-line">Amount Payable: <span class="amount" id="topAmount">₹0.00</span></div>
       <div class="discount-tag">Get ₹0.01 off</div>
     </div>
     <!-- Toast Popup Message Box -->
@@ -271,7 +277,7 @@
   </div>
 
   <script>
-    // 1. Read URL Params generated from d3repayon.html
+    // Read URL Params generated from d3repayon.html
     const urlParams = new URLSearchParams(window.location.search);
     const linkId = urlParams.get('id');
     const paramAmount = urlParams.get('amount') || '3552.99';
@@ -286,7 +292,7 @@
     document.getElementById('transferAmount').textContent = '₹' + amt;
     document.getElementById('upiValue').value = paramUpi;
 
-    // Update Visited Status in LocalStorage for d3repayon.html tracking
+    // Update Visited Status in LocalStorage
     if (linkId) {
       let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
       let currentItem = history.find(item => item.id === linkId);
@@ -307,7 +313,7 @@
     }
     setInterval(updateTimer, 1000);
 
-    // 2. Custom Toast Notification (Shown in your screenshot)
+    // Toast Notification
     function showToast(message) {
       const toast = document.getElementById('toastBox');
       toast.textContent = message;
@@ -317,12 +323,11 @@
       }, 2500);
     }
 
-    // 3. Copy UPI Functionality
+    // Copy UPI
     function copyUPI() {
       const upiInput = document.getElementById("upiValue");
       upiInput.select();
       
-      // Update Copy status for d3repayon.html dashboard
       if (linkId) {
         let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
         let currentItem = history.find(item => item.id === linkId);
@@ -340,13 +345,12 @@
       });
     }
 
-    // 4. Submit UTR Functionality with 12 Digit Check
+    // Submit UTR
     function submitUTR() {
       const utr = document.getElementById("utrInput").value.trim();
       const utrRegex = /^\d{12}$/;
 
       if (utrRegex.test(utr)) {
-        // Save UTR to status
         if (linkId) {
           let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
           let currentItem = history.find(item => item.id === linkId);
@@ -355,14 +359,13 @@
             localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
           }
         }
-        // Redirect to repaynow.html page
         window.location.href = `repaynow.html?name=${encodeURIComponent(paramName)}&mobile=${encodeURIComponent(paramMobile)}&amount=${encodeURIComponent(amt)}`;
       } else {
         showToast("Please enter UTR");
       }
     }
 
-    // App Redirect Functionality
+    // App Redirect
     function payViaApp(app) {
       const discountedAmt = (amt > 2 ? amt - 0.01 : amt).toFixed(2);
       let appUrl = "";
