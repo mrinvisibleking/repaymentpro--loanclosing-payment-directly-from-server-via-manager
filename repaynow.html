@@ -14,16 +14,14 @@
 
     body {
       background-color: #f2f5f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 15px; /* স্ক্রিনের দুই পাশে হালকা স্পেস এর জন্য */
+      display: block; /* সেন্টার এলাইনমেন্ট তুলে দেওয়া হলো */
     }
 
     .card-container {
       width: 100%;
-      max-width: 900px;
+      max-width: 100%; /* নির্দিষ্ট ৯০০ পিক্সেল উঠিয়ে ফুল উইডথ ফিক্স করা হলো */
       margin: 0 auto;
     }
 
@@ -138,9 +136,6 @@
 
     /* Mobile View Responsive Adjustment */
     @media (max-width: 600px) {
-      .card-container {
-        max-width: 100%;
-      }
       .info-card {
         padding: 18px 16px;
       }
