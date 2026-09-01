@@ -66,6 +66,16 @@
             </div>
             
             <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1">Customer Name</label>
+                <input type="text" id="input-name" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-black" placeholder="Enter Customer Name">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1">Mobile Number</label>
+                <input type="text" id="input-mobile" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-black" placeholder="Enter Mobile Number">
+            </div>
+
+            <div class="mb-4">
                 <label class="block text-sm font-semibold mb-1">Amount (₹)</label>
                 <input type="number" id="input-amount" class="w-full border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-black" placeholder="Enter amount">
             </div>
@@ -163,20 +173,22 @@
         }
 
         function generateLink() {
+            const name = document.getElementById('input-name').value;
+            const mobile = document.getElementById('input-mobile').value;
             const amount = document.getElementById('input-amount').value;
             const upi = document.getElementById('input-upi').value;
 
-            if(!amount || !upi) {
-                alert("Please fill in both Amount and UPI ID");
+            if(!name || !mobile || !amount || !upi) {
+                alert("Please fill in all fields (Name, Mobile, Amount, and UPI ID)");
                 return;
             }
 
             const uniqueId = Math.random().toString(36).substring(7);
-            const generatedUrl = `${window.location.origin}/payment.html?id=${uniqueId}&amount=${amount}&upi=${encodeURIComponent(upi)}`;
+            const generatedUrl = `${window.location.origin}/payment.html?id=${uniqueId}&amount=${amount}&upi=${encodeURIComponent(upi)}&name=${encodeURIComponent(name)}&mobile=${encodeURIComponent(mobile)}`;
 
             const newItem = {
                 id: uniqueId,
-                details: `₹${amount} (${upi})`,
+                details: `${name} (${mobile}) - ₹${amount}`,
                 link: generatedUrl,
                 visited: false,
                 copied: false,
@@ -187,6 +199,8 @@
             localStorage.setItem('paymentLinkHistory', JSON.stringify(linkHistory));
             renderHistory();
 
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-mobile').value = '';
             document.getElementById('input-amount').value = '';
             document.getElementById('input-upi').value = '';
         }
