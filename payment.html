@@ -119,14 +119,20 @@
     }
 
     .method-logo {
-      height: 24px;
+      height: 28px;
       display: flex;
       align-items: center;
     }
 
-    .hand-icon {
-      color: #0070f3;
-      font-size: 18px;
+    .method-logo img {
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .finger-icon {
+      height: 22px;
+      width: 22px;
+      object-fit: contain;
     }
 
     /* Step Instructions */
@@ -237,16 +243,16 @@
 
       <div class="method-item" onclick="payViaApp('paytm')">
         <div class="method-logo">
-          <strong style="color: #002e6e; font-size: 20px;">pay<span style="color:#00baf2;">tm</span></strong>
+          <img src="paytm.png" alt="Paytm">
         </div>
-        <span class="hand-icon">👆</span>
+        <img src="finger.png" class="finger-icon" alt="Click">
       </div>
 
       <div class="method-item" onclick="payViaApp('phonepe')">
         <div class="method-logo">
-          <strong style="color: #5f259f; font-size: 18px;">PhonePe</strong>
+          <img src="phonepe.png" alt="PhonePe">
         </div>
-        <span class="hand-icon">👆</span>
+        <img src="finger.png" class="finger-icon" alt="Click">
       </div>
     </div>
 
