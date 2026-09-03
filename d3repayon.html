@@ -24,7 +24,11 @@
 <div class="container">
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <h2 style="font-size: 1.2em; margin: 0;">Admin Dashboard - Repayment Panel</h2>
-    <button style="background: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer;" onclick="logout()">Logout</button>
+    <div style="display: flex; gap: 6px;">
+      <!-- আপনার মার্ক করা জায়গায় সেভ বাটন -->
+      <button style="background: #16a34a; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" onclick="saveInputs()">Save</button>
+      <button style="background: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer;" onclick="logout()">Logout</button>
+    </div>
   </div>
 
   <div class="section-title">Customer Name</div>
@@ -39,8 +43,6 @@
   <div class="section-title">UPI ID</div>
   <input type="text" class="utr-input" id="inputUpi" placeholder="Enter UPI ID">
   
-  <!-- সেভ বাটন -->
-  <button class="submit-btn" style="background:#16a34a;" onclick="saveInputs()">Save Inputs</button>
   <button class="submit-btn" onclick="generateLink()">Generate & Track Link</button>
   <div style="display: flex; gap: 10px; margin-top: 5px;">
     <button class="submit-btn" style="background:#059669; flex: 1;" onclick="loadHistory()">Refresh Data</button>
