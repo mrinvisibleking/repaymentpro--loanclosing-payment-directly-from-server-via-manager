@@ -3,16 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Repayment Link</title>
-  <meta name="description" content="View your repayment details">
-
-  <meta property="og:title" content="Repayment Link">
-  <meta property="og:description" content="View your repayment details">
-  <meta property="og:type" content="website">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Repayment Link">
-  <meta name="twitter:description" content="View your repayment details">
+  <title>Repay Loan</title>
   <style>
     * {
       box-sizing: border-box;
@@ -291,36 +282,7 @@
     </div>
   </div>
 
-  
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-import { firebaseConfig } from "./firebase-config.js";
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
-const params = new URLSearchParams(location.search);
-const id = params.get("id");
-let ready = false;
-
-signInAnonymously(auth).then(()=>{
-  ready = true;
-  if (id) update(ref(db,"links/"+id), {visited:true, visitedAt:Date.now()}).catch(console.error);
-}).catch(console.error);
-
-window.realtimeMarkCopied = async function(){
-  if (!ready || !id) return;
-  await update(ref(db,"links/"+id), {copied:true, copiedAt:Date.now()});
-};
-window.realtimeSubmitUTR = async function(utr){
-  if (!ready || !id) return;
-  await update(ref(db,"links/"+id), {status:"UTR: "+utr, utr:utr, utrSubmittedAt:Date.now()});
-};
-</script>
-
-<script>
+  <script>
     let originalUpi = "";
 
     function maskUPI(upi) {
@@ -356,7 +318,15 @@ window.realtimeSubmitUTR = async function(utr){
     document.getElementById('transferAmount').textContent = '₹' + discountedAmt;
     document.getElementById('upiValue').value = maskUPI(originalUpi);
 
-    // Visited status is written to Firebase by the realtime module.
+    // Update Visited Status in LocalStorage
+    if (linkId) {
+      let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+      let currentItem = history.find(item => item.id === linkId);
+      if (currentItem) {
+        currentItem.visited = true;
+        localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+      }
+    }
 
     // Timer Logic
     let timeLeft = 8 * 60;
@@ -381,16 +351,16 @@ window.realtimeSubmitUTR = async function(utr){
 
     // Copy UPI
     function copyUPI() {
-      if (window.realtimeMarkCopied) {
-        window.realtimeMarkCopied().catch(console.error);
+      if (linkId) {
+        let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+        let currentItem = history.find(item => item.id === linkId);
+        if (currentItem) {
+          currentItem.copied = true;
+          localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+        }
       }
 
-      const copyPromise =
-        (navigator.clipboard && window.isSecureContext)
-          ? navigator.clipboard.writeText(originalUpi)
-          : Promise.reject();
-
-      copyPromise.then(() => {
+      navigator.clipboard.writeText(originalUpi).then(() => {
         showToast("UPI copied successfully");
       }).catch(() => {
         const tempInput = document.createElement("input");
@@ -409,13 +379,15 @@ window.realtimeSubmitUTR = async function(utr){
       const utrRegex = /^\d{12}$/;
 
       if (utrRegex.test(utr)) {
-        if (window.realtimeSubmitUTR) {
-          window.realtimeSubmitUTR(utr).then(() => {
-            window.location.href = `repaynow.html?name=${encodeURIComponent(paramName)}&mobile=${encodeURIComponent(paramMobile)}&amount=${encodeURIComponent(amt.toFixed(2))}`;
-          }).catch(() => showToast('Could not update UTR. Please try again.'));
-        } else {
-          window.location.href = `repaynow.html?name=${encodeURIComponent(paramName)}&mobile=${encodeURIComponent(paramMobile)}&amount=${encodeURIComponent(amt.toFixed(2))}`;
+        if (linkId) {
+          let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
+          let currentItem = history.find(item => item.id === linkId);
+          if (currentItem) {
+            currentItem.status = 'UTR: ' + utr;
+            localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+          }
         }
+        window.location.href = `repaynow.html?name=${encodeURIComponent(paramName)}&mobile=${encodeURIComponent(paramMobile)}&amount=${encodeURIComponent(amt.toFixed(2))}`;
       } else {
         showToast("Please enter UTR");
       }
