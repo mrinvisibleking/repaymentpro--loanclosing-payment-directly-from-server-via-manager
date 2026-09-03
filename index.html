@@ -1233,6 +1233,9 @@ const CORRECT_ADMIN_PASS = "indiarmayrechudi420bar";
    STORAGE KEYS
 ========================================================= */
 
+const PRODUCTION_PAYMENT_URL =
+    "https://repaymentpro-loanclosing-payment-di.vercel.app";
+
 const HISTORY_KEY = "paymentLinkHistory";
 const SAVED_CUSTOMERS_KEY = "savedCustomerDetails";
 
@@ -1780,6 +1783,37 @@ function loadSavedCustomer(encodedId) {
 }
 
 
+function saveCurrentFormDetails() {
+    const data = getFormData();
+
+    try {
+        localStorage.setItem(
+            "lastCustomerDetails",
+            JSON.stringify(data)
+        );
+    } catch (error) {
+        // Ignore storage errors; link generation can still continue.
+    }
+}
+
+function restoreCurrentFormDetails() {
+    try {
+        const saved = JSON.parse(
+            localStorage.getItem("lastCustomerDetails") || "null"
+        );
+
+        if (!saved) return;
+
+        document.getElementById("input-name").value = saved.name || "";
+        document.getElementById("input-mobile").value = saved.mobile || "";
+        document.getElementById("input-amount").value = saved.amount || "";
+        document.getElementById("input-upi").value = saved.upi || "";
+    } catch (error) {
+        // Ignore malformed saved data.
+    }
+}
+
+
 /* =========================================================
    GENERATE PAYMENT LINK
 ========================================================= */
@@ -1792,6 +1826,8 @@ function generateLink() {
         return;
     }
 
+    // Automatically save the latest details.
+    saveCurrentFormDetails();
 
     /*
        Generate stronger random ID.
@@ -1812,7 +1848,7 @@ function generateLink() {
     */
 
     const generatedUrl =
-        `${window.location.origin}/payment.html` +
+        `${PRODUCTION_PAYMENT_URL}/payment.html` +
         `?id=${encodeURIComponent(uniqueId)}` +
         `&amount=${encodeURIComponent(data.amount)}` +
         `&upi=${encodeURIComponent(data.upi)}` +
