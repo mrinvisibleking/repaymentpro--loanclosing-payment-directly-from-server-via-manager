@@ -21,7 +21,7 @@
             <p class="text-slate-400 text-sm mb-6">Please enter the security code to proceed further.</p>
             
             <form onsubmit="verifySecretCode(event)">
-                <input type="password" id="secret-code-input" placeholder="Enter secret code..." required
+                <input type="password" id="secret-code-input" placeholder="Enter secret code..." required autocomplete="new-password"
                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white mb-4 focus:outline-none focus:border-indigo-500">
                 <div id="secret-error" class="text-red-400 text-sm mb-4 hidden">Incorrect secret code. Try again.</div>
                 
@@ -40,13 +40,13 @@
         <form onsubmit="verifyAdminLogin(event)" class="text-left">
             <div class="mb-4">
                 <label class="block text-slate-400 text-sm mb-2">Admin Username</label>
-                <input type="text" id="admin-user" required placeholder="Username"
+                <input type="text" id="admin-user" required placeholder="Username" autocomplete="off"
                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
             </div>
             
             <div class="mb-6">
                 <label class="block text-slate-400 text-sm mb-2">Admin Password</label>
-                <input type="password" id="admin-pass" required placeholder="Password"
+                <input type="password" id="admin-pass" required placeholder="Password" autocomplete="new-password"
                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
             </div>
 
@@ -115,10 +115,9 @@
 
     <!-- Secure Encoded Credentials Script -->
     <script>
-        // Passwords are Base64 encoded so they don't show as plain text in source code
-        const ENC_SECRET = "aHRpZG95MjF1cGlhZG1pbg=="; //
-        const ENC_USER = "aHJpZDIyMXVwaQ==";           //
-        const ENC_PASS = "aW5kaWFybWF5cmVjaHVkaTQyMGJhcg=="; // 
+        const ENC_SECRET = "aHRpZG95MjF1cGlhZG1pbg=="; // hridoy21upiadmin
+        const ENC_USER = "aHJpZDIyMXVwaQ==";           // hridoy221upi
+        const ENC_PASS = "aW5kaWFybWF5cmVjaHVkaTQyMGJhcg=="; // indiarmayrechudi420bar
 
         let linkHistory = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
 
@@ -129,6 +128,7 @@
         function openSecretModal() {
             document.getElementById('secret-modal').classList.remove('hidden');
             document.getElementById('secret-modal').classList.add('flex');
+            document.getElementById('secret-code-input').value = ''; // Clear input on open
         }
 
         function closeSecretModal() {
@@ -140,7 +140,7 @@
 
         function verifySecretCode(event) {
             event.preventDefault();
-            const enteredCode = document.getElementById('secret-code-input').value;
+            const enteredCode = document.getElementById('secret-code-input').value.trim();
             const errorElement = document.getElementById('secret-error');
 
             if (enteredCode === atob(ENC_SECRET)) {
@@ -154,8 +154,8 @@
 
         function verifyAdminLogin(event) {
             event.preventDefault();
-            const user = document.getElementById('admin-user').value;
-            const pass = document.getElementById('admin-pass').value;
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
             const errorElement = document.getElementById('admin-error');
 
             if (user === atob(ENC_USER) && pass === atob(ENC_PASS)) {
