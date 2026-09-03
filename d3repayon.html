@@ -3,40 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Repayment Panel</title>
+  <title>Admin Dashboard</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #0f172a; margin: 0; padding: 20px; }
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
     .container { max-width: 650px; width: 100%; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .section-title { margin: 15px 0 5px; font-weight: bold; color: #444; font-size: 0.95em; }
-    .utr-input { width: 100%; padding: 10px; margin: 5px 0 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
-    .submit-btn { background: #2563eb; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 1em; margin-top: 5px; font-weight: bold; }
+    .section-title { margin: 15px 0 10px; font-weight: bold; color: #444; font-size: 0.95em; }
+    .utr-input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
+    .submit-btn { background: #0070f3; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 1em; margin-top: 10px; }
     table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85em; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; word-break: break-all; }
     th { background: #f1f1f1; }
     .badge-yes { color: green; font-weight: bold; }
     .badge-no { color: red; font-weight: bold; }
-    .copy-btn { background: #2563eb; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.85em; }
+    .copy-btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; white-space: nowrap; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h2 style="font-size: 1.2em; margin: 0;">Admin Dashboard - Repayment Panel</h2>
-    <div style="display: flex; gap: 6px;">
-      <!-- আপনার নির্দিষ্ট জায়গায় সেভ বাটন -->
-      <button style="background: #16a34a; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;" onclick="saveInputs()">Save</button>
-      <button style="background: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer;" onclick="logout()">Logout</button>
-    </div>
-  </div>
-
-  <div class="section-title">Customer Name</div>
-  <input type="text" class="utr-input" id="inputName" placeholder="Enter Customer Name">
-
-  <div class="section-title">Mobile Number</div>
-  <input type="text" class="utr-input" id="inputMobile" placeholder="Enter Mobile Number">
-
+  <h2>Payment Link Generator & Dashboard</h2>
   <div class="section-title">Amount (₹)</div>
   <input type="number" class="utr-input" id="inputAmount" placeholder="Enter amount">
   
@@ -44,12 +30,9 @@
   <input type="text" class="utr-input" id="inputUpi" placeholder="Enter UPI ID">
   
   <button class="submit-btn" onclick="generateLink()">Generate & Track Link</button>
-  <div style="display: flex; gap: 10px; margin-top: 5px;">
-    <button class="submit-btn" style="background:#059669; flex: 1;" onclick="loadHistory()">Refresh Data</button>
-    <button class="submit-btn" style="background:#dc2626; flex: 1;" onclick="clearHistory()">Clear History</button>
-  </div>
+  <button class="submit-btn" style="background:#dc3545;" onclick="clearHistory()">Clear History</button>
 
-  <h3 style="margin-top:25px; font-size: 1em;">Generated Links History & Status</h3>
+  <h3 style="margin-top:25px;">Generated Links History & Status</h3>
   <div style="overflow-x:auto;">
     <table>
       <thead>
@@ -69,63 +52,34 @@
 </div>
 
 <script>
-  window.onload = function() {
-    loadHistory();
-    loadSavedInputs();
-  };
-
-  function saveInputs() {
-    const name = document.getElementById('inputName').value;
-    const mobile = document.getElementById('inputMobile').value;
-    const amt = document.getElementById('inputAmount').value;
-    const upi = document.getElementById('inputUpi').value;
-    
-    localStorage.setItem('savedName', name);
-    localStorage.setItem('savedMobile', mobile);
-    localStorage.setItem('savedAmount', amt);
-    localStorage.setItem('savedUpi', upi);
-    
-    alert('Inputs saved successfully!');
-  }
-
-  function loadSavedInputs() {
-    if (localStorage.getItem('savedName')) document.getElementById('inputName').value = localStorage.getItem('savedName');
-    if (localStorage.getItem('savedMobile')) document.getElementById('inputMobile').value = localStorage.getItem('savedMobile');
-    if (localStorage.getItem('savedAmount')) document.getElementById('inputAmount').value = localStorage.getItem('savedAmount');
-    if (localStorage.getItem('savedUpi')) document.getElementById('inputUpi').value = localStorage.getItem('savedUpi');
-  }
-
   function loadHistory() {
     const history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
     const tbody = document.getElementById('historyTableBody');
     tbody.innerHTML = '';
 
     if (history.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#777;">No history available</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#777;">No links generated yet.</td></tr>`;
       return;
     }
 
     history.forEach((item) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${item.name || ''} (${item.mobile || ''}) - ₹${item.amount}<br><small>${item.upi}</small></td>
-        <td><button class="copy-btn" onclick="copyLinkText('${item.url}')">Copy</button></td>
+        <td>₹${item.amount}<br><small>${item.upi}</small></td>
+        <td><button class="copy-btn" onclick="copyLinkText('${item.url}')">Copy Link</button></td>
         <td><span class="${item.visited ? 'badge-yes' : 'badge-no'}">${item.visited ? 'Yes' : 'No'}</span></td>
         <td><span class="${item.copied ? 'badge-yes' : 'badge-no'}">${item.copied ? 'Yes' : 'No'}</span></td>
-        <td><span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${item.status}</span></td>
+        <td>${item.status}</td>
       `;
       tbody.appendChild(tr);
     });
   }
 
   function generateLink() {
-    const name = document.getElementById('inputName').value;
-    const mobile = document.getElementById('inputMobile').value;
     const amt = document.getElementById('inputAmount').value;
     const upi = document.getElementById('inputUpi').value;
-
     if (!amt || !upi) {
-      alert('Please fill out Amount and UPI ID.');
+      alert('Please fill out both Amount and UPI ID.');
       return;
     }
 
@@ -135,8 +89,6 @@
 
     const newEntry = {
       id: linkId,
-      name: name,
-      mobile: mobile,
       amount: amt,
       upi: upi,
       url: targetUrl,
@@ -149,11 +101,21 @@
     history.unshift(newEntry);
     localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
 
+    document.getElementById('inputAmount').value = '';
+    document.getElementById('inputUpi').value = '';
     loadHistory();
   }
 
   function copyLinkText(url) {
     navigator.clipboard.writeText(url).then(() => {
+      alert("Payment link copied to clipboard!");
+    }).catch(() => {
+      const tempInput = document.createElement("input");
+      tempInput.value = url;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
       alert("Payment link copied to clipboard!");
     });
   }
@@ -165,11 +127,8 @@
     }
   }
 
-  function logout() {
-    alert('Logged out successfully!');
-  }
-
   setInterval(loadHistory, 2000);
+  window.onload = loadHistory;
 </script>
 
 </body>
