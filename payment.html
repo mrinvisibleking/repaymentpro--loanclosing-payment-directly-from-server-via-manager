@@ -3,7 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Repay Loan</title>
+  <title>Repayment Link</title>
+  <meta name="description" content="View your repayment details">
+
+  <meta property="og:title" content="Repayment Link">
+  <meta property="og:description" content="View your repayment details">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Repayment Link">
+  <meta name="twitter:description" content="View your repayment details">
   <style>
     * {
       box-sizing: border-box;
@@ -360,7 +369,12 @@
         }
       }
 
-      navigator.clipboard.writeText(originalUpi).then(() => {
+      const copyPromise =
+        (navigator.clipboard && window.isSecureContext)
+          ? navigator.clipboard.writeText(originalUpi)
+          : Promise.reject();
+
+      copyPromise.then(() => {
         showToast("UPI copied successfully");
       }).catch(() => {
         const tempInput = document.createElement("input");
