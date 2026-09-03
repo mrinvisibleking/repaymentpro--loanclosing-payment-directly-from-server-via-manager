@@ -29,6 +29,8 @@
   <div class="section-title">UPI ID</div>
   <input type="text" class="utr-input" id="inputUpi" placeholder="Enter UPI ID">
   
+  <!-- সেভ বাটন যুক্ত করা হলো -->
+  <button class="submit-btn" style="background:#28a745;" onclick="saveInputs()">Save Inputs</button>
   <button class="submit-btn" onclick="generateLink()">Generate & Track Link</button>
   <button class="submit-btn" style="background:#dc3545;" onclick="clearHistory()">Clear History</button>
 
@@ -52,6 +54,36 @@
 </div>
 
 <script>
+  // পেজ লোড হওয়ার সময় সেভ করা ডাটা এবং হিস্ট্রি লোড করবে
+  window.onload = function() {
+    loadHistory();
+    loadSavedInputs();
+  };
+
+  // ইনপুট সেভ করার ফাংশন
+  function saveInputs() {
+    const amt = document.getElementById('inputAmount').value;
+    const upi = document.getElementById('inputUpi').value;
+    
+    if (!amt || !upi) {
+      alert('Please fill out both Amount and UPI ID to save.');
+      return;
+    }
+
+    localStorage.setItem('savedAmount', amt);
+    localStorage.setItem('savedUpi', upi);
+    alert('Inputs saved successfully!');
+  }
+
+  // সেভ করা ডাটা ফিল্ডে ফিরিয়ে আনার ফাংশন
+  function loadSavedInputs() {
+    const savedAmt = localStorage.getItem('savedAmount');
+    const savedUpi = localStorage.getItem('savedUpi');
+
+    if (savedAmt) document.getElementById('inputAmount').value = savedAmt;
+    if (savedUpi) document.getElementById('inputUpi').value = savedUpi;
+  }
+
   function loadHistory() {
     const history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
     const tbody = document.getElementById('historyTableBody');
@@ -101,8 +133,6 @@
     history.unshift(newEntry);
     localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
 
-    document.getElementById('inputAmount').value = '';
-    document.getElementById('inputUpi').value = '';
     loadHistory();
   }
 
@@ -128,7 +158,6 @@
   }
 
   setInterval(loadHistory, 2000);
-  window.onload = loadHistory;
 </script>
 
 </body>
