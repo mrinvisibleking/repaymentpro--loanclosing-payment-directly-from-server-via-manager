@@ -3,33 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Repayment Successful - RepayNow</title>
+
+  <title>Payment Failed - RepayNow</title>
+
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
       background-color: #f2f5f8;
       min-height: 100vh;
-      padding: 15px; /* স্ক্রিনের দুই পাশে হালকা স্পেস এর জন্য */
-      display: block; /* সেন্টার এলাইনমেন্ট তুলে দেওয়া হলো */
+      padding: 15px;
+      display: block;
     }
 
     .card-container {
       width: 100%;
-      max-width: 100%; /* নির্দিষ্ট ৯০০ পিক্সেল উঠিয়ে ফুল উইডথ ফিক্স করা হলো */
+      max-width: 100%;
       margin: 0 auto;
     }
 
-    /* Top Gradient Banner */
+    /* =========================
+       TOP HEADER
+    ========================== */
+
     .header-banner {
-      background: linear-gradient(90deg, #fbf267 0%, #f7931e 100%);
+      background: linear-gradient(
+        90deg,
+        #fbf267 0%,
+        #f7931e 100%
+      );
+
       border-top-left-radius: 20px;
       border-top-right-radius: 20px;
+
       padding: 30px 20px 50px;
       text-align: center;
     }
@@ -46,69 +58,114 @@
       color: #444444;
     }
 
-    /* Main Success Card */
+    /* =========================
+       PAYMENT FAILED CARD
+    ========================== */
+
     .success-card {
       background: #ffffff;
+
       border-radius: 20px;
+
       padding: 35px 20px 30px;
+
       text-align: center;
+
       margin-top: -30px;
+
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
     }
+
+    /* Outer red circle */
 
     .icon-container {
       width: 56px;
       height: 56px;
-      background-color: #e8f8f0;
+
+      background-color: #fdecec;
+
       border-radius: 50%;
+
       display: flex;
       justify-content: center;
       align-items: center;
+
       margin: 0 auto 16px;
     }
+
+    /* Red exclamation icon */
 
     .check-icon {
       width: 30px;
       height: 30px;
-      background-color: #10d078;
+
+      background-color: #e53935;
+
       border-radius: 50%;
+
       display: flex;
       justify-content: center;
       align-items: center;
+
       color: #ffffff;
-      font-size: 16px;
-      font-weight: bold;
+
+      font-size: 20px;
+      font-weight: 700;
+
+      line-height: 1;
     }
+
+    /* Failed title */
 
     .status-title {
       font-size: clamp(20px, 2.8vw, 28px);
+
       font-weight: 600;
-      color: #2b2b2b;
+
+      color: #e53935;
+
       margin-bottom: 10px;
     }
 
+    /* Failed message */
+
     .status-subtext {
       font-size: clamp(13px, 1.8vw, 16px);
+
       color: #888888;
+
       line-height: 1.5;
     }
 
-    /* Bottom Info Card */
+    /* =========================
+       PAYMENT DETAILS
+    ========================== */
+
     .info-card {
       background: #ffffff;
+
       border-radius: 20px;
+
       margin-top: 15px;
+
       padding: 24px 30px;
+
       display: flex;
+
       justify-content: space-between;
+
       align-items: center;
+
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
     }
 
     .info-column {
       display: flex;
+
       flex-direction: column;
+
       gap: 8px;
+
       flex: 1;
     }
 
@@ -118,103 +175,302 @@
 
     .divider {
       width: 1px;
+
       height: 40px;
+
       background-color: #eef1f5;
+
       margin: 0 20px;
     }
 
     .label {
       font-size: clamp(13px, 1.8vw, 16px);
+
       color: #9ba3af;
     }
 
     .value {
       font-size: clamp(20px, 2.8vw, 28px);
+
       font-weight: 600;
+
       color: #f15a24;
     }
 
-    /* Mobile View Responsive Adjustment */
+    /* =========================
+       MOBILE RESPONSIVE
+    ========================== */
+
     @media (max-width: 600px) {
+
+      body {
+        padding: 10px;
+      }
+
+      .header-banner {
+        padding: 25px 15px 45px;
+      }
+
+      .success-card {
+        padding: 30px 15px 25px;
+      }
+
       .info-card {
         padding: 18px 16px;
       }
+
       .divider {
         margin: 0 10px;
+      }
+
+      .value {
+        font-size: 20px;
+      }
+    }
+
+    /* Very small screens */
+
+    @media (max-width: 380px) {
+
+      .info-card {
+        padding: 16px 12px;
+      }
+
+      .divider {
+        margin: 0 7px;
+      }
+
+      .label {
+        font-size: 12px;
+      }
+
+      .value {
+        font-size: 18px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <div class="card-container">
-    <!-- Top Header -->
+
+    <!-- =========================
+         CUSTOMER HEADER
+    ========================== -->
+
     <div class="header-banner">
-      <div class="user-name" id="userName">--</div>
-      <div class="user-mobile">Mobile Number: <span id="userMobile">--</span></div>
+
+      <div class="user-name" id="userName">
+        --
+      </div>
+
+      <div class="user-mobile">
+        Mobile Number:
+        <span id="userMobile">--</span>
+      </div>
+
     </div>
 
-    <!-- Success Card -->
+
+    <!-- =========================
+         PAYMENT FAILED
+    ========================== -->
+
     <div class="success-card">
+
       <div class="icon-container">
-        <div class="check-icon">✓</div>
+
+        <!-- Red Exclamation -->
+        <div class="check-icon">
+          !
+        </div>
+
       </div>
-      <div class="status-title">Repayment Successful</div>
+
+      <div class="status-title">
+        Payment Failed
+      </div>
+
       <div class="status-subtext">
-        Your loan has been fully settled.<br>
-        Thank you for repaying on time!
+        Your payment could not be completed.<br>
+        Please try again or contact support.
       </div>
+
     </div>
 
-    <!-- Payment Details -->
+
+    <!-- =========================
+         PAYMENT DETAILS
+    ========================== -->
+
     <div class="info-card">
+
+      <!-- Amount -->
+
       <div class="info-column">
-        <span class="label">Payable Amount</span>
-        <span class="value" id="payableAmount">₹ --</span>
+
+        <span class="label">
+          Payable Amount
+        </span>
+
+        <span class="value" id="payableAmount">
+          ₹ --
+        </span>
+
       </div>
+
+
+      <!-- Divider -->
+
       <div class="divider"></div>
+
+
+      <!-- Date -->
+
       <div class="info-column right">
-        <span class="label">Repayment Date</span>
-        <span class="value" id="repaymentDate">--/--/----</span>
+
+        <span class="label">
+          Repayment Date
+        </span>
+
+        <span class="value" id="repaymentDate">
+          --/--/----
+        </span>
+
       </div>
+
     </div>
+
   </div>
 
+
   <script>
-    // মোবাইল নম্বর হাইড (Mask) করার ফাংশন (প্রথম ২টি এবং শেষ ২টি রেখে মাঝের ডিজিটগুলো স্টার করা)
+
+    /* =========================
+       MOBILE NUMBER MASK
+    ========================== */
+
     function maskMobileNumber(mobile) {
+
       if (!mobile) return '';
+
       const str = String(mobile).trim();
-      if (str.length <= 4) return str;
-      
+
+      if (str.length <= 4) {
+        return str;
+      }
+
       const firstTwo = str.substring(0, 2);
-      const lastTwo = str.substring(str.length - 2);
-      const middleStars = '*'.repeat(str.length - 4);
-      
-      return firstTwo + middleStars + lastTwo;
+
+      const lastTwo = str.substring(
+        str.length - 2
+      );
+
+      const middleStars = '*'.repeat(
+        str.length - 4
+      );
+
+      return firstTwo +
+             middleStars +
+             lastTwo;
     }
 
-    // URL Params থেকে Data পড়া
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramName = urlParams.get('name') || 'Rashmika Mondal';
-    const paramMobile = urlParams.get('mobile') || '9123412342';
-    const paramAmount = urlParams.get('amount') || '3014';
 
-    // UI তে কাস্টমারের তথ্য বসানো
-    document.getElementById('userName').textContent = paramName;
-    document.getElementById('userMobile').textContent = maskMobileNumber(paramMobile);
-    
-    // অ্যামাউন্ট ২ দশমিক ঘরসহ দেখানো (যেমন: ₹ 3014.00)
-    const formattedAmount = parseFloat(paramAmount).toFixed(2);
-    document.getElementById('payableAmount').textContent = '₹ ' + formattedAmount;
+    /* =========================
+       READ URL PARAMETERS
+    ========================== */
 
-    // আজকের তারিখ স্বয়ংক্রিয়ভাবে (DD/MM/YYYY) সেটিং
+    const urlParams =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const paramName =
+      urlParams.get('name') ||
+      'Rashmika Mondal';
+
+
+    const paramMobile =
+      urlParams.get('mobile') ||
+      '9123412342';
+
+
+    const paramAmount =
+      urlParams.get('amount') ||
+      '3014';
+
+
+    /* =========================
+       SHOW CUSTOMER NAME
+    ========================== */
+
+    document.getElementById(
+      'userName'
+    ).textContent = paramName;
+
+
+    /* =========================
+       SHOW MASKED MOBILE
+    ========================== */
+
+    document.getElementById(
+      'userMobile'
+    ).textContent =
+      maskMobileNumber(paramMobile);
+
+
+    /* =========================
+       SHOW AMOUNT
+    ========================== */
+
+    const parsedAmount =
+      parseFloat(paramAmount);
+
+
+    if (!isNaN(parsedAmount)) {
+
+      const formattedAmount =
+        parsedAmount.toFixed(2);
+
+      document.getElementById(
+        'payableAmount'
+      ).textContent =
+        '₹ ' + formattedAmount;
+
+    } else {
+
+      document.getElementById(
+        'payableAmount'
+      ).textContent =
+        '₹ 0.00';
+    }
+
+
+    /* =========================
+       TODAY'S DATE
+    ========================== */
+
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
 
-    document.getElementById('repaymentDate').textContent = `${day}/${month}/${year}`;
+    const day =
+      String(today.getDate())
+        .padStart(2, '0');
+
+    const month =
+      String(today.getMonth() + 1)
+        .padStart(2, '0');
+
+    const year =
+      today.getFullYear();
+
+
+    document.getElementById(
+      'repaymentDate'
+    ).textContent =
+      `${day}/${month}/${year}`;
+
   </script>
 
 </body>
