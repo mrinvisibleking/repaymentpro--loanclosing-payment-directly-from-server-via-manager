@@ -1,134 +1,2620 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
+
+  <!-- IMPORTANT FOR MOBILE RESPONSIVENESS -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  >
+
+  <title>Admin Dashboard - Repayment Panel</title>
+
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
-    .container { max-width: 650px; width: 100%; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .section-title { margin: 15px 0 10px; font-weight: bold; color: #444; font-size: 0.95em; }
-    .utr-input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
-    .submit-btn { background: #0070f3; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 1em; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85em; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; word-break: break-all; }
-    th { background: #f1f1f1; }
-    .badge-yes { color: green; font-weight: bold; }
-    .badge-no { color: red; font-weight: bold; }
-    .copy-btn { background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; white-space: nowrap; }
+
+    /* =====================================================
+       GLOBAL
+    ===================================================== */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      width: 100%;
+      min-height: 100vh;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background: #0f172a;
+      color: #111827;
+
+      overflow-x: hidden;
+    }
+
+
+    /* =====================================================
+       MAIN DASHBOARD
+    ===================================================== */
+
+    .dashboard {
+      width: 100%;
+      max-width: 1500px;
+      margin: 0 auto;
+
+      background: #ffffff;
+
+      border-radius: 18px;
+
+      overflow: hidden;
+
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .header {
+      width: 100%;
+
+      padding: 24px 28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #173d78,
+          #151c55
+        );
+    }
+
+
+    .header-left {
+      display: flex;
+      align-items: center;
+
+      gap: 14px;
+
+      min-width: 0;
+    }
+
+
+    .header-icon {
+      width: 46px;
+      height: 46px;
+
+      flex-shrink: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 10px;
+
+      background:
+        rgba(255,255,255,0.18);
+
+      font-size: 22px;
+    }
+
+
+    .header-text {
+      min-width: 0;
+    }
+
+
+    .header h1 {
+      margin: 0;
+
+      font-size: clamp(18px, 2vw, 25px);
+
+      line-height: 1.25;
+
+      white-space: normal;
+    }
+
+
+    .header p {
+      margin: 5px 0 0;
+
+      font-size: 13px;
+
+      color: #dbeafe;
+    }
+
+
+    .logout-btn {
+      flex-shrink: 0;
+
+      border: none;
+
+      background: #ef4444;
+
+      color: white;
+
+      padding: 11px 18px;
+
+      border-radius: 8px;
+
+      font-size: 14px;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+
+
+    /* =====================================================
+       MAIN CONTENT
+    ===================================================== */
+
+    .content {
+
+      width: 100%;
+
+      display: grid;
+
+      /*
+        Desktop:
+        Form = 400px
+        History = remaining space
+      */
+      grid-template-columns:
+        minmax(330px, 400px)
+        minmax(0, 1fr);
+
+      gap: 20px;
+
+      padding: 22px;
+
+      background: #ffffff;
+    }
+
+
+    /* =====================================================
+       CARD
+    ===================================================== */
+
+    .card {
+
+      width: 100%;
+
+      min-width: 0;
+
+      padding: 20px;
+
+      background: #ffffff;
+
+      border: 1px solid #e2e8f0;
+
+      border-radius: 13px;
+
+      box-shadow:
+        0 3px 15px rgba(15,23,42,0.05);
+    }
+
+
+    /* =====================================================
+       CARD TITLE
+    ===================================================== */
+
+    .card-title {
+
+      display: flex;
+      align-items: center;
+
+      gap: 9px;
+
+      margin-bottom: 5px;
+    }
+
+
+    .card-title-icon {
+
+      color: #2563eb;
+
+      font-size: 20px;
+
+      flex-shrink: 0;
+    }
+
+
+    .card-title h2 {
+
+      margin: 0;
+
+      font-size: 18px;
+
+      color: #111827;
+    }
+
+
+    .card-subtitle {
+
+      margin: 0 0 21px;
+
+      color: #64748b;
+
+      font-size: 12px;
+
+      line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       FORM
+    ===================================================== */
+
+    .form-group {
+
+      width: 100%;
+
+      margin-bottom: 17px;
+    }
+
+
+    .form-group label {
+
+      display: block;
+
+      margin-bottom: 7px;
+
+      font-size: 13px;
+
+      font-weight: 600;
+
+      color: #111827;
+    }
+
+
+    .input-wrapper {
+
+      position: relative;
+
+      width: 100%;
+    }
+
+
+    .input-icon {
+
+      position: absolute;
+
+      left: 14px;
+
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      color: #64748b;
+
+      font-size: 16px;
+
+      pointer-events: none;
+
+      z-index: 2;
+    }
+
+
+    .form-input {
+
+      display: block;
+
+      width: 100%;
+
+      max-width: 100%;
+
+      height: 51px;
+
+      padding:
+        0 14px 0 43px;
+
+      border:
+        1px solid #cbd5e1;
+
+      border-radius: 9px;
+
+      outline: none;
+
+      background: #ffffff;
+
+      color: #1e293b;
+
+      font-size: 14px;
+
+      transition: 0.2s;
+    }
+
+
+    .form-input:focus {
+
+      border-color: #2563eb;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(37,99,235,0.10);
+    }
+
+
+    .form-input::placeholder {
+
+      color: #94a3b8;
+    }
+
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+
+    .generate-btn {
+
+      display: block;
+
+      width: 100%;
+
+      height: 50px;
+
+      border: none;
+
+      border-radius: 9px;
+
+      background: #2563eb;
+
+      color: white;
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+
+    .generate-btn:hover {
+
+      background: #1d4ed8;
+
+      transform: translateY(-1px);
+    }
+
+
+    .save-btn {
+
+      display: block;
+
+      width: 100%;
+
+      height: 48px;
+
+      margin-top: 10px;
+
+      border:
+        1.5px solid #10b981;
+
+      border-radius: 9px;
+
+      background: white;
+
+      color: #059669;
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+
+    .save-btn:hover {
+
+      background: #ecfdf5;
+    }
+
+
+    .save-message {
+
+      display: none;
+
+      width: 100%;
+
+      margin-top: 10px;
+
+      padding: 9px 11px;
+
+      border-radius: 7px;
+
+      background: #ecfdf5;
+
+      color: #047857;
+
+      font-size: 12px;
+    }
+
+
+    .info-box {
+
+      margin-top: 11px;
+
+      color: #64748b;
+
+      font-size: 11px;
+
+      line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       HISTORY HEADER
+    ===================================================== */
+
+    .history-header {
+
+      display: flex;
+
+      align-items: flex-start;
+
+      justify-content: space-between;
+
+      gap: 15px;
+
+      margin-bottom: 16px;
+    }
+
+
+    .history-title {
+
+      min-width: 0;
+    }
+
+
+    .refresh-btn {
+
+      flex-shrink: 0;
+
+      border:
+        1px solid #2563eb;
+
+      background: white;
+
+      color: #2563eb;
+
+      padding: 9px 15px;
+
+      border-radius: 8px;
+
+      cursor: pointer;
+
+      font-size: 13px;
+
+      font-weight: 600;
+
+      white-space: nowrap;
+    }
+
+
+    .refresh-btn:hover {
+
+      background: #eff6ff;
+    }
+
+
+    /* =====================================================
+       TABLE
+    ===================================================== */
+
+    .table-container {
+
+      width: 100%;
+
+      max-width: 100%;
+
+      overflow-x: auto;
+
+      overflow-y: hidden;
+
+      border:
+        1px solid #e2e8f0;
+
+      border-radius: 9px;
+
+      -webkit-overflow-scrolling: touch;
+    }
+
+
+    table {
+
+      width: 100%;
+
+      min-width: 780px;
+
+      border-collapse: collapse;
+
+      table-layout: auto;
+    }
+
+
+    th {
+
+      padding: 12px 11px;
+
+      background: #f1f5f9;
+
+      color: #334155;
+
+      font-size: 10px;
+
+      font-weight: 700;
+
+      text-align: left;
+
+      text-transform: uppercase;
+
+      white-space: nowrap;
+    }
+
+
+    td {
+
+      padding: 12px 11px;
+
+      border-top:
+        1px solid #e2e8f0;
+
+      font-size: 12px;
+
+      vertical-align: middle;
+    }
+
+
+    tr:hover td {
+
+      background: #f8fafc;
+    }
+
+
+    /* =====================================================
+       CUSTOMER DETAILS
+    ===================================================== */
+
+    .customer-details {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 9px;
+
+      min-width: 175px;
+    }
+
+
+    .customer-avatar {
+
+      width: 38px;
+      height: 38px;
+
+      flex-shrink: 0;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 50%;
+
+      background: #dbeafe;
+
+      color: #2563eb;
+
+      font-size: 15px;
+
+      font-weight: 700;
+    }
+
+
+    .customer-info {
+
+      min-width: 0;
+    }
+
+
+    .customer-info strong {
+
+      display: block;
+
+      max-width: 170px;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+      white-space: nowrap;
+
+      margin-bottom: 2px;
+
+      color: #1e293b;
+    }
+
+
+    .customer-info span {
+
+      display: block;
+
+      max-width: 170px;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+      white-space: nowrap;
+
+      color: #64748b;
+
+      font-size: 11px;
+
+      line-height: 1.45;
+    }
+
+
+    /* =====================================================
+       COPY BUTTON
+    ===================================================== */
+
+    .copy-btn {
+
+      border:
+        1px solid #dbe3ef;
+
+      background: white;
+
+      color: #2563eb;
+
+      border-radius: 7px;
+
+      padding: 7px 10px;
+
+      cursor: pointer;
+
+      font-size: 11px;
+
+      font-weight: 600;
+
+      white-space: nowrap;
+    }
+
+
+    .copy-btn:hover {
+
+      background: #eff6ff;
+
+      border-color: #2563eb;
+    }
+
+
+    /* =====================================================
+       BADGES
+    ===================================================== */
+
+    .badge {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 4px;
+
+      padding: 6px 9px;
+
+      border-radius: 6px;
+
+      font-size: 10px;
+
+      font-weight: 600;
+
+      white-space: nowrap;
+    }
+
+
+    .badge-yes {
+
+      color: #047857;
+
+      background: #ecfdf5;
+    }
+
+
+    .badge-no {
+
+      color: #b45309;
+
+      background: #fffbeb;
+    }
+
+
+    .badge-pending {
+
+      color: #475569;
+
+      background: #e8eef6;
+    }
+
+
+    .badge-paid {
+
+      color: #047857;
+
+      background: #ecfdf5;
+    }
+
+
+    .utr {
+
+      margin-top: 5px;
+
+      font-size: 10px;
+
+      font-weight: 600;
+
+      color: #334155;
+
+      white-space: nowrap;
+    }
+
+
+    /* =====================================================
+       TABLE FOOTER
+    ===================================================== */
+
+    .table-footer {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 15px;
+
+      padding-top: 13px;
+    }
+
+
+    .total-links {
+
+      color: #475569;
+
+      font-size: 12px;
+
+      font-weight: 500;
+    }
+
+
+    .clear-btn {
+
+      border:
+        1px solid #ef4444;
+
+      background: white;
+
+      color: #dc2626;
+
+      padding: 8px 13px;
+
+      border-radius: 7px;
+
+      cursor: pointer;
+
+      font-size: 11px;
+
+      font-weight: 600;
+
+      white-space: nowrap;
+    }
+
+
+    .clear-btn:hover {
+
+      background: #fef2f2;
+    }
+
+
+    /* =====================================================
+       EMPTY TABLE
+    ===================================================== */
+
+    .empty-state {
+
+      text-align: center;
+
+      padding: 35px 20px !important;
+
+      color: #94a3b8;
+    }
+
+
+    /* =====================================================
+       LARGE TABLET
+       1200px or less
+    ===================================================== */
+
+    @media (max-width: 1200px) {
+
+      body {
+        padding: 15px;
+      }
+
+      .content {
+
+        grid-template-columns:
+          minmax(300px, 360px)
+          minmax(0, 1fr);
+
+        gap: 15px;
+
+        padding: 17px;
+      }
+
+      .card {
+        padding: 17px;
+      }
+
+    }
+
+
+    /* =====================================================
+       TABLET
+       900px or less
+    ===================================================== */
+
+    @media (max-width: 900px) {
+
+      body {
+        padding: 10px;
+      }
+
+
+      .dashboard {
+        border-radius: 12px;
+      }
+
+
+      .content {
+
+        /*
+          Switch from 2 columns
+          to 1 column.
+        */
+
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+
+        padding: 15px;
+      }
+
+
+      .form-card {
+
+        width: 100%;
+
+        max-width: none;
+      }
+
+
+      .header {
+
+        padding: 19px 20px;
+      }
+
+    }
+
+
+    /* =====================================================
+       MOBILE
+       600px or less
+    ===================================================== */
+
+    @media (max-width: 600px) {
+
+      body {
+
+        padding: 0;
+
+        background: #f8fafc;
+      }
+
+
+      .dashboard {
+
+        width: 100%;
+
+        min-height: 100vh;
+
+        border-radius: 0;
+
+        box-shadow: none;
+      }
+
+
+      /* HEADER */
+
+      .header {
+
+        padding: 16px;
+
+        gap: 10px;
+
+        align-items: flex-start;
+      }
+
+
+      .header-left {
+
+        gap: 10px;
+
+        flex: 1;
+      }
+
+
+      .header-icon {
+
+        width: 38px;
+
+        height: 38px;
+
+        font-size: 18px;
+      }
+
+
+      .header h1 {
+
+        font-size: 16px;
+
+        line-height: 1.3;
+      }
+
+
+      .header p {
+
+        font-size: 10px;
+
+        margin-top: 3px;
+      }
+
+
+      .logout-btn {
+
+        padding: 8px 11px;
+
+        font-size: 11px;
+      }
+
+
+      /* CONTENT */
+
+      .content {
+
+        display: block;
+
+        padding: 10px;
+      }
+
+
+      .card {
+
+        margin-bottom: 12px;
+
+        padding: 15px;
+
+        border-radius: 10px;
+      }
+
+
+      /* FORM */
+
+      .card-title h2 {
+
+        font-size: 16px;
+      }
+
+
+      .card-subtitle {
+
+        font-size: 11px;
+
+        margin-bottom: 17px;
+      }
+
+
+      .form-group {
+
+        margin-bottom: 14px;
+      }
+
+
+      .form-group label {
+
+        font-size: 12px;
+      }
+
+
+      .form-input {
+
+        height: 48px;
+
+        font-size: 14px;
+      }
+
+
+      .generate-btn {
+
+        height: 48px;
+
+        font-size: 13px;
+      }
+
+
+      .save-btn {
+
+        height: 46px;
+
+        font-size: 13px;
+      }
+
+
+      /* HISTORY */
+
+      .history-header {
+
+        align-items: center;
+
+        margin-bottom: 12px;
+      }
+
+
+      .history-header .card-subtitle {
+
+        display: none;
+      }
+
+
+      .refresh-btn {
+
+        padding: 8px 11px;
+
+        font-size: 11px;
+      }
+
+
+      /*
+        Table intentionally keeps
+        minimum width.
+
+        User can swipe horizontally
+        instead of everything becoming
+        unreadably small.
+      */
+
+      .table-container {
+
+        overflow-x: auto;
+      }
+
+
+      table {
+
+        min-width: 780px;
+      }
+
+
+      .table-footer {
+
+        padding-top: 11px;
+      }
+
+    }
+
+
+    /* =====================================================
+       VERY SMALL PHONES
+       400px or less
+    ===================================================== */
+
+    @media (max-width: 400px) {
+
+      .header {
+
+        padding: 13px;
+      }
+
+
+      .header-icon {
+
+        display: none;
+      }
+
+
+      .header h1 {
+
+        font-size: 15px;
+      }
+
+
+      .header p {
+
+        font-size: 9px;
+      }
+
+
+      .logout-btn {
+
+        padding: 7px 9px;
+
+        font-size: 10px;
+      }
+
+
+      .content {
+
+        padding: 7px;
+      }
+
+
+      .card {
+
+        padding: 13px;
+      }
+
+    }
+
   </style>
+
 </head>
+
+
 <body>
 
-<div class="container">
-  <h2>Payment Link Generator & Dashboard</h2>
-  <div class="section-title">Amount (₹)</div>
-  <input type="number" class="utr-input" id="inputAmount" placeholder="Enter amount">
-  
-  <div class="section-title">UPI ID</div>
-  <input type="text" class="utr-input" id="inputUpi" placeholder="Enter UPI ID">
-  
-  <button class="submit-btn" onclick="generateLink()">Generate & Track Link</button>
-  <button class="submit-btn" style="background:#dc3545;" onclick="clearHistory()">Clear History</button>
 
-  <h3 style="margin-top:25px;">Generated Links History & Status</h3>
-  <div style="overflow-x:auto;">
-    <table>
-      <thead>
-        <tr>
-          <th>Details</th>
-          <th>Copy Link</th>
-          <th>Visited?</th>
-          <th>UPI Copied?</th>
-          <th>Status / UTR</th>
-        </tr>
-      </thead>
-      <tbody id="historyTableBody">
-        <!-- Dynamically injected history -->
-      </tbody>
-    </table>
-  </div>
+<div class="dashboard">
+
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <header class="header">
+
+    <div class="header-left">
+
+      <div class="header-icon">
+        🛡️
+      </div>
+
+      <div class="header-text">
+
+        <h1>
+          Admin Dashboard - Repayment Panel
+        </h1>
+
+        <p>
+          Generate payment links and track real-time activity
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <button
+      class="logout-btn"
+      onclick="logout()"
+    >
+      ↪ Logout
+    </button>
+
+  </header>
+
+
+
+  <!-- =====================================================
+       CONTENT
+  ====================================================== -->
+
+  <main class="content">
+
+
+    <!-- =================================================
+         CREATE PAYMENT
+    ================================================== -->
+
+    <section class="card form-card">
+
+      <div class="card-title">
+
+        <div class="card-title-icon">
+          ♙
+        </div>
+
+        <h2>
+          Create Payment Link
+        </h2>
+
+      </div>
+
+
+      <p class="card-subtitle">
+        Enter customer details to generate and track payment link
+      </p>
+
+
+
+      <!-- CUSTOMER NAME -->
+
+      <div class="form-group">
+
+        <label for="inputName">
+          Customer Name
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="input-icon">
+            ♙
+          </span>
+
+          <input
+            type="text"
+            id="inputName"
+            class="form-input"
+            placeholder="Enter Customer Name"
+            autocomplete="name"
+          >
+
+        </div>
+
+      </div>
+
+
+
+      <!-- MOBILE NUMBER -->
+
+      <div class="form-group">
+
+        <label for="inputMobile">
+          Mobile Number
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="input-icon">
+            ☎
+          </span>
+
+          <input
+            type="tel"
+            id="inputMobile"
+            class="form-input"
+            placeholder="Enter Mobile Number"
+            autocomplete="tel"
+            inputmode="numeric"
+          >
+
+        </div>
+
+      </div>
+
+
+
+      <!-- AMOUNT -->
+
+      <div class="form-group">
+
+        <label for="inputAmount">
+          Amount (₹)
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="input-icon">
+            ₹
+          </span>
+
+          <input
+            type="number"
+            id="inputAmount"
+            class="form-input"
+            placeholder="Enter amount"
+            min="1"
+            inputmode="decimal"
+          >
+
+        </div>
+
+      </div>
+
+
+
+      <!-- UPI -->
+
+      <div class="form-group">
+
+        <label for="inputUpi">
+          UPI ID
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="input-icon">
+            ⌁
+          </span>
+
+          <input
+            type="text"
+            id="inputUpi"
+            class="form-input"
+            placeholder="Enter UPI ID (e.g. name@upi)"
+            autocomplete="off"
+          >
+
+        </div>
+
+      </div>
+
+
+
+      <!-- GENERATE -->
+
+      <button
+        type="button"
+        class="generate-btn"
+        onclick="generateLink()"
+      >
+        🔗 &nbsp; Generate & Track Link
+      </button>
+
+
+
+      <!-- SAVE -->
+
+      <button
+        type="button"
+        class="save-btn"
+        onclick="saveDetails()"
+      >
+        💾 &nbsp; Save Details
+      </button>
+
+
+
+      <!-- SAVE MESSAGE -->
+
+      <div
+        id="saveMessage"
+        class="save-message"
+      >
+        ✓ Customer details saved successfully.
+      </div>
+
+
+
+      <div class="info-box">
+
+        ℹ️ Your entered details are saved automatically.
+        Generating a link will not clear the fields.
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         GENERATED LINKS
+    ================================================== -->
+
+    <section class="card">
+
+
+      <div class="history-header">
+
+        <div class="history-title">
+
+          <div class="card-title">
+
+            <div class="card-title-icon">
+              ▣
+            </div>
+
+            <h2>
+              Generated Links History
+            </h2>
+
+          </div>
+
+          <p class="card-subtitle">
+            View and track all generated payment links
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="refresh-btn"
+          onclick="loadHistory()"
+        >
+          ⟳ Refresh
+        </button>
+
+      </div>
+
+
+
+      <!-- TABLE -->
+
+      <div class="table-container">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Details
+              </th>
+
+              <th>
+                Copy Link
+              </th>
+
+              <th>
+                Visited?
+              </th>
+
+              <th>
+                UPI Copied?
+              </th>
+
+              <th>
+                Status / UTR
+              </th>
+
+              <th>
+                Date & Time
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody id="historyTableBody">
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+
+      <!-- FOOTER -->
+
+      <div class="table-footer">
+
+        <div
+          class="total-links"
+          id="totalLinks"
+        >
+          Total Links: 0
+        </div>
+
+
+        <button
+          type="button"
+          class="clear-btn"
+          onclick="clearHistory()"
+        >
+          🗑 Clear History
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
 </div>
 
+
+
 <script>
-  function loadHistory() {
-    const history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
-    const tbody = document.getElementById('historyTableBody');
-    tbody.innerHTML = '';
 
-    if (history.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#777;">No links generated yet.</td></tr>`;
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+const HISTORY_KEY =
+  "paymentLinkHistory";
+
+const SAVED_DETAILS_KEY =
+  "savedCustomerDetails";
+
+
+
+/* =====================================================
+   GET FORM DETAILS
+===================================================== */
+
+function getFormDetails() {
+
+  return {
+
+    name:
+      document
+        .getElementById("inputName")
+        .value
+        .trim(),
+
+    mobile:
+      document
+        .getElementById("inputMobile")
+        .value
+        .trim(),
+
+    amount:
+      document
+        .getElementById("inputAmount")
+        .value
+        .trim(),
+
+    upi:
+      document
+        .getElementById("inputUpi")
+        .value
+        .trim()
+
+  };
+
+}
+
+
+
+/* =====================================================
+   SAVE DETAILS
+===================================================== */
+
+function saveDetails() {
+
+  const details =
+    getFormDetails();
+
+
+  if (
+    !details.name ||
+    !details.mobile ||
+    !details.amount ||
+    !details.upi
+  ) {
+
+    alert(
+      "Please fill Customer Name, Mobile Number, Amount and UPI ID."
+    );
+
+    return;
+  }
+
+
+  localStorage.setItem(
+
+    SAVED_DETAILS_KEY,
+
+    JSON.stringify(details)
+
+  );
+
+
+  showSaveMessage();
+
+}
+
+
+
+/* =====================================================
+   SAVE MESSAGE
+===================================================== */
+
+function showSaveMessage() {
+
+  const message =
+    document.getElementById(
+      "saveMessage"
+    );
+
+
+  message.style.display =
+    "block";
+
+
+  setTimeout(() => {
+
+    message.style.display =
+      "none";
+
+  }, 2500);
+
+}
+
+
+
+/* =====================================================
+   LOAD SAVED DETAILS
+===================================================== */
+
+function loadSavedDetails() {
+
+  try {
+
+    const saved =
+      JSON.parse(
+
+        localStorage.getItem(
+          SAVED_DETAILS_KEY
+        ) || "null"
+
+      );
+
+
+    if (!saved) {
       return;
     }
 
-    history.forEach((item) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>₹${item.amount}<br><small>${item.upi}</small></td>
-        <td><button class="copy-btn" onclick="copyLinkText('${item.url}')">Copy Link</button></td>
-        <td><span class="${item.visited ? 'badge-yes' : 'badge-no'}">${item.visited ? 'Yes' : 'No'}</span></td>
-        <td><span class="${item.copied ? 'badge-yes' : 'badge-no'}">${item.copied ? 'Yes' : 'No'}</span></td>
-        <td>${item.status}</td>
+
+    document.getElementById(
+      "inputName"
+    ).value =
+      saved.name || "";
+
+
+    document.getElementById(
+      "inputMobile"
+    ).value =
+      saved.mobile || "";
+
+
+    document.getElementById(
+      "inputAmount"
+    ).value =
+      saved.amount || "";
+
+
+    document.getElementById(
+      "inputUpi"
+    ).value =
+      saved.upi || "";
+
+
+  } catch (error) {
+
+    console.error(
+      "Could not load saved details:",
+      error
+    );
+
+  }
+
+}
+
+
+
+/* =====================================================
+   GENERATE PAYMENT LINK
+===================================================== */
+
+function generateLink() {
+
+  const details =
+    getFormDetails();
+
+
+  /* VALIDATION */
+
+  if (
+    !details.name ||
+    !details.mobile ||
+    !details.amount ||
+    !details.upi
+  ) {
+
+    alert(
+      "Please fill out all details."
+    );
+
+    return;
+  }
+
+
+  /* ===============================================
+     AUTOMATICALLY SAVE DETAILS
+  =============================================== */
+
+  localStorage.setItem(
+
+    SAVED_DETAILS_KEY,
+
+    JSON.stringify(details)
+
+  );
+
+
+  /* ===============================================
+     CREATE UNIQUE ID
+  =============================================== */
+
+  const linkId =
+    "link_" +
+    Date.now();
+
+
+  /* ===============================================
+     GET CURRENT DIRECTORY
+  =============================================== */
+
+  const currentUrl =
+    window.location.href
+      .split("?")[0];
+
+
+  const directory =
+    currentUrl.substring(
+      0,
+      currentUrl.lastIndexOf("/") + 1
+    );
+
+
+  /* ===============================================
+     CREATE PAYMENT URL
+
+     Your existing payment.html
+     system is preserved.
+  =============================================== */
+
+  const targetUrl =
+    directory +
+    "payment.html" +
+
+    "?id=" +
+    encodeURIComponent(linkId) +
+
+    "&amount=" +
+    encodeURIComponent(details.amount) +
+
+    "&upi=" +
+    encodeURIComponent(details.upi);
+
+
+
+  /* ===============================================
+     CREATE HISTORY
+  =============================================== */
+
+  const newEntry = {
+
+    id:
+      linkId,
+
+    name:
+      details.name,
+
+    mobile:
+      details.mobile,
+
+    amount:
+      details.amount,
+
+    upi:
+      details.upi,
+
+    url:
+      targetUrl,
+
+    visited:
+      false,
+
+    copied:
+      false,
+
+    status:
+      "Pending",
+
+    utr:
+      "",
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+
+  /* ===============================================
+     GET OLD HISTORY
+  =============================================== */
+
+  let history =
+    JSON.parse(
+
+      localStorage.getItem(
+        HISTORY_KEY
+      ) || "[]"
+
+    );
+
+
+
+  /* ===============================================
+     ADD NEW RECORD
+  =============================================== */
+
+  history.unshift(
+    newEntry
+  );
+
+
+
+  /* ===============================================
+     SAVE
+  =============================================== */
+
+  localStorage.setItem(
+
+    HISTORY_KEY,
+
+    JSON.stringify(history)
+
+  );
+
+
+
+  /* ===============================================
+     REFRESH TABLE
+  =============================================== */
+
+  loadHistory();
+
+
+
+  /* ===============================================
+     COPY LINK
+
+     IMPORTANT:
+     Inputs are NOT cleared.
+  =============================================== */
+
+  copyPaymentLink(
+    targetUrl,
+    linkId
+  );
+
+}
+
+
+
+/* =====================================================
+   COPY PAYMENT LINK
+===================================================== */
+
+function copyPaymentLink(
+  url,
+  id
+) {
+
+  if (
+    navigator.clipboard &&
+    window.isSecureContext
+  ) {
+
+    navigator.clipboard
+      .writeText(url)
+
+      .then(() => {
+
+        markLinkCopied(id);
+
+        alert(
+          "Payment link copied to clipboard!"
+        );
+
+      })
+
+      .catch(() => {
+
+        fallbackCopy(
+          url,
+          id
+        );
+
+      });
+
+  } else {
+
+    fallbackCopy(
+      url,
+      id
+    );
+
+  }
+
+}
+
+
+
+/* =====================================================
+   FALLBACK COPY
+===================================================== */
+
+function fallbackCopy(
+  url,
+  id
+) {
+
+  const tempInput =
+    document.createElement(
+      "input"
+    );
+
+
+  tempInput.value =
+    url;
+
+
+  document.body.appendChild(
+    tempInput
+  );
+
+
+  tempInput.select();
+
+
+  try {
+
+    document.execCommand(
+      "copy"
+    );
+
+    markLinkCopied(id);
+
+    alert(
+      "Payment link copied to clipboard!"
+    );
+
+  } catch (error) {
+
+    alert(
+      "Could not copy automatically. Please copy the link manually."
+    );
+
+  }
+
+
+  document.body.removeChild(
+    tempInput
+  );
+
+}
+
+
+
+/* =====================================================
+   MANUAL COPY
+===================================================== */
+
+function copyLinkText(
+  url,
+  id
+) {
+
+  copyPaymentLink(
+    url,
+    id
+  );
+
+}
+
+
+
+/* =====================================================
+   MARK COPIED
+===================================================== */
+
+function markLinkCopied(
+  id
+) {
+
+  let history =
+    JSON.parse(
+
+      localStorage.getItem(
+        HISTORY_KEY
+      ) || "[]"
+
+    );
+
+
+  history =
+    history.map(
+      item => {
+
+        if (
+          item.id === id
+        ) {
+
+          item.copied =
+            true;
+
+        }
+
+        return item;
+
+      }
+    );
+
+
+  localStorage.setItem(
+
+    HISTORY_KEY,
+
+    JSON.stringify(history)
+
+  );
+
+
+  loadHistory();
+
+}
+
+
+
+/* =====================================================
+   LOAD HISTORY
+===================================================== */
+
+function loadHistory() {
+
+  let history = [];
+
+
+  try {
+
+    history =
+      JSON.parse(
+
+        localStorage.getItem(
+          HISTORY_KEY
+        ) || "[]"
+
+      );
+
+  } catch (error) {
+
+    history = [];
+
+  }
+
+
+
+  const tbody =
+    document.getElementById(
+      "historyTableBody"
+    );
+
+
+  tbody.innerHTML =
+    "";
+
+
+
+  document.getElementById(
+    "totalLinks"
+  ).textContent =
+    "Total Links: " +
+    history.length;
+
+
+
+  /* EMPTY */
+
+  if (
+    history.length === 0
+  ) {
+
+    tbody.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="6"
+          class="empty-state"
+        >
+          No payment links generated yet.
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
+
+
+  /* ===============================================
+     CREATE EACH ROW
+  =============================================== */
+
+  history.forEach(
+    item => {
+
+      const tr =
+        document.createElement(
+          "tr"
+        );
+
+
+      /* DATE */
+
+      let dateText =
+        "-";
+
+
+      if (
+        item.createdAt
+      ) {
+
+        const date =
+          new Date(
+            item.createdAt
+          );
+
+
+        dateText =
+
+          date.toLocaleDateString() +
+
+          "<br>" +
+
+          date.toLocaleTimeString(
+            [],
+            {
+              hour:
+                "2-digit",
+
+              minute:
+                "2-digit"
+            }
+          );
+
+      }
+
+
+
+      /* STATUS */
+
+      let statusHTML = `
+
+        <span
+          class="badge badge-pending"
+        >
+          Pending
+        </span>
+
       `;
-      tbody.appendChild(tr);
-    });
+
+
+      if (
+
+        item.status &&
+
+        item.status
+          .toLowerCase() === "paid"
+
+      ) {
+
+        statusHTML = `
+
+          <span
+            class="badge badge-paid"
+          >
+            ✓ Paid
+          </span>
+
+        `;
+
+      }
+
+
+      if (
+        item.utr
+      ) {
+
+        statusHTML += `
+
+          <div class="utr">
+
+            UTR:
+            ${escapeHTML(item.utr)}
+
+          </div>
+
+        `;
+
+      }
+
+
+
+      /* CUSTOMER NAME */
+
+      const name =
+        item.name ||
+        "Customer";
+
+
+      const initial =
+        name
+          .charAt(0)
+          .toUpperCase();
+
+
+
+      /* ROW */
+
+      tr.innerHTML = `
+
+        <td>
+
+          <div
+            class="customer-details"
+          >
+
+            <div
+              class="customer-avatar"
+            >
+              ${escapeHTML(initial)}
+            </div>
+
+
+            <div
+              class="customer-info"
+            >
+
+              <strong>
+                ${escapeHTML(name)}
+              </strong>
+
+
+              <span>
+                ${escapeHTML(
+                  item.mobile || "-"
+                )}
+              </span>
+
+
+              <span>
+                ₹${escapeHTML(
+                  item.amount || "0"
+                )}
+              </span>
+
+
+              <span>
+                ${escapeHTML(
+                  item.upi || "-"
+                )}
+              </span>
+
+            </div>
+
+          </div>
+
+        </td>
+
+
+
+        <td>
+
+          <button
+            type="button"
+            class="copy-btn"
+            onclick="copyLinkText(
+              '${escapeJS(item.url)}',
+              '${escapeJS(item.id)}'
+            )"
+          >
+            ▣ Copy Link
+          </button>
+
+        </td>
+
+
+
+        <td>
+
+          ${
+            item.visited
+
+            ?
+
+            `
+              <span
+                class="badge badge-yes"
+              >
+                ✓ Yes
+              </span>
+            `
+
+            :
+
+            `
+              <span
+                class="badge badge-no"
+              >
+                ◉ No
+              </span>
+            `
+          }
+
+        </td>
+
+
+
+        <td>
+
+          ${
+            item.copied
+
+            ?
+
+            `
+              <span
+                class="badge badge-yes"
+              >
+                ✓ Yes
+              </span>
+            `
+
+            :
+
+            `
+              <span
+                class="badge badge-no"
+              >
+                ◉ No
+              </span>
+            `
+          }
+
+        </td>
+
+
+
+        <td>
+
+          ${statusHTML}
+
+        </td>
+
+
+
+        <td>
+
+          ${dateText}
+
+        </td>
+
+      `;
+
+
+      tbody.appendChild(
+        tr
+      );
+
+    }
+  );
+
+}
+
+
+
+/* =====================================================
+   CLEAR HISTORY
+===================================================== */
+
+function clearHistory() {
+
+  const confirmed =
+    confirm(
+      "Are you sure you want to clear all tracking history?"
+    );
+
+
+  if (!confirmed) {
+    return;
   }
 
-  function generateLink() {
-    const amt = document.getElementById('inputAmount').value;
-    const upi = document.getElementById('inputUpi').value;
-    if (!amt || !upi) {
-      alert('Please fill out both Amount and UPI ID.');
-      return;
-    }
 
-    const linkId = 'link_' + Date.now();
-    const currentUrl = window.location.href.split('?')[0];
-    const targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + `payment.html?id=${linkId}&amount=${encodeURIComponent(amt)}&upi=${encodeURIComponent(upi)}`;
+  localStorage.removeItem(
+    HISTORY_KEY
+  );
 
-    const newEntry = {
-      id: linkId,
-      amount: amt,
-      upi: upi,
-      url: targetUrl,
-      visited: false,
-      copied: false,
-      status: 'Pending'
-    };
 
-    let history = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
-    history.unshift(newEntry);
-    localStorage.setItem('paymentLinkHistory', JSON.stringify(history));
+  loadHistory();
 
-    document.getElementById('inputAmount').value = '';
-    document.getElementById('inputUpi').value = '';
+}
+
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logout() {
+
+  const confirmed =
+    confirm(
+      "Are you sure you want to logout?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  alert(
+    "Logged out."
+  );
+
+}
+
+
+
+/* =====================================================
+   HTML ESCAPE
+===================================================== */
+
+function escapeHTML(
+  value
+) {
+
+  return String(value)
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+
+/* =====================================================
+   JAVASCRIPT ESCAPE
+===================================================== */
+
+function escapeJS(
+  value
+) {
+
+  return String(value)
+
+    .replace(
+      /\\/g,
+      "\\\\"
+    )
+
+    .replace(
+      /'/g,
+      "\\'"
+    )
+
+    .replace(
+      /"/g,
+      '\\"'
+    )
+
+    .replace(
+      /\n/g,
+      "\\n"
+    )
+
+    .replace(
+      /\r/g,
+      "\\r"
+    );
+
+}
+
+
+
+/* =====================================================
+   AUTO REFRESH
+===================================================== */
+
+setInterval(
+  loadHistory,
+  2000
+);
+
+
+
+/* =====================================================
+   PAGE LOAD
+===================================================== */
+
+window.addEventListener(
+  "load",
+  () => {
+
+    loadSavedDetails();
+
     loadHistory();
-  }
 
-  function copyLinkText(url) {
-    navigator.clipboard.writeText(url).then(() => {
-      alert("Payment link copied to clipboard!");
-    }).catch(() => {
-      const tempInput = document.createElement("input");
-      tempInput.value = url;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand("copy");
-      document.body.removeChild(tempInput);
-      alert("Payment link copied to clipboard!");
-    });
   }
+);
 
-  function clearHistory() {
-    if (confirm('Are you sure you want to clear tracking history?')) {
-      localStorage.removeItem('paymentLinkHistory');
-      loadHistory();
-    }
-  }
-
-  setInterval(loadHistory, 2000);
-  window.onload = loadHistory;
 </script>
 
 </body>
