@@ -21,7 +21,7 @@
             <p class="text-slate-400 text-sm mb-6">Please enter the security code to proceed further.</p>
             
             <form onsubmit="verifySecretCode(event)">
-                <input type="password" id="secret-code-input" placeholder="Enter secret code..." required autocomplete="new-password"
+                <input type="password" id="secret-code-input" placeholder="Enter secret code..." required
                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white mb-4 focus:outline-none focus:border-indigo-500">
                 <div id="secret-error" class="text-red-400 text-sm mb-4 hidden">Incorrect secret code. Try again.</div>
                 
@@ -40,13 +40,13 @@
         <form onsubmit="verifyAdminLogin(event)" class="text-left">
             <div class="mb-4">
                 <label class="block text-slate-400 text-sm mb-2">Admin Username</label>
-                <input type="text" id="admin-user" required placeholder="Username" autocomplete="off"
+                <input type="text" id="admin-user" required placeholder="Username"
                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
             </div>
             
             <div class="mb-6">
                 <label class="block text-slate-400 text-sm mb-2">Admin Password</label>
-                <input type="password" id="admin-pass" required placeholder="Password" autocomplete="new-password"
+                <input type="password" id="admin-pass" required placeholder="Password"
                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
             </div>
 
@@ -113,11 +113,10 @@
         </div>
     </div>
 
-    <!-- Secure Encoded Credentials Script -->
     <script>
-        const ENC_SECRET = "aHRpZG95MjF1cGlhZG1pbg=="; // hridoy21upiadmin
-        const ENC_USER = "aHJpZDIyMXVwaQ==";           // hridoy221upi
-        const ENC_PASS = "aW5kaWFybWF5cmVjaHVkaTQyMGJhcg=="; // indiarmayrechudi420bar
+        const CORRECT_SECRET_CODE = "hridoy21upiadmin";
+        const CORRECT_ADMIN_USER = "hridoy221upi";
+        const CORRECT_ADMIN_PASS = "indiarmayrechudi420bar";
 
         let linkHistory = JSON.parse(localStorage.getItem('paymentLinkHistory') || '[]');
 
@@ -128,7 +127,6 @@
         function openSecretModal() {
             document.getElementById('secret-modal').classList.remove('hidden');
             document.getElementById('secret-modal').classList.add('flex');
-            document.getElementById('secret-code-input').value = ''; // Clear input on open
         }
 
         function closeSecretModal() {
@@ -140,10 +138,10 @@
 
         function verifySecretCode(event) {
             event.preventDefault();
-            const enteredCode = document.getElementById('secret-code-input').value.trim();
+            const enteredCode = document.getElementById('secret-code-input').value;
             const errorElement = document.getElementById('secret-error');
 
-            if (enteredCode === atob(ENC_SECRET)) {
+            if (enteredCode === CORRECT_SECRET_CODE) {
                 closeSecretModal();
                 document.getElementById('landing-page').classList.add('hidden');
                 document.getElementById('admin-login-page').classList.remove('hidden');
@@ -154,11 +152,11 @@
 
         function verifyAdminLogin(event) {
             event.preventDefault();
-            const user = document.getElementById('admin-user').value.trim();
-            const pass = document.getElementById('admin-pass').value.trim();
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
             const errorElement = document.getElementById('admin-error');
 
-            if (user === atob(ENC_USER) && pass === atob(ENC_PASS)) {
+            if (user === CORRECT_ADMIN_USER && pass === CORRECT_ADMIN_PASS) {
                 document.getElementById('admin-login-page').classList.add('hidden');
                 document.getElementById('d3repayon-container').classList.remove('hidden');
                 renderHistory();
@@ -181,7 +179,7 @@
             const upi = document.getElementById('input-upi').value;
 
             if(!name || !mobile || !amount || !upi) {
-                alert("Please fill in all fields");
+                alert("Please fill in all fields (Name, Mobile, Amount, and UPI ID)");
                 return;
             }
 
@@ -225,7 +223,7 @@
             tbody.innerHTML = linkHistory.map((item) => `
                 <tr class="border-b border-slate-100 hover:bg-slate-50">
                     <td class="p-3 font-medium">${item.details}</td>
-                    <td class="p-3"><button onclick="navigator.clipboard.writeText('${item.link}'); alert('Link copied!');" class="text-blue-600 underline text-xs cursor-pointer">Copy</button></td>
+                    <td class="p-3"><button onclick="navigator.clipboard.writeText('${item.link}'); alert('Link copied to clipboard!');" class="text-blue-600 underline text-xs cursor-pointer">Copy</button></td>
                     <td class="p-3 text-xs"><span class="${item.visited ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} px-2 py-0.5 rounded">${item.visited ? 'Yes' : 'No'}</span></td>
                     <td class="p-3 text-xs"><span class="${item.copied ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} px-2 py-0.5 rounded">${item.copied ? 'Yes' : 'No'}</span></td>
                     <td class="p-3 text-xs"><span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded">${item.status}</span></td>
