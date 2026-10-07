@@ -20,14 +20,21 @@ import {
   update,
   onValue,
   isFirebaseConfigured,
-  firebaseConfig
+  firebaseConfig,
+  auth,
+  signInAnonymously
 } from "./firebase-config.js";
 
 
-const HISTORY_KEY = "paymentLinkHistory";
-const TRACKING_ROOT = "paymentLinks";
+const HISTORY_KEY =
+  "paymentLinkHistory";
+
+const TRACKING_ROOT =
+  "paymentLinks";
+
 
 let cloudRecords = {};
+
 let unsubscribe = null;
 
 
@@ -36,21 +43,32 @@ let unsubscribe = null;
 // ============================================================
 
 function readLocalHistory() {
-  try {
-    const parsed = JSON.parse(
-      localStorage.getItem(HISTORY_KEY) || "[]"
-    );
 
-    return Array.isArray(parsed) ? parsed : [];
+  try {
+
+    const parsed =
+      JSON.parse(
+        localStorage.getItem(
+          HISTORY_KEY
+        ) || "[]"
+      );
+
+
+    return Array.isArray(parsed)
+      ? parsed
+      : [];
 
   } catch (error) {
+
     console.error(
       "Could not read local history:",
       error
     );
 
     return [];
+
   }
+
 }
 
 
@@ -60,12 +78,16 @@ function readLocalHistory() {
 
 function normalizeItem(item) {
 
-  const id = String(
-    item?.id || ""
-  ).trim();
+  const id =
+    String(
+      item?.id || ""
+    ).trim();
+
 
   if (!id) {
+
     return null;
+
   }
 
 
@@ -76,6 +98,7 @@ function normalizeItem(item) {
 
 
   return {
+
     ...item,
 
     id,
@@ -103,7 +126,9 @@ function normalizeItem(item) {
     createdAt:
       item.createdAt ||
       new Date().toISOString()
+
   };
+
 }
 
 
@@ -121,14 +146,18 @@ function sortHistory(items) {
           a.createdAt || ""
         ) || 0;
 
+
       const bTime =
         Date.parse(
           b.createdAt || ""
         ) || 0;
 
+
       return bTime - aTime;
+
     }
   );
+
 }
 
 
@@ -143,6 +172,7 @@ function saveMergedHistory() {
 
 
   // Local records
+
   for (
     const item of readLocalHistory()
   ) {
@@ -150,27 +180,37 @@ function saveMergedHistory() {
     const normalized =
       normalizeItem(item);
 
+
     if (normalized) {
 
       local.set(
         normalized.id,
         normalized
       );
+
     }
+
   }
 
 
   // Firebase records
+
   for (
     const [id, value]
-    of Object.entries(cloudRecords)
+    of Object.entries(
+      cloudRecords
+    )
   ) {
 
     const normalized =
       normalizeItem({
+
         ...value,
+
         id
+
       });
+
 
     if (normalized) {
 
@@ -178,7 +218,9 @@ function saveMergedHistory() {
         id,
         normalized
       );
+
     }
+
   }
 
 
@@ -194,7 +236,7 @@ function saveMergedHistory() {
   );
 
 
-  // Tell Admin Dashboard that
+  // Tell Admin Dashboard
   // Firebase data changed.
 
   window.dispatchEvent(
@@ -208,6 +250,7 @@ function saveMergedHistory() {
 
 
   return merged;
+
 }
 
 
@@ -221,11 +264,13 @@ async function upsertMissingLocalRecords() {
     !isFirebaseConfigured ||
     !database
   ) {
+
     console.warn(
       "Firebase is not configured."
     );
 
     return;
+
   }
 
 
@@ -242,12 +287,18 @@ async function upsertMissingLocalRecords() {
 
 
     if (!item) {
+
       continue;
+
     }
 
 
-    if (cloudRecords[item.id]) {
+    if (
+      cloudRecords[item.id]
+    ) {
+
       continue;
+
     }
 
 
@@ -267,14 +318,82 @@ async function upsertMissingLocalRecords() {
         item.id
       );
 
+
     } catch (error) {
 
       console.error(
         "Could not create Firebase tracking record:",
         error
       );
+
     }
+
   }
+
+}
+
+
+// ============================================================
+// FIREBASE AUTHENTICATION
+// ============================================================
+
+let anonymousAuthPromise =
+  null;
+
+
+async function ensurePaymentPageAuth() {
+
+  if (!auth) {
+
+    throw new Error(
+      "Firebase Authentication is not initialized."
+    );
+
+  }
+
+
+  if (auth.currentUser) {
+
+    return auth.currentUser;
+
+  }
+
+
+  if (!anonymousAuthPromise) {
+
+    anonymousAuthPromise =
+      signInAnonymously(auth)
+
+        .then(result => {
+
+          console.log(
+            "Anonymous Firebase login successful:",
+            result.user.uid
+          );
+
+          return result.user;
+
+        })
+
+        .catch(error => {
+
+          anonymousAuthPromise =
+            null;
+
+          console.error(
+            "Anonymous Firebase login failed:",
+            error
+          );
+
+          throw error;
+
+        });
+
+  }
+
+
+  return anonymousAuthPromise;
+
 }
 
 
@@ -299,11 +418,36 @@ async function cloudUpdate(
       {
         id,
         isFirebaseConfigured,
-        databaseExists: Boolean(database)
+        databaseExists:
+          Boolean(database)
       }
     );
 
     return false;
+
+  }
+
+
+  // Payment pages use Anonymous Authentication.
+  // Admin pages use Email/Password Authentication.
+
+  try {
+
+    if (!auth.currentUser) {
+
+      await ensurePaymentPageAuth();
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Firebase authentication is required before tracking:",
+      error
+    );
+
+    return false;
+
   }
 
 
@@ -313,6 +457,7 @@ async function cloudUpdate(
 
     updatedAt:
       new Date().toISOString()
+
   };
 
 
@@ -324,8 +469,12 @@ async function cloudUpdate(
 
     const baseUrl =
       String(
-        firebaseConfig.databaseURL || ""
-      ).replace(/\/$/, "");
+        firebaseConfig.databaseURL ||
+        ""
+      ).replace(
+        /\/$/,
+        ""
+      );
 
 
     if (!baseUrl) {
@@ -335,20 +484,39 @@ async function cloudUpdate(
       );
 
       return false;
+
     }
 
 
     try {
 
+      const token =
+        auth.currentUser
+          ? await auth.currentUser.getIdToken()
+          : "";
+
+
+      const authQuery =
+        token
+          ? `?auth=${encodeURIComponent(token)}`
+          : "";
+
+
       const response =
         await fetch(
-          `${baseUrl}/${TRACKING_ROOT}/${encodeURIComponent(id)}.json`,
+
+          `${baseUrl}/${TRACKING_ROOT}/${encodeURIComponent(id)}.json${authQuery}`,
+
           {
-            method: "PATCH",
+
+            method:
+              "PATCH",
 
             headers: {
+
               "Content-Type":
                 "application/json"
+
             },
 
             body:
@@ -356,8 +524,11 @@ async function cloudUpdate(
                 safePatch
               ),
 
-            keepalive: true
+            keepalive:
+              true
+
           }
+
         );
 
 
@@ -370,6 +541,7 @@ async function cloudUpdate(
         );
 
         return false;
+
       }
 
 
@@ -382,6 +554,7 @@ async function cloudUpdate(
 
       return true;
 
+
     } catch (error) {
 
       console.error(
@@ -390,7 +563,9 @@ async function cloudUpdate(
       );
 
       return false;
+
     }
+
   }
 
 
@@ -418,6 +593,7 @@ async function cloudUpdate(
 
     return true;
 
+
   } catch (error) {
 
     console.error(
@@ -426,7 +602,9 @@ async function cloudUpdate(
     );
 
     return false;
+
   }
+
 }
 
 
@@ -445,10 +623,13 @@ function startAdminSync() {
       "Firebase Admin Sync cannot start."
     );
 
+
     window.paymentTrackingEnabled =
       false;
 
+
     return;
+
   }
 
 
@@ -462,9 +643,11 @@ function startAdminSync() {
 
 
   // Remove previous listener
+
   if (unsubscribe) {
 
     unsubscribe();
+
   }
 
 
@@ -474,6 +657,7 @@ function startAdminSync() {
 
   unsubscribe =
     onValue(
+
       ref(
         database,
         TRACKING_ROOT
@@ -495,6 +679,7 @@ function startAdminSync() {
 
 
         upsertMissingLocalRecords();
+
       },
 
 
@@ -504,21 +689,24 @@ function startAdminSync() {
           "Firebase realtime read failed:",
           error
         );
+
       }
+
     );
 
 
   // Create missing local records
+
   upsertMissingLocalRecords();
 
 
-  // Check for newly-created local
-  // records every 2.5 seconds.
+  // Check newly-created local records
 
   setInterval(
     upsertMissingLocalRecords,
     2500
   );
+
 }
 
 
@@ -545,6 +733,7 @@ function startPaymentTracking() {
     );
 
     return;
+
   }
 
 
@@ -558,6 +747,7 @@ function startPaymentTracking() {
     );
 
     return;
+
   }
 
 
@@ -572,16 +762,21 @@ function startPaymentTracking() {
   // ==========================================================
 
   cloudUpdate(
+
     linkId,
 
     {
-      visited: true,
+
+      visited:
+        true,
 
       visitedAt:
         new Date().toISOString()
+
     },
 
     true
+
   );
 
 
@@ -590,6 +785,7 @@ function startPaymentTracking() {
   // ==========================================================
 
   document.addEventListener(
+
     "click",
 
     event => {
@@ -612,17 +808,23 @@ function startPaymentTracking() {
 
 
         cloudUpdate(
+
           linkId,
 
           {
-            copied: true,
+
+            copied:
+              true,
 
             copiedAt:
               new Date().toISOString()
+
           },
 
           true
+
         );
+
       }
 
 
@@ -661,9 +863,11 @@ function startPaymentTracking() {
 
 
           cloudUpdate(
+
             linkId,
 
             {
+
               status:
                 "UTR: " + utr,
 
@@ -671,16 +875,23 @@ function startPaymentTracking() {
 
               utrSubmittedAt:
                 new Date().toISOString()
+
             },
 
             true
+
           );
+
         }
+
       }
+
     },
 
     true
+
   );
+
 }
 
 
@@ -699,6 +910,7 @@ window.paymentTracker = {
   startAdminSync,
 
   startPaymentTracking
+
 };
 
 
@@ -707,21 +919,11 @@ window.paymentTracker = {
 // ============================================================
 
 // Admin Dashboard
-if (
-  document.getElementById(
-    "historyTableBody"
-  ) ||
+// Admin sync is NOT started automatically.
+// It starts only after Firebase Email/Password authentication.
+//
+// Payment page starts tracking automatically.
 
-  document.getElementById(
-    "history-table-body"
-  )
-) {
-
-  startAdminSync();
-}
-
-
-// Payment page
 if (
   new URLSearchParams(
     window.location.search
@@ -729,4 +931,5 @@ if (
 ) {
 
   startPaymentTracking();
+
 }
