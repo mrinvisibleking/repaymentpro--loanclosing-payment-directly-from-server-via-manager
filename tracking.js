@@ -447,8 +447,13 @@ async function validatePaymentLink(id) {
 }
 
 
-async function waitForAdminAuth(timeoutMs = 10000) {
+async function waitForAdminAuth(timeoutMs = 30000) {
 
+  /*
+     Firebase restores the saved session asynchronously.
+     Do not rely only on auth.currentUser immediately after
+     the dashboard becomes visible.
+  */
   if (
     auth.currentUser &&
     auth.currentUser.uid === ADMIN_UID
@@ -493,24 +498,32 @@ async function waitForAdminAuth(timeoutMs = 10000) {
 
       }, timeoutMs);
 
+    /*
+       Check the current user immediately and also listen for
+       the asynchronous Firebase Auth restoration.
+    */
+    const checkUser = function(user) {
+
+      if (
+        user &&
+        user.uid === ADMIN_UID
+      ) {
+
+        finish(function() {
+          resolve(user);
+        });
+
+      }
+
+    };
+
     unsubscribe =
       onAuthStateChanged(
         auth,
-        function(user) {
-
-          if (
-            user &&
-            user.uid === ADMIN_UID
-          ) {
-
-            finish(function() {
-              resolve(user);
-            });
-
-          }
-
-        }
+        checkUser
       );
+
+    checkUser(auth.currentUser);
 
   });
 }
@@ -827,11 +840,26 @@ async function clearAllCloudHistory() {
     throw new Error("Firebase is not configured.");
   }
 
-  const currentUser = auth.currentUser;
+  /*
+     The dashboard can be visible before Firebase has finished
+     restoring the saved admin session. Wait for that session
+     instead of failing immediately.
+  */
+  let currentUser;
+
+  try {
+    currentUser = await waitForAdminAuth(30000);
+  } catch (error) {
+    console.error(
+      "Firebase admin authentication was not ready for Clear History:",
+      error
+    );
+    throw new Error("Admin Firebase login required.");
+  }
 
   if (
     !currentUser ||
-    currentUser.uid !== "pC1CqXm1gRUwX2m4XbdbcNNN0p93"
+    currentUser.uid !== ADMIN_UID
   ) {
     throw new Error("Admin Firebase login required.");
   }
