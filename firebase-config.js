@@ -116,6 +116,7 @@ export {
 
   onValue,
   remove,
+  get,
 
   getAuth,
 
