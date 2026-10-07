@@ -129,6 +129,17 @@ onAuthStateChanged(
         "No Firebase admin session."
       );
 
+      /*
+         Firebase has finished signing out. Keep the UI on the
+         landing page even when logout was triggered elsewhere.
+      */
+      if (
+        typeof window.handleFirebaseAdminSignedOut ===
+          "function"
+      ) {
+        window.handleFirebaseAdminSignedOut();
+      }
+
       return;
 
     }
