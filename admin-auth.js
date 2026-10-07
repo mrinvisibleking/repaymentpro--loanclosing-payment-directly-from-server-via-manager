@@ -1,7 +1,3 @@
-// ============================================================
-// FIREBASE ADMIN AUTHENTICATION
-// ============================================================
-
 import {
   auth,
   signInWithEmailAndPassword,
@@ -10,11 +6,22 @@ import {
 } from "./firebase-config.js";
 
 
+/* =========================================================
+   AUTHORIZED ADMIN UID
+========================================================= */
+
 const ADMIN_UID =
   "pC1CqXm1gRUwX2m4XbdbcNNN0p93";
 
 
-async function login(email, password) {
+/* =========================================================
+   ADMIN LOGIN
+========================================================= */
+
+async function login(
+  email,
+  password
+) {
 
   const result =
     await signInWithEmailAndPassword(
@@ -24,15 +31,24 @@ async function login(email, password) {
     );
 
 
+  /*
+     Check that the logged-in Firebase
+     account is the authorized admin.
+  */
+
   if (
-    result.user.uid !== ADMIN_UID
+    result.user.uid !==
+    ADMIN_UID
   ) {
 
-    await signOut(auth);
+    await signOut(
+      auth
+    );
 
     throw new Error(
       "This Firebase account is not authorized as an admin."
     );
+
   }
 
 
@@ -42,27 +58,43 @@ async function login(email, password) {
   );
 
 
-  // Start realtime dashboard listener
-  // only after successful authentication.
+  /*
+     Start Firebase realtime
+     admin history synchronization.
+  */
 
   if (
-    window.paymentTracker?.startAdminSync
+    window.paymentTracker &&
+    typeof window.paymentTracker.startAdminSync ===
+      "function"
   ) {
 
     window.paymentTracker.startAdminSync();
+
   }
 
 
   return result.user;
+
 }
 
+
+/* =========================================================
+   ADMIN LOGOUT
+========================================================= */
 
 async function logout() {
 
-  await signOut(auth);
+  await signOut(
+    auth
+  );
 
 }
 
+
+/* =========================================================
+   MAKE FUNCTIONS AVAILABLE TO index.html
+========================================================= */
 
 window.firebaseAdminAuth = {
 
@@ -75,14 +107,13 @@ window.firebaseAdminAuth = {
 };
 
 
-// ============================================================
-// EXISTING AUTH SESSION
-// ============================================================
+/* =========================================================
+   AUTH STATE LISTENER
+========================================================= */
 
 onAuthStateChanged(
   auth,
-
-  user => {
+  function(user) {
 
     if (!user) {
 
@@ -91,15 +122,36 @@ onAuthStateChanged(
       );
 
       return;
+
     }
 
 
+    console.log(
+      "Firebase auth user:",
+      user.uid
+    );
+
+
+    /*
+       Only the authorized admin
+       can start dashboard synchronization.
+    */
+
     if (
-      user.uid === ADMIN_UID &&
-      window.paymentTracker?.startAdminSync
+      user.uid ===
+      ADMIN_UID
     ) {
 
-      window.paymentTracker.startAdminSync();
+      if (
+        window.paymentTracker &&
+        typeof window.paymentTracker.startAdminSync ===
+          "function"
+      ) {
+
+        window.paymentTracker.startAdminSync();
+
+      }
+
     }
 
   }
