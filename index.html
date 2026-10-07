@@ -843,14 +843,14 @@ button {
             <div style="margin-bottom:15px;">
 
                 <label class="dark-label">
-                    Admin Username
+                    Admin Email
                 </label>
 
                 <input
-                    type="text"
+                    type="email"
                     id="admin-user"
                     class="dark-input"
-                    placeholder="Username"
+                    placeholder="Admin email address"
                     required
                 >
 
@@ -1225,8 +1225,6 @@ button {
 ========================================================= */
 
 const CORRECT_SECRET_CODE = "hridoy21upiadmin";
-const CORRECT_ADMIN_USER = "hridoy221upi";
-const CORRECT_ADMIN_PASS = "indiarmayrechudi420bar";
 
 
 /* =========================================================
@@ -1420,7 +1418,7 @@ function verifySecretCode(event) {
    ADMIN LOGIN
 ========================================================= */
 
-function verifyAdminLogin(event) {
+async function verifyAdminLogin(event) {
 
     event.preventDefault();
 
@@ -1438,12 +1436,27 @@ function verifyAdminLogin(event) {
     const error =
         document.getElementById("admin-error");
 
-    if (
-        user === CORRECT_ADMIN_USER &&
-        pass === CORRECT_ADMIN_PASS
-    ) {
+    const button =
+        event.submitter ||
+        event.target.querySelector('button[type="submit"]');
 
-        error.classList.add("hidden");
+    error.classList.add("hidden");
+
+    if (!window.firebaseAdminAuth) {
+        error.textContent =
+            "Firebase Authentication is still loading. Please wait a moment and try again.";
+        error.classList.remove("hidden");
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Signing in...";
+    }
+
+    try {
+
+        await window.firebaseAdminAuth.login(user, pass);
 
         document
             .getElementById("admin-login-page")
@@ -1454,13 +1467,24 @@ function verifyAdminLogin(event) {
             .classList.remove("hidden");
 
         renderHistory();
-
         renderSavedCustomers();
 
-    } else {
+        showToast("Firebase admin login successful.");
 
+    } catch (firebaseError) {
+
+        console.error("Firebase admin login failed:", firebaseError);
+
+        error.textContent =
+            "Invalid Firebase admin email or password.";
         error.classList.remove("hidden");
 
+    } finally {
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Login to Dashboard";
+        }
     }
 
 }
@@ -1470,7 +1494,15 @@ function verifyAdminLogin(event) {
    LOGOUT
 ========================================================= */
 
-function logoutDashboard() {
+async function logoutDashboard() {
+
+    try {
+        if (window.firebaseAdminAuth) {
+            await window.firebaseAdminAuth.logout();
+        }
+    } catch (error) {
+        console.error("Firebase logout failed:", error);
+    }
 
     document
         .getElementById("d3repayon-container")
@@ -2452,8 +2484,11 @@ document.addEventListener(
 
 </script>
 
+<!-- Firebase admin authentication -->
+<script type="module" src="./admin-auth.js"></script>
+
 <!-- Firebase realtime tracking -->
-<script type="module" src="./tracking.js"></script>
+<script type="module" src="./tracking-secure.js"></script>
 
 </body>
 </html>
