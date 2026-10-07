@@ -3343,13 +3343,34 @@ async function generateLink() {
     */
     try {
 
+        // Wait briefly for Firebase admin authentication/tracker to be ready.
+        // The link must be registered in Firebase before the customer can open it.
+        for (let attempt = 0; attempt < 50; attempt++) {
+
+            if (
+                window.paymentTracker &&
+                typeof window.paymentTracker.registerLink === "function"
+            ) {
+                break;
+            }
+
+            await new Promise(function(resolve) {
+                setTimeout(resolve, 100);
+            });
+        }
+
         if (
-            window.paymentTracker &&
-            typeof window.paymentTracker.registerLink === "function"
+            !window.paymentTracker ||
+            typeof window.paymentTracker.registerLink !== "function"
         ) {
-            await window.paymentTracker.registerLink(
-                newItem
-            );
+            throw new Error("Firebase tracking is not ready. Please wait a moment and try again.");
+        }
+
+        const registered =
+            await window.paymentTracker.registerLink(newItem);
+
+        if (!registered) {
+            throw new Error("Payment link could not be registered in Firebase.");
         }
 
     } catch (error) {
@@ -3359,6 +3380,8 @@ async function generateLink() {
             error
         );
 
+        showToast("Could not activate tracking. Please generate the link again.");
+        return;
     }
 
 
