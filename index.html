@@ -3181,7 +3181,7 @@ function restoreCurrentFormDetails() {
    GENERATE PAYMENT LINK
 ========================================================= */
 
-function generateLink() {
+async function generateLink() {
 
     const data =
         getFormData();
@@ -3240,6 +3240,15 @@ function generateLink() {
         )}`;
 
 
+    const createdAt =
+        new Date();
+
+    const expiresAt =
+        new Date(
+            createdAt.getTime() +
+            (10 * 60 * 1000)
+        ).toISOString();
+
     const newItem = {
 
         id:
@@ -3273,7 +3282,15 @@ function generateLink() {
             "Pending",
 
         createdAt:
-            new Date().toISOString()
+            createdAt.toISOString(),
+
+        expiresAt,
+
+        expired:
+            false,
+
+        revoked:
+            false
 
     };
 
@@ -3295,6 +3312,31 @@ function generateLink() {
 
 
     renderHistory();
+
+
+    /*
+       Register the link immediately in Firebase.
+       This stores the fixed expiry timestamp.
+    */
+    try {
+
+        if (
+            window.paymentTracker &&
+            typeof window.paymentTracker.registerLink === "function"
+        ) {
+            await window.paymentTracker.registerLink(
+                newItem
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not register payment link in Firebase:",
+            error
+        );
+
+    }
 
 
     /*

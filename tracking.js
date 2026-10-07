@@ -360,6 +360,177 @@ async function ensurePaymentPageAuth() {
 // CLOUD UPDATE
 // ============================================================
 
+async function getPaymentLinkStatus(id) {
+
+  if (
+    !isFirebaseConfigured ||
+    !database ||
+    !id
+  ) {
+    return null;
+  }
+
+  try {
+
+    if (!auth.currentUser) {
+      await ensurePaymentPageAuth();
+    }
+
+    const snapshot =
+      await get(
+        ref(
+          database,
+          `paymentLinkStatus/${id}`
+        )
+      );
+
+    return snapshot.exists()
+      ? snapshot.val()
+      : null;
+
+  } catch (error) {
+
+    console.error(
+      "Could not read payment link status:",
+      error
+    );
+
+    return null;
+
+  }
+
+}
+
+
+async function validatePaymentLink(id) {
+
+  const status =
+    await getPaymentLinkStatus(id);
+
+  if (!status) {
+    return {
+      valid: false,
+      reason: "missing"
+    };
+  }
+
+  if (status.revoked === true) {
+    return {
+      valid: false,
+      reason: "revoked",
+      status
+    };
+  }
+
+  const expiresAt =
+    Date.parse(
+      status.expiresAt || ""
+    );
+
+  if (
+    !expiresAt ||
+    Date.now() >= expiresAt
+  ) {
+    return {
+      valid: false,
+      reason: "expired",
+      status
+    };
+  }
+
+  return {
+    valid: true,
+    reason: "active",
+    status
+  };
+
+}
+
+
+async function registerLink(item) {
+
+  if (
+    !isFirebaseConfigured ||
+    !database ||
+    !item ||
+    !item.id
+  ) {
+    return false;
+  }
+
+  const currentUser =
+    auth.currentUser;
+
+  if (
+    !currentUser ||
+    currentUser.uid !== ADMIN_UID
+  ) {
+    console.warn(
+      "Firebase admin login is required to register a payment link."
+    );
+    return false;
+  }
+
+  const id =
+    String(item.id);
+
+  const record = {
+    ...item,
+    updatedAt:
+      new Date().toISOString()
+  };
+
+  const statusRecord = {
+    expiresAt:
+      item.expiresAt,
+    expired:
+      false,
+    revoked:
+      Boolean(item.revoked),
+    createdAt:
+      item.createdAt,
+    updatedAt:
+      new Date().toISOString()
+  };
+
+  try {
+
+    await update(
+      ref(database),
+      {
+        [`paymentLinks/${id}`]:
+          record,
+        [`paymentLinkStatus/${id}`]:
+          statusRecord
+      }
+    );
+
+    cloudRecords[id] =
+      record;
+
+    saveMergedHistory();
+
+    console.log(
+      "Firebase payment link registered:",
+      id
+    );
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "Could not register payment link:",
+      error
+    );
+
+    return false;
+
+  }
+
+}
+
+
 async function cloudUpdate(
   id,
   patch,
@@ -948,6 +1119,38 @@ async function startPaymentTracking() {
 
 
   /*
+     Validate the fixed server-side expiry before
+     recording customer activity.
+  */
+  const validation =
+    await validatePaymentLink(linkId);
+
+  window.dispatchEvent(
+    new CustomEvent(
+      "paymentLinkValidation",
+      {
+        detail: {
+          linkId,
+          ...validation
+        }
+      }
+    )
+  );
+
+  if (!validation.valid) {
+
+    console.warn(
+      "Payment link is not active:",
+      linkId,
+      validation.reason
+    );
+
+    return;
+
+  }
+
+
+  /*
      IMPORTANT:
      Authenticate first.
   */
@@ -1139,7 +1342,13 @@ window.paymentTracker = {
 
   startPaymentTracking,
 
-  clearAllCloudHistory
+  clearAllCloudHistory,
+
+  registerLink,
+
+  getPaymentLinkStatus,
+
+  validatePaymentLink
 
 };
 

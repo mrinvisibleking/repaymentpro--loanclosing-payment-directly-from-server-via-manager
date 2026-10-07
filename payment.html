@@ -6,6 +6,77 @@
   <title>Repay Loan</title>
 
   <style>
+
+    html {
+      visibility: hidden;
+    }
+
+    html.payment-ready {
+      visibility: visible;
+    }
+
+    body.expired-page {
+      background: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .expired-card {
+      width: 100%;
+      max-width: 460px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 34px 24px;
+      text-align: center;
+      box-shadow: 0 14px 45px rgba(15,23,42,.10);
+    }
+
+    .expired-icon {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: #fee2e2;
+      color: #dc2626;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    .expired-title {
+      margin: 0 0 10px;
+      color: #b91c1c;
+      font-size: 26px;
+      font-weight: 850;
+    }
+
+    .expired-text {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .expired-manager {
+      margin-top: 18px;
+      color: #111827;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .expired-retry {
+      margin-top: 20px;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -297,7 +368,7 @@
 
       <div class="section-header">
         <span>Select a method to pay:</span>
-        <span class="timer" id="countdown">08:00</span>
+        <span class="timer" id="countdown">10:00</span>
       </div>
 
 
@@ -519,6 +590,176 @@
 
 
     /* ==========================================
+       SERVER-SIDE LINK EXPIRY VALIDATION
+    ========================================== */
+
+    const countdown =
+      document.getElementById(
+        "countdown"
+      );
+
+
+    function showExpiredPage(reason) {
+
+      document.body.innerHTML = `
+        <div class="expired-card">
+          <div class="expired-icon">!</div>
+          <h1 class="expired-title">LINK EXPIRED</h1>
+          <p class="expired-text">
+            This payment link has expired and is no longer active.
+          </p>
+          <div class="expired-manager">
+            Please collect a new payment link from manager.
+          </div>
+          <div class="expired-retry">
+            ${reason === "revoked"
+              ? "This link has been revoked."
+              : "The 10-minute validity period has ended."}
+          </div>
+        </div>
+      `;
+
+      document.body.className = "expired-page";
+      document.documentElement.classList.add("payment-ready");
+
+    }
+
+
+    async function waitForPaymentTracker() {
+
+      for (
+        let attempt = 0;
+        attempt < 100;
+        attempt++
+      ) {
+
+        if (
+          window.paymentTracker &&
+          typeof window.paymentTracker.validatePaymentLink === "function"
+        ) {
+          return window.paymentTracker;
+        }
+
+        await new Promise(
+          resolve => setTimeout(resolve, 100)
+        );
+
+      }
+
+      return null;
+
+    }
+
+
+    async function validateBeforeShowingPaymentPage() {
+
+      if (!linkId) {
+
+        showExpiredPage("missing");
+
+        return false;
+
+      }
+
+      const tracker =
+        await waitForPaymentTracker();
+
+      if (!tracker) {
+
+        showExpiredPage("missing");
+
+        return false;
+
+      }
+
+      const result =
+        await tracker.validatePaymentLink(
+          linkId
+        );
+
+      if (!result.valid) {
+
+        showExpiredPage(
+          result.reason
+        );
+
+        return false;
+
+      }
+
+      const expiresAt =
+        Date.parse(
+          result.status.expiresAt || ""
+        );
+
+      if (!expiresAt) {
+
+        showExpiredPage("expired");
+
+        return false;
+
+      }
+
+      function updateServerTimer() {
+
+        const remaining =
+          Math.max(
+            0,
+            expiresAt - Date.now()
+          );
+
+        const seconds =
+          Math.floor(
+            remaining / 1000
+          );
+
+        const minutes =
+          Math.floor(
+            seconds / 60
+          );
+
+        const secs =
+          seconds % 60;
+
+        countdown.textContent =
+          `${minutes
+            .toString()
+            .padStart(2, "0")
+          }:${secs
+            .toString()
+            .padStart(2, "0")
+          }`;
+
+        if (remaining <= 0) {
+
+          clearInterval(
+            serverTimer
+          );
+
+          showExpiredPage("expired");
+
+        }
+
+      }
+
+      const serverTimer =
+        setInterval(
+          updateServerTimer,
+          1000
+        );
+
+      updateServerTimer();
+
+      document.documentElement.classList.add(
+        "payment-ready"
+      );
+
+      return true;
+
+    }
+
+
+    /* ==========================================
        AMOUNT
     ========================================== */
 
@@ -584,7 +825,7 @@
        COUNTDOWN TIMER
     ========================================== */
 
-    let timeLeft = 8 * 60;
+    let timeLeft = 10 * 60;
 
     const countdown =
       document.getElementById(
@@ -626,13 +867,10 @@
     }
 
 
-    updateTimer();
+    /* Server-side expiry timer is started after Firebase validation. */
 
-    setInterval(
-      updateTimer,
-      1000
-    );
 
+    validateBeforeShowingPaymentPage();
 
     /* ==========================================
        TOAST
