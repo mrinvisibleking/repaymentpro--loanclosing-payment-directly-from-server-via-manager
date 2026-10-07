@@ -773,6 +773,518 @@ button {
 
 }
 
+
+/* =========================================================
+   MODERN LIGHT FINTECH DASHBOARD - REDESIGN
+========================================================= */
+
+html, body {
+    background: #ffffff !important;
+    color: #0f2b5f;
+}
+
+body {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.admin-wrapper {
+    min-height: 100vh !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+}
+
+.dashboard {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 100vh;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: #f7faff !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+}
+
+.dashboard-header {
+    min-height: 76px;
+    padding: 14px clamp(18px, 2.5vw, 34px) !important;
+    background: rgba(255,255,255,.98) !important;
+    color: #0f2b5f !important;
+    border-bottom: 1px solid #e6eef8;
+    box-shadow: 0 2px 12px rgba(27,71,125,.05);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.header-left {
+    gap: 13px;
+}
+
+.header-icon {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg,#0d6efd,#3b82f6) !important;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(37,99,235,.22);
+}
+
+.header-title {
+    color: #0c2b62 !important;
+    font-size: clamp(18px, 2vw, 25px) !important;
+    letter-spacing: -.3px;
+}
+
+.header-subtitle {
+    color: #6680a6 !important;
+    opacity: 1 !important;
+}
+
+.logout-btn {
+    background: #fff1f2 !important;
+    color: #e11d48 !important;
+    border: 1px solid #fecdd3 !important;
+    border-radius: 11px !important;
+    padding: 10px 17px !important;
+    box-shadow: none !important;
+}
+
+.logout-btn:hover {
+    background: #ffe4e6 !important;
+}
+
+.dashboard-body {
+    padding: clamp(18px, 2.4vw, 30px) !important;
+    max-width: 1800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.dashboard-welcome {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 4px 2px 0;
+}
+
+.welcome-title {
+    margin: 0;
+    color: #0b2d66;
+    font-size: clamp(20px, 2.3vw, 30px);
+    font-weight: 850;
+    letter-spacing: -.6px;
+}
+
+.welcome-text {
+    margin: 5px 0 0;
+    color: #7186a5;
+    font-size: 13px;
+}
+
+.admin-online {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border: 1px solid #dce8f7;
+    border-radius: 999px;
+    background: #fff;
+    color: #27714b;
+    font-size: 12px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.admin-online span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 4px #dcfce7;
+}
+
+.stats-grid {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 14px;
+}
+
+.stat-card {
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 16px 18px;
+    background: #fff;
+    border: 1px solid #e5edf8;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(28,71,120,.055);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    font-size: 20px;
+}
+
+.stat-icon.blue { background:#e8f1ff; color:#1769e0; }
+.stat-icon.green { background:#e8faef; color:#149447; }
+.stat-icon.purple { background:#f1eaff; color:#7c3aed; }
+.stat-icon.orange { background:#fff3dd; color:#ea8b00; }
+
+.stat-label {
+    color:#617897;
+    font-size:11px;
+    font-weight:700;
+}
+
+.stat-value {
+    margin-top:2px;
+    color:#0b2d66;
+    font-size:23px;
+    font-weight:850;
+    line-height:1.1;
+}
+
+.stat-note {
+    margin-top:3px;
+    color:#91a2b9;
+    font-size:10px;
+}
+
+.dashboard-sidebar {
+    grid-column: 1;
+    grid-row: 3;
+    position: sticky;
+    top: 98px;
+    background: #fff;
+    border: 1px solid #e4edf8;
+    border-radius: 16px;
+    padding: 12px;
+    box-shadow: 0 5px 20px rgba(28,71,120,.05);
+}
+
+.sidebar-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    background: transparent;
+    color: #5c7190;
+    padding: 11px 12px;
+    margin-bottom: 4px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.sidebar-item.active {
+    background: linear-gradient(135deg,#1769e0,#347ef0);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(37,99,235,.18);
+}
+
+.sidebar-item .side-icon {
+    width: 25px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: #edf2f8;
+    margin: 11px 4px;
+}
+
+.sidebar-status {
+    padding: 11px 9px 4px;
+    color: #8294ad;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.dashboard-grid {
+    grid-column: 2;
+    grid-row: 3;
+    grid-template-columns: minmax(300px, 390px) minmax(0, 1fr) !important;
+    gap: 16px !important;
+    width: 100%;
+}
+
+.card {
+    border: 1px solid #e3ebf6 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 6px 22px rgba(28,71,120,.055) !important;
+}
+
+.card-header {
+    padding: 18px 19px 12px !important;
+}
+
+.card-title {
+    color: #0d2d64 !important;
+    font-size: 16px !important;
+}
+
+.card-description {
+    color: #7589a5 !important;
+}
+
+.card-content {
+    padding: 0 19px 19px !important;
+}
+
+.form-label {
+    color: #29466f !important;
+    font-size: 12px !important;
+}
+
+.form-input {
+    height: 45px !important;
+    border-color: #d7e2ef !important;
+    border-radius: 10px !important;
+    background: #fbfdff !important;
+}
+
+.form-input:focus {
+    border-color: #2d78e9 !important;
+    box-shadow: 0 0 0 3px rgba(45,120,233,.10) !important;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg,#0d6efd,#2563eb) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 7px 16px rgba(37,99,235,.16);
+}
+
+.success-btn {
+    background: #eef5ff !important;
+    color: #1769e0 !important;
+    border: 1px solid #d6e5fb !important;
+}
+
+.success-btn:hover {
+    background: #e4efff !important;
+}
+
+.history-card {
+    min-width: 0;
+}
+
+.history-top {
+    padding: 18px 19px !important;
+    border-bottom: 1px solid #e8eef6;
+}
+
+.history-actions {
+    gap: 8px !important;
+}
+
+.outline-btn {
+    border-color: #9fc4f7 !important;
+    background: #fff !important;
+    color: #1769e0 !important;
+}
+
+.danger-btn {
+    background: #ef3340 !important;
+    border-radius: 10px !important;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.history-table {
+    min-width: 760px;
+}
+
+.history-table th {
+    background: #f1f6fb !important;
+    color: #5b7393 !important;
+    font-size: 10px !important;
+    letter-spacing: .3px;
+}
+
+.history-table td {
+    background: #fff !important;
+    border-bottom-color: #edf2f7 !important;
+    color: #24436d;
+}
+
+.customer-name {
+    color: #102f61 !important;
+}
+
+.customer-meta {
+    color: #8092aa !important;
+}
+
+.copy-link-btn {
+    background: #edf5ff !important;
+    border-color: #d7e8ff !important;
+    color: #1769e0 !important;
+}
+
+.badge-yes {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+}
+
+.badge-no {
+    background: #fff0c7 !important;
+    color: #9a6700 !important;
+}
+
+.badge-pending {
+    background: #e8edf3 !important;
+    color: #405674 !important;
+}
+
+.badge-utr {
+    background: #dceaff !important;
+    color: #1769e0 !important;
+}
+
+.saved-box {
+    background: #fbfdff !important;
+    border-color: #d8e4f1 !important;
+}
+
+.dashboard-footer {
+    background: #fff !important;
+    border-top-color: #edf2f7 !important;
+    color: #7a8da7 !important;
+}
+
+.toast {
+    box-shadow: 0 12px 30px rgba(15,43,95,.16) !important;
+}
+
+@media (max-width: 1100px) {
+    .dashboard-body {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-sidebar,
+    .dashboard-grid {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .dashboard-sidebar {
+        position: static;
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 7px;
+    }
+
+    .sidebar-item {
+        width: auto;
+        min-width: max-content;
+        margin: 0;
+    }
+
+    .sidebar-divider,
+    .sidebar-status {
+        display: none;
+    }
+}
+
+@media (max-width: 850px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .history-card {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 560px) {
+    .dashboard-header {
+        min-height: 68px;
+        padding: 11px 14px !important;
+    }
+
+    .header-icon {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .header-subtitle {
+        display: none;
+    }
+
+    .logout-btn {
+        padding: 8px 11px !important;
+        font-size: 11px;
+    }
+
+    .dashboard-body {
+        padding: 14px !important;
+        gap: 12px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .stat-card {
+        min-height: 80px;
+        padding: 11px;
+        gap: 8px;
+    }
+
+    .stat-icon {
+        width: 35px;
+        height: 35px;
+        flex-basis: 35px;
+        font-size: 16px;
+    }
+
+    .stat-value {
+        font-size: 19px;
+    }
+
+    .stat-note {
+        display: none;
+    }
+
+    .dashboard-welcome {
+        align-items: flex-start;
+    }
+
+    .admin-online {
+        display: none;
+    }
+
+    .history-top {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+}
 </style>
 </head>
 
@@ -1003,6 +1515,100 @@ button {
         <!-- BODY -->
 
         <main class="dashboard-body">
+
+
+            <!-- MODERN DASHBOARD OVERVIEW -->
+
+            <section class="dashboard-welcome">
+
+                <div>
+                    <h2 class="welcome-title">Welcome Back, Admin! 👋</h2>
+                    <p class="welcome-text">
+                        Create secure payment links and track customer activity in real-time.
+                    </p>
+                </div>
+
+                <div class="admin-online">
+                    <span></span>
+                    Admin Panel Online
+                </div>
+
+            </section>
+
+
+            <section class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">🔗</div>
+                    <div>
+                        <div class="stat-label">Total Links</div>
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-note">Generated links</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">◉</div>
+                    <div>
+                        <div class="stat-label">Visited</div>
+                        <div class="stat-value" id="stat-visited">0</div>
+                        <div class="stat-note">Customers opened</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">▣</div>
+                    <div>
+                        <div class="stat-label">UPI Copied</div>
+                        <div class="stat-value" id="stat-copied">0</div>
+                        <div class="stat-note">UPI ID copied</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">✓</div>
+                    <div>
+                        <div class="stat-label">Completed</div>
+                        <div class="stat-value" id="stat-completed">0</div>
+                        <div class="stat-note">UTR submitted</div>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- SIDEBAR -->
+
+            <aside class="dashboard-sidebar">
+
+                <button class="sidebar-item active" type="button">
+                    <span class="side-icon">⌂</span>
+                    Dashboard
+                </button>
+
+                <button class="sidebar-item" type="button" onclick="document.getElementById('input-name').focus()">
+                    <span class="side-icon">🔗</span>
+                    Create Payment Link
+                </button>
+
+                <button class="sidebar-item" type="button" onclick="document.getElementById('history-table-body').scrollIntoView({behavior:'smooth',block:'center'})">
+                    <span class="side-icon">▤</span>
+                    Generated Links History
+                </button>
+
+                <button class="sidebar-item" type="button" onclick="document.getElementById('saved-customers').scrollIntoView({behavior:'smooth',block:'center'})">
+                    <span class="side-icon">♙</span>
+                    Saved Customer Details
+                </button>
+
+                <div class="sidebar-divider"></div>
+
+                <div class="sidebar-status">
+                    <strong>Secure • Fast • Reliable</strong><br>
+                    Firebase realtime tracking enabled.
+                </div>
+
+            </aside>
 
             <div class="dashboard-grid">
 
@@ -2700,6 +3306,7 @@ function refreshData() {
 function renderHistory() {
 
     loadHistory();
+    updateDashboardStats();
 
 
     const tbody =
@@ -2939,6 +3546,53 @@ function renderHistory() {
                 }
             )
             .join("");
+
+}
+
+
+function updateDashboardStats() {
+
+    const total =
+        linkHistory.length;
+
+    const visited =
+        linkHistory.filter(
+            function(item) {
+                return Boolean(item.visited);
+            }
+        ).length;
+
+    const copied =
+        linkHistory.filter(
+            function(item) {
+                return Boolean(item.copied);
+            }
+        ).length;
+
+    const completed =
+        linkHistory.filter(
+            function(item) {
+                return String(item.status || "")
+                    .startsWith("UTR:");
+            }
+        ).length;
+
+    const totalEl =
+        document.getElementById("stat-total");
+
+    const visitedEl =
+        document.getElementById("stat-visited");
+
+    const copiedEl =
+        document.getElementById("stat-copied");
+
+    const completedEl =
+        document.getElementById("stat-completed");
+
+    if (totalEl) totalEl.textContent = total;
+    if (visitedEl) visitedEl.textContent = visited;
+    if (copiedEl) copiedEl.textContent = copied;
+    if (completedEl) completedEl.textContent = completed;
 
 }
 
