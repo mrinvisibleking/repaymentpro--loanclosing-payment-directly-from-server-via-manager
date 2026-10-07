@@ -22,6 +22,7 @@ import {
   set,
   update,
   onValue,
+  remove,
   isFirebaseConfigured,
   firebaseConfig,
   auth,
@@ -569,6 +570,41 @@ async function cloudUpdate(
 
 }
 
+
+// ============================================================
+// CLEAR ALL FIREBASE PAYMENT HISTORY
+// ============================================================
+
+async function clearAllCloudHistory() {
+
+  if (!isFirebaseConfigured || !database) {
+    throw new Error("Firebase is not configured.");
+  }
+
+  const currentUser = auth.currentUser;
+
+  if (!currentUser || currentUser.uid !== "pC1CqXm1gRUwX2m4XbdbcNNN0p93") {
+    throw new Error("Admin Firebase login required.");
+  }
+
+  const ids = Object.keys(cloudRecords || {});
+
+  for (const id of ids) {
+    await remove(
+      ref(database, TRACKING_ROOT + "/" + encodeURIComponent(id))
+    );
+  }
+
+  cloudRecords = {};
+  localStorage.removeItem(HISTORY_KEY);
+
+  window.dispatchEvent(
+    new CustomEvent("paymentHistoryCloudUpdated", { detail: [] })
+  );
+
+  return true;
+
+}
 
 // ============================================================
 // ADMIN REALTIME SYNC
