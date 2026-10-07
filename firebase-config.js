@@ -7,7 +7,8 @@ import {
   ref,
   set,
   update,
-  onValue
+  onValue,
+  remove
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 import {
@@ -113,6 +114,7 @@ export {
   update,
 
   onValue,
+  remove,
 
   getAuth,
 
