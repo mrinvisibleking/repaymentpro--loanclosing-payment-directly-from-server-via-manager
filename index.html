@@ -1285,6 +1285,120 @@ body {
         gap: 10px;
     }
 }
+
+
+/* =========================================================
+   TOP NAVIGATION - REPLACES LEFT SIDEBAR
+========================================================= */
+
+.dashboard-welcome {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 22px !important;
+    padding: 2px 2px 0 !important;
+}
+
+.welcome-copy {
+    min-width: 280px;
+    flex: 1 1 auto;
+}
+
+.top-dashboard-nav {
+    flex: 0 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    background: #ffffff;
+    border: 1px solid #e1eaf5;
+    border-radius: 13px;
+    box-shadow: 0 5px 18px rgba(28,71,120,.055);
+}
+
+.top-nav-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 39px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #5b7190;
+    font-size: 11px;
+    font-weight: 750;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: .18s ease;
+}
+
+.top-nav-item span {
+    font-size: 14px;
+}
+
+.top-nav-item:hover {
+    background: #f0f6ff;
+    color: #1769e0;
+}
+
+.top-nav-item.active {
+    color: #ffffff;
+    background: linear-gradient(135deg,#1769e0,#347ef0);
+    box-shadow: 0 6px 14px rgba(37,99,235,.18);
+}
+
+.dashboard-grid {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+    grid-template-columns: minmax(300px, 390px) minmax(0, 1fr) !important;
+    width: 100% !important;
+}
+
+@media (max-width: 1180px) {
+    .dashboard-welcome {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+    }
+
+    .top-dashboard-nav {
+        width: 100%;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 850px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .top-dashboard-nav {
+        width: 100%;
+    }
+
+    .top-nav-item {
+        flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 560px) {
+    .welcome-copy {
+        min-width: 0;
+    }
+
+    .top-dashboard-nav {
+        border-radius: 11px;
+        padding: 4px;
+    }
+
+    .top-nav-item {
+        min-height: 36px;
+        padding: 7px 10px;
+        font-size: 10px;
+    }
+}
 </style>
 </head>
 
@@ -1521,17 +1635,52 @@ body {
 
             <section class="dashboard-welcome">
 
-                <div>
+                <div class="welcome-copy">
                     <h2 class="welcome-title">Welcome Back, Admin! 👋</h2>
                     <p class="welcome-text">
                         Create secure payment links and track customer activity in real-time.
                     </p>
                 </div>
 
-                <div class="admin-online">
-                    <span></span>
-                    Admin Panel Online
-                </div>
+                <nav class="top-dashboard-nav" aria-label="Dashboard navigation">
+
+                    <button
+                        class="top-nav-item active"
+                        type="button"
+                        onclick="window.scrollTo({top:0,behavior:'smooth'})"
+                    >
+                        <span>⌂</span>
+                        Dashboard
+                    </button>
+
+                    <button
+                        class="top-nav-item"
+                        type="button"
+                        onclick="document.getElementById('input-name').focus()"
+                    >
+                        <span>🔗</span>
+                        Create Payment Link
+                    </button>
+
+                    <button
+                        class="top-nav-item"
+                        type="button"
+                        onclick="document.getElementById('history-table-body').scrollIntoView({behavior:'smooth',block:'center'})"
+                    >
+                        <span>▤</span>
+                        Generated Links History
+                    </button>
+
+                    <button
+                        class="top-nav-item"
+                        type="button"
+                        onclick="document.getElementById('saved-customers').scrollIntoView({behavior:'smooth',block:'center'})"
+                    >
+                        <span>♙</span>
+                        Saved Customer Details
+                    </button>
+
+                </nav>
 
             </section>
 
@@ -1576,39 +1725,6 @@ body {
 
             </section>
 
-
-            <!-- SIDEBAR -->
-
-            <aside class="dashboard-sidebar">
-
-                <button class="sidebar-item active" type="button">
-                    <span class="side-icon">⌂</span>
-                    Dashboard
-                </button>
-
-                <button class="sidebar-item" type="button" onclick="document.getElementById('input-name').focus()">
-                    <span class="side-icon">🔗</span>
-                    Create Payment Link
-                </button>
-
-                <button class="sidebar-item" type="button" onclick="document.getElementById('history-table-body').scrollIntoView({behavior:'smooth',block:'center'})">
-                    <span class="side-icon">▤</span>
-                    Generated Links History
-                </button>
-
-                <button class="sidebar-item" type="button" onclick="document.getElementById('saved-customers').scrollIntoView({behavior:'smooth',block:'center'})">
-                    <span class="side-icon">♙</span>
-                    Saved Customer Details
-                </button>
-
-                <div class="sidebar-divider"></div>
-
-                <div class="sidebar-status">
-                    <strong>Secure • Fast • Reliable</strong><br>
-                    Firebase realtime tracking enabled.
-                </div>
-
-            </aside>
 
             <div class="dashboard-grid">
 
