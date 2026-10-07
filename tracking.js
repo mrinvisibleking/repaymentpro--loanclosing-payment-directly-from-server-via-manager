@@ -656,43 +656,16 @@ async function clearAllCloudHistory() {
         }
       }
 
-      // Verify that Firebase really removed the branch.
-      const verifyResponse = await fetch(
-        baseUrl +
-          "/" +
-          rootPath +
-          ".json?auth=" +
-          encodeURIComponent(token) +
-          "&_=" +
-          Date.now(),
-        {
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache"
-          }
-        }
-      );
+      /*
+         Do not read the whole root to verify the delete.
+         paymentLinkStatus is intentionally readable only at the
+         individual $linkId level in Firebase Rules, so a root GET
+         there returns Permission Denied.
 
-      if (!verifyResponse.ok) {
-        throw new Error(
-          "Firebase clear verification failed for " +
-          rootPath +
-          " (" +
-          verifyResponse.status +
-          ")."
-        );
-      }
-
-      const remaining = await verifyResponse.json();
-
-      if (remaining !== null) {
-        throw new Error(
-          "Firebase still contains data in " +
-          rootPath +
-          " after deletion."
-        );
-      }
+         Each DELETE above already returns success only when Firebase
+         accepted the deletion. The realtime listener will also
+         confirm the branch is empty after sync restarts.
+      */
     }
 
     await deleteRootChildren("paymentLinks");
