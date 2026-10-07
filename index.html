@@ -2450,8 +2450,51 @@ async function verifyAdminLogin(event) {
 
 
 /* =========================================================
-   LOGOUT
+   RESTORE ADMIN SESSION AFTER PAGE REFRESH
 ========================================================= */
+
+window.restoreAdminSession = function() {
+
+    const landing =
+        document.getElementById(
+            "landing-page"
+        );
+
+    const loginPage =
+        document.getElementById(
+            "admin-login-page"
+        );
+
+    const dashboard =
+        document.getElementById(
+            "d3repayon-container"
+        );
+
+    if (!dashboard) return;
+
+    if (landing) {
+        landing.classList.add("hidden");
+    }
+
+    if (loginPage) {
+        loginPage.classList.add("hidden");
+    }
+
+    dashboard.classList.remove("hidden");
+
+    if (typeof renderHistory === "function") {
+        renderHistory();
+    }
+
+    if (typeof renderSavedCustomers === "function") {
+        renderSavedCustomers();
+    }
+
+};
+
+
+/* =========================================================
+
 
 async function logoutDashboard() {
 
