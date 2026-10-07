@@ -418,6 +418,47 @@ button {
     white-space: nowrap;
 }
 
+.saved-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.clear-saved-btn,
+.delete-saved-btn {
+    border: 0;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 7px;
+    padding: 6px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.clear-saved-btn:hover,
+.delete-saved-btn:hover {
+    background: #fecaca;
+}
+
+.saved-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 420px) {
+    .saved-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+
 /* =========================
    TABLE CARD
 ========================= */
@@ -1966,38 +2007,44 @@ function saveCustomerDetails() {
 function renderSavedCustomers() {
 
     const container =
-        document.getElementById(
-            "saved-customers"
-        );
-
+        document.getElementById("saved-customers");
 
     if (!container) {
-
         return;
-
     }
 
 
     loadSavedCustomers();
 
 
-    if (
-        savedCustomers.length === 0
-    ) {
+    const header = `
+        <div class="saved-actions">
+            <div class="saved-title" style="margin-bottom:0;">
+                SAVED CUSTOMER DETAILS
+            </div>
 
-        container.innerHTML = `
+            <button
+                type="button"
+                class="clear-saved-btn"
+                onclick="clearSavedCustomers()"
+            >
+                🗑 Clear All
+            </button>
+        </div>
+    `;
 
+
+    if (savedCustomers.length === 0) {
+
+        container.innerHTML = header + `
             <div style="
                 font-size:11px;
                 color:#94a3b8;
                 text-align:center;
                 padding:8px;
             ">
-
                 No saved customers yet.
-
             </div>
-
         `;
 
         return;
@@ -2006,53 +2053,159 @@ function renderSavedCustomers() {
 
 
     container.innerHTML =
-        savedCustomers
-            .slice(
-                0,
-                20
-            )
-            .map(
-                function(item) {
+        header +
+        `
+            <div class="saved-list">
+                ${savedCustomers
+                    .slice(0, 20)
+                    .map(function(item) {
 
-                    const safeId =
-                        encodeURIComponent(
-                            item.id
-                        );
+                        const safeId =
+                            encodeURIComponent(item.id);
 
+                        return `
 
-                    return `
+                            <div class="saved-item">
 
-                        <div class="saved-item">
+                                <div class="saved-info">
 
-                            <div class="saved-info">
+                                    <div class="saved-name">
+                                        ${escapeHtml(item.name)}
+                                    </div>
 
-                                <div class="saved-name">
-                                    ${escapeHtml(item.name)}
+                                    <div class="saved-meta">
+                                        ${escapeHtml(item.mobile)}
+                                        • ₹${escapeHtml(item.amount)}
+                                    </div>
+
                                 </div>
 
-                                <div class="saved-meta">
-                                    ${escapeHtml(item.mobile)}
-                                    • ₹${escapeHtml(item.amount)}
+                                <div class="saved-buttons">
+
+                                    <button
+                                        type="button"
+                                        class="load-saved-btn"
+                                        onclick="loadSavedCustomer('${safeId}')"
+                                    >
+                                        Load
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="delete-saved-btn"
+                                        onclick="deleteSavedCustomer('${safeId}')"
+                                    >
+                                        Delete
+                                    </button>
+
                                 </div>
 
                             </div>
 
-                            <button
-                                class="load-saved-btn"
-                                onclick="loadSavedCustomer('${safeId}')"
-                            >
-                                Load
-                            </button>
+                        `;
 
-                        </div>
-
-                    `;
-
-                }
-            )
-            .join("");
+                    })
+                    .join("")}
+            </div>
+        `;
 
 }
+
+
+function deleteSavedCustomer(encodedId) {
+
+    const id =
+        decodeURIComponent(encodedId);
+
+    loadSavedCustomers();
+
+    const customer =
+        savedCustomers.find(function(item) {
+            return item.id === id;
+        });
+
+
+    if (!customer) {
+
+        showToast("Saved customer not found.");
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "Delete saved customer " +
+            customer.name +
+            "?\\n\\n" +
+            "This will only remove the saved details from this browser."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    savedCustomers =
+        savedCustomers.filter(function(item) {
+            return item.id !== id;
+        });
+
+
+    localStorage.setItem(
+        SAVED_CUSTOMERS_KEY,
+        JSON.stringify(savedCustomers)
+    );
+
+
+    renderSavedCustomers();
+
+    showToast("Saved customer deleted.");
+
+}
+
+
+function clearSavedCustomers() {
+
+    loadSavedCustomers();
+
+
+    if (savedCustomers.length === 0) {
+
+        showToast("Saved customer list is already empty.");
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to delete ALL saved customer details?\\n\\n" +
+            "This will not delete Generated Links History."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    savedCustomers = [];
+
+    localStorage.removeItem(
+        SAVED_CUSTOMERS_KEY
+    );
+
+
+    renderSavedCustomers();
+
+    showToast("All saved customer details cleared.");
+
+}
+
 
 
 /* =========================================================
