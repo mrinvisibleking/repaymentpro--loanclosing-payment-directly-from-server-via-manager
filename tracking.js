@@ -573,7 +573,6 @@ async function clearAllCloudHistory() {
     throw new Error("Admin Firebase login required.");
   }
 
-  // Stop realtime sync while deleting so it cannot recreate records.
   if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;
@@ -585,64 +584,12 @@ async function clearAllCloudHistory() {
   }
 
   try {
-    const token = await currentUser.getIdToken(true);
+    console.log("Clear History: deleting Firebase roots...");
 
-    const baseUrl = String(firebaseConfig.databaseURL || "").replace(/\\/$/, "");
+    // Root deletion is admin-only in the Firebase Rules.
+    await set(ref(database, "paymentLinks"), null);
+    await set(ref(database, "paymentLinkStatus"), null);
 
-    if (!baseUrl) {
-      throw new Error("Firebase databaseURL is missing.");
-    }
-
-    // paymentLinks is admin-readable, so use it only to get the IDs.
-    // Do NOT read paymentLinkStatus as a root: its rules only allow
-    // authenticated reads of individual /paymentLinkStatus/{id} records.
-    const snapshot = await get(ref(database, "paymentLinks"));
-    const records = snapshot.exists() ? (snapshot.val() || {}) : {};
-    const ids = Object.keys(records);
-
-    console.log("Clear History: deleting", ids.length, "payment link(s).");
-
-    async function deleteChild(rootPath, id) {
-      const url =
-        baseUrl +
-        "/" +
-        rootPath +
-        "/" +
-        encodeURIComponent(id) +
-        ".json?auth=" +
-        encodeURIComponent(token);
-
-      const response = await fetch(url, {
-        method: "DELETE",
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
-        }
-      });
-
-      if (!response.ok) {
-        const body = await response.text();
-        throw new Error(
-          "Firebase DELETE failed: " +
-          rootPath +
-          "/" +
-          id +
-          " (" +
-          response.status +
-          "): " +
-          body
-        );
-      }
-    }
-
-    // Delete both records for every link. Do not read the status root.
-    for (const id of ids) {
-      await deleteChild("paymentLinks", id);
-      await deleteChild("paymentLinkStatus", id);
-    }
-
-    // Clear only this module's state. index.html owns linkHistory.
     cloudRecords = {};
     localStorage.removeItem(HISTORY_KEY);
 
@@ -652,15 +599,15 @@ async function clearAllCloudHistory() {
       })
     );
 
+    console.log("ALL PAYMENT LINK HISTORY CLEARED SUCCESSFULLY.");
+
     startAdminSync();
 
-    console.log("ALL PAYMENT LINK HISTORY CLEARED SUCCESSFULLY.");
     return true;
 
   } catch (error) {
     console.error("Firebase clear history failed:", error);
 
-    // Always restore the listener after an error.
     startAdminSync();
 
     throw error;
