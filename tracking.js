@@ -560,159 +560,49 @@ async function cloudUpdate(
 
 async function clearAllCloudHistory() {
 
-  if (
-    !isFirebaseConfigured ||
-    !database
-  ) {
-
-    throw new Error(
-      "Firebase is not configured."
-    );
-
+  if (!isFirebaseConfigured || !database) {
+    throw new Error("Firebase is not configured.");
   }
 
-
-  const currentUser =
-    auth.currentUser;
-
-
-  /*
-     Only the Firebase admin account
-     can perform Clear History.
-  */
+  const currentUser = auth.currentUser;
 
   if (
     !currentUser ||
-    currentUser.uid !==
-      "pC1CqXm1gRUwX2m4XbdbcNNN0p93"
+    currentUser.uid !== "pC1CqXm1gRUwX2m4XbdbcNNN0p93"
   ) {
-
-    throw new Error(
-      "Admin Firebase login required."
-    );
-
+    throw new Error("Admin Firebase login required.");
   }
 
-
-  /*
-     Stop realtime listener temporarily.
-  */
-
-  if (
-    unsubscribe
-  ) {
-
+  // Stop realtime sync while deleting so it cannot recreate records.
+  if (unsubscribe) {
     unsubscribe();
-
-    unsubscribe =
-      null;
-
+    unsubscribe = null;
   }
 
-
-  /*
-     Stop missing-record timer.
-  */
-
-  if (
-    missingRecordTimer
-  ) {
-
-    clearInterval(
-      missingRecordTimer
-    );
-
-    missingRecordTimer =
-      null;
-
+  if (missingRecordTimer) {
+    clearInterval(missingRecordTimer);
+    missingRecordTimer = null;
   }
-
 
   try {
+    const token = await currentUser.getIdToken(true);
 
-    /*
-       Get a fresh Firebase ID token.
-    */
-
-    const token =
-      await currentUser.getIdToken(
-        true
-      );
-
-
-    const baseUrl =
-      String(
-        firebaseConfig.databaseURL ||
-        ""
-      ).replace(
-        /\/$/,
-        ""
-      );
-
+    const baseUrl = String(firebaseConfig.databaseURL || "").replace(/\\/$/, "");
 
     if (!baseUrl) {
-
-      throw new Error(
-        "Firebase databaseURL is missing."
-      );
-
+      throw new Error("Firebase databaseURL is missing.");
     }
 
+    // paymentLinks is admin-readable, so use it only to get the IDs.
+    // Do NOT read paymentLinkStatus as a root: its rules only allow
+    // authenticated reads of individual /paymentLinkStatus/{id} records.
+    const snapshot = await get(ref(database, "paymentLinks"));
+    const records = snapshot.exists() ? (snapshot.val() || {}) : {};
+    const ids = Object.keys(records);
 
-    // ========================================================
-    // IMPORTANT
-    // ========================================================
-    //
-    // We can READ paymentLinks because the Firebase Rules
-    // allow the admin to read it.
-    //
-    // We MUST NOT read the entire paymentLinkStatus root
-    // because its rules intentionally allow reading individual
-    // $linkId records, not the complete root.
-    //
-    // Therefore we get the IDs from paymentLinks and use the
-    // same IDs to delete paymentLinkStatus/{id}.
-    // ========================================================
+    console.log("Clear History: deleting", ids.length, "payment link(s).");
 
-    const paymentLinksSnapshot =
-      await get(
-        ref(
-          database,
-          "paymentLinks"
-        )
-      );
-
-
-    const paymentLinks =
-      paymentLinksSnapshot.exists()
-        ? (
-            paymentLinksSnapshot.val()
-            || {}
-          )
-        : {};
-
-
-    const ids =
-      Object.keys(
-        paymentLinks
-      );
-
-
-    console.log(
-      "Clear History - Firebase link IDs:",
-      ids
-    );
-
-
-    // ========================================================
-    // DELETE ONE FIREBASE RECORD
-    // ========================================================
-
-    async function deleteRecord(
-      rootPath,
-      id
-    ) {
-
+    async function deleteChild(rootPath, id) {
       const url =
         baseUrl +
         "/" +
@@ -722,42 +612,19 @@ async function clearAllCloudHistory() {
         ".json?auth=" +
         encodeURIComponent(token);
 
+      const response = await fetch(url, {
+        method: "DELETE",
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        }
+      });
 
-      console.log(
-        "Deleting Firebase record:",
-        rootPath,
-        id
-      );
-
-
-      const response =
-        await fetch(
-          url,
-          {
-            method:
-              "DELETE",
-
-            cache:
-              "no-store",
-
-            headers: {
-              "Cache-Control":
-                "no-cache"
-            }
-          }
-        );
-
-
-      if (
-        !response.ok
-      ) {
-
-        const body =
-          await response.text();
-
-
+      if (!response.ok) {
+        const body = await response.text();
         throw new Error(
-          "Firebase DELETE failed for " +
+          "Firebase DELETE failed: " +
           rootPath +
           "/" +
           id +
@@ -766,148 +633,39 @@ async function clearAllCloudHistory() {
           "): " +
           body
         );
-
       }
-
-
-      console.log(
-        "Firebase DELETE successful:",
-        rootPath,
-        id
-      );
-
     }
 
-
-    // ========================================================
-    // DELETE ALL PAYMENT LINKS
-    // ========================================================
-
-    for (
-      const id of ids
-    ) {
-
-      await deleteRecord(
-        "paymentLinks",
-        id
-      );
-
+    // Delete both records for every link. Do not read the status root.
+    for (const id of ids) {
+      await deleteChild("paymentLinks", id);
+      await deleteChild("paymentLinkStatus", id);
     }
 
-
-    // ========================================================
-    // DELETE ALL PAYMENT LINK STATUS RECORDS
-    // ========================================================
-    //
-    // We use the same IDs from paymentLinks.
-    //
-    // We do NOT call:
-    //
-    // get(ref(database, "paymentLinkStatus"))
-    //
-    // because Firebase Rules intentionally do not allow
-    // reading the complete paymentLinkStatus root.
-    // ========================================================
-
-    for (
-      const id of ids
-    ) {
-
-      await deleteRecord(
-        "paymentLinkStatus",
-        id
-      );
-
-    }
-
-
-    // ========================================================
-    // FIREBASE DELETE SUCCESS
-    // ========================================================
-    //
-    // IMPORTANT:
-    // Do NOT use:
-    //
-    // linkHistory = [];
-    //
-    // here.
-    //
-    // linkHistory belongs to index.html and is NOT available
-    // inside this ES module.
-    //
-    // Using it here would cause:
-    //
-    // ReferenceError: linkHistory is not defined
-    //
-    // after Firebase had already successfully deleted the
-    // records.
-    // ========================================================
-
-
-    cloudRecords =
-      {};
-
-
-    /*
-       Remove local browser history.
-    */
-
-    localStorage.removeItem(
-      HISTORY_KEY
-    );
-
-
-    /*
-       Tell index.html that Firebase
-       history is now empty.
-    */
+    // Clear only this module's state. index.html owns linkHistory.
+    cloudRecords = {};
+    localStorage.removeItem(HISTORY_KEY);
 
     window.dispatchEvent(
-      new CustomEvent(
-        "paymentHistoryCloudUpdated",
-        {
-          detail: []
-        }
-      )
+      new CustomEvent("paymentHistoryCloudUpdated", {
+        detail: []
+      })
     );
-
-
-    /*
-       Start Firebase realtime sync again.
-    */
 
     startAdminSync();
 
-
-    console.log(
-      "ALL PAYMENT LINK HISTORY CLEARED SUCCESSFULLY."
-    );
-
-
+    console.log("ALL PAYMENT LINK HISTORY CLEARED SUCCESSFULLY.");
     return true;
 
   } catch (error) {
+    console.error("Firebase clear history failed:", error);
 
-    console.error(
-      "Firebase clear history failed:",
-      error
-    );
-
-
-    /*
-       Restart realtime sync even if
-       deletion fails.
-    */
-
+    // Always restore the listener after an error.
     startAdminSync();
 
-
     throw error;
-
   }
-
 }
-
 
 // ============================================================
 // ADMIN REALTIME SYNC
