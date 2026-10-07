@@ -1,4 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
 import {
   getDatabase,
@@ -29,17 +31,24 @@ const firebaseConfig = {
 };
 
 
-const app = initializeApp(firebaseConfig);
+const app =
+  initializeApp(firebaseConfig);
 
-export const database = getDatabase(app);
 
-export const auth = getAuth(app);
+export const database =
+  getDatabase(app);
 
-export const isFirebaseConfigured = Boolean(
-  firebaseConfig.apiKey &&
-  firebaseConfig.projectId &&
-  firebaseConfig.databaseURL
-);
+
+export const auth =
+  getAuth(app);
+
+
+export const isFirebaseConfigured =
+  Boolean(
+    firebaseConfig.apiKey &&
+    firebaseConfig.projectId &&
+    firebaseConfig.databaseURL
+  );
 
 
 export {
@@ -48,7 +57,6 @@ export {
   set,
   update,
   onValue,
-
   getAuth,
   signInAnonymously,
   signInWithEmailAndPassword,
