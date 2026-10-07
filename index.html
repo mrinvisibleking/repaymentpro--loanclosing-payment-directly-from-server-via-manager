@@ -622,6 +622,7 @@ button {
 ========================= */
 
 @media (max-width: 900px) {
+
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
@@ -629,9 +630,11 @@ button {
     .history-card {
         width: 100%;
     }
+
 }
 
 @media (max-width: 600px) {
+
     .admin-wrapper {
         padding: 0;
     }
@@ -706,9 +709,11 @@ button {
         bottom: 15px;
         max-width: none;
     }
+
 }
 
 @media (max-width: 380px) {
+
     .dashboard-header {
         gap: 8px;
     }
@@ -724,7 +729,9 @@ button {
     .logout-btn {
         font-size: 11px;
     }
+
 }
+
 </style>
 </head>
 
@@ -738,7 +745,9 @@ button {
 
     <div class="login-card">
 
-        <h1 class="login-title">Welcome</h1>
+        <h1 class="login-title">
+            Welcome
+        </h1>
 
         <p class="login-subtitle">
             Manager repayment payment portal
@@ -767,7 +776,10 @@ button {
 
     <div class="login-card">
 
-        <h2 class="login-title" style="font-size:23px;">
+        <h2
+            class="login-title"
+            style="font-size:23px;"
+        >
             Enter Secret Code
         </h2>
 
@@ -796,7 +808,10 @@ button {
                 Incorrect secret code. Try again.
             </div>
 
-            <div class="two-buttons" style="margin-top:16px;">
+            <div
+                class="two-buttons"
+                style="margin-top:16px;"
+            >
 
                 <button
                     type="button"
@@ -826,11 +841,17 @@ button {
      ADMIN LOGIN
 ========================================= -->
 
-<div id="admin-login-page" class="hidden center-screen">
+<div
+    id="admin-login-page"
+    class="hidden center-screen"
+>
 
     <div class="login-card">
 
-        <h2 class="login-title" style="font-size:23px;">
+        <h2
+            class="login-title"
+            style="font-size:23px;"
+        >
             Admin Dashboard
         </h2>
 
@@ -876,7 +897,7 @@ button {
                 id="admin-error"
                 class="hidden text-red-400 text-sm mb-4"
             >
-                Invalid username or password.
+                Invalid email or password.
             </div>
 
             <button
@@ -1063,8 +1084,6 @@ button {
                         </div>
 
 
-                        <!-- INFO -->
-
                         <div
                             style="
                                 margin-top:10px;
@@ -1176,9 +1195,7 @@ button {
 
                             </thead>
 
-                            <tbody
-                                id="history-table-body"
-                            >
+                            <tbody id="history-table-body">
                             </tbody>
 
                         </table>
@@ -1193,7 +1210,7 @@ button {
                         </span>
 
                         <span>
-                            Data stored locally in this browser
+                            Firebase realtime tracking enabled
                         </span>
 
                     </div>
@@ -1218,13 +1235,18 @@ button {
 
 /* =========================================================
    CONFIGURATION
-
-   NOTE:
-   These credentials are visible in client-side source code.
-   For real security, move authentication to a server.
 ========================================================= */
 
-const CORRECT_SECRET_CODE = "hridoy21upiadmin";
+/*
+   This secret code is only a front-end gate.
+
+   IMPORTANT:
+   The real admin security is Firebase Authentication
+   + Firebase Realtime Database Security Rules.
+*/
+
+const CORRECT_SECRET_CODE =
+    "hridoy21upiadmin";
 
 
 /* =========================================================
@@ -1234,8 +1256,11 @@ const CORRECT_SECRET_CODE = "hridoy21upiadmin";
 const PRODUCTION_PAYMENT_URL =
     "https://repaymentpro-loanclosing-payment-di.vercel.app";
 
-const HISTORY_KEY = "paymentLinkHistory";
-const SAVED_CUSTOMERS_KEY = "savedCustomerDetails";
+const HISTORY_KEY =
+    "paymentLinkHistory";
+
+const SAVED_CUSTOMERS_KEY =
+    "savedCustomerDetails";
 
 
 /* =========================================================
@@ -1243,6 +1268,7 @@ const SAVED_CUSTOMERS_KEY = "savedCustomerDetails";
 ========================================================= */
 
 let linkHistory = [];
+
 let savedCustomers = [];
 
 
@@ -1250,17 +1276,20 @@ let savedCustomers = [];
    INITIAL LOAD
 ========================================================= */
 
-window.addEventListener("load", function() {
+window.addEventListener(
+    "load",
+    function() {
 
-    loadHistory();
+        loadHistory();
 
-    loadSavedCustomers();
+        loadSavedCustomers();
 
-    renderHistory();
+        renderHistory();
 
-    renderSavedCustomers();
+        renderSavedCustomers();
 
-});
+    }
+);
 
 
 /* =========================================================
@@ -1273,14 +1302,28 @@ function loadHistory() {
 
         linkHistory =
             JSON.parse(
-                localStorage.getItem(HISTORY_KEY) || "[]"
+                localStorage.getItem(
+                    HISTORY_KEY
+                ) || "[]"
             );
 
-        if (!Array.isArray(linkHistory)) {
+
+        if (
+            !Array.isArray(
+                linkHistory
+            )
+        ) {
+
             linkHistory = [];
+
         }
 
     } catch (error) {
+
+        console.error(
+            "Could not load history:",
+            error
+        );
 
         linkHistory = [];
 
@@ -1295,14 +1338,28 @@ function loadSavedCustomers() {
 
         savedCustomers =
             JSON.parse(
-                localStorage.getItem(SAVED_CUSTOMERS_KEY) || "[]"
+                localStorage.getItem(
+                    SAVED_CUSTOMERS_KEY
+                ) || "[]"
             );
 
-        if (!Array.isArray(savedCustomers)) {
+
+        if (
+            !Array.isArray(
+                savedCustomers
+            )
+        ) {
+
             savedCustomers = [];
+
         }
 
     } catch (error) {
+
+        console.error(
+            "Could not load saved customers:",
+            error
+        );
 
         savedCustomers = [];
 
@@ -1317,21 +1374,47 @@ function loadSavedCustomers() {
 
 let toastTimer;
 
+
 function showToast(message) {
 
-    const toast = document.getElementById("toast");
+    const toast =
+        document.getElementById(
+            "toast"
+        );
 
-    toast.textContent = message;
 
-    toast.classList.add("show");
+    if (!toast) {
 
-    clearTimeout(toastTimer);
+        return;
 
-    toastTimer = setTimeout(function() {
+    }
 
-        toast.classList.remove("show");
 
-    }, 2500);
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            function() {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
 
 }
 
@@ -1343,19 +1426,33 @@ function showToast(message) {
 function openSecretModal() {
 
     const modal =
-        document.getElementById("secret-modal");
+        document.getElementById(
+            "secret-modal"
+        );
 
-    modal.classList.remove("hidden");
 
-    modal.classList.add("flex");
+    modal.classList.remove(
+        "hidden"
+    );
 
-    setTimeout(function() {
 
-        document
-            .getElementById("secret-code-input")
-            .focus();
+    modal.classList.add(
+        "flex"
+    );
 
-    }, 100);
+
+    setTimeout(
+        function() {
+
+            document
+                .getElementById(
+                    "secret-code-input"
+                )
+                .focus();
+
+        },
+        100
+    );
 
 }
 
@@ -1363,19 +1460,35 @@ function openSecretModal() {
 function closeSecretModal() {
 
     const modal =
-        document.getElementById("secret-modal");
+        document.getElementById(
+            "secret-modal"
+        );
 
-    modal.classList.remove("flex");
 
-    modal.classList.add("hidden");
+    modal.classList.remove(
+        "flex"
+    );
+
+
+    modal.classList.add(
+        "hidden"
+    );
+
 
     document
-        .getElementById("secret-code-input")
+        .getElementById(
+            "secret-code-input"
+        )
         .value = "";
 
+
     document
-        .getElementById("secret-error")
-        .classList.add("hidden");
+        .getElementById(
+            "secret-error"
+        )
+        .classList.add(
+            "hidden"
+        );
 
 }
 
@@ -1384,30 +1497,52 @@ function verifySecretCode(event) {
 
     event.preventDefault();
 
+
     const enteredCode =
         document
-            .getElementById("secret-code-input")
+            .getElementById(
+                "secret-code-input"
+            )
             .value
             .trim();
 
-    const error =
-        document.getElementById("secret-error");
 
-    if (enteredCode === CORRECT_SECRET_CODE) {
+    const error =
+        document.getElementById(
+            "secret-error"
+        );
+
+
+    if (
+        enteredCode ===
+        CORRECT_SECRET_CODE
+    ) {
 
         closeSecretModal();
 
-        document
-            .getElementById("landing-page")
-            .classList.add("hidden");
 
         document
-            .getElementById("admin-login-page")
-            .classList.remove("hidden");
+            .getElementById(
+                "landing-page"
+            )
+            .classList.add(
+                "hidden"
+            );
+
+
+        document
+            .getElementById(
+                "admin-login-page"
+            )
+            .classList.remove(
+                "hidden"
+            );
 
     } else {
 
-        error.classList.remove("hidden");
+        error.classList.remove(
+            "hidden"
+        );
 
     }
 
@@ -1415,76 +1550,141 @@ function verifySecretCode(event) {
 
 
 /* =========================================================
-   ADMIN LOGIN
+   FIREBASE ADMIN LOGIN
 ========================================================= */
 
 async function verifyAdminLogin(event) {
 
     event.preventDefault();
 
+
     const user =
         document
-            .getElementById("admin-user")
+            .getElementById(
+                "admin-user"
+            )
             .value
             .trim();
 
+
     const pass =
         document
-            .getElementById("admin-pass")
+            .getElementById(
+                "admin-pass"
+            )
             .value;
 
+
     const error =
-        document.getElementById("admin-error");
+        document.getElementById(
+            "admin-error"
+        );
+
 
     const button =
         event.submitter ||
-        event.target.querySelector('button[type="submit"]');
+        event.target.querySelector(
+            'button[type="submit"]'
+        );
 
-    error.classList.add("hidden");
 
-    if (!window.firebaseAdminAuth) {
+    error.classList.add(
+        "hidden"
+    );
+
+
+    if (
+        !window.firebaseAdminAuth
+    ) {
+
         error.textContent =
             "Firebase Authentication is still loading. Please wait a moment and try again.";
-        error.classList.remove("hidden");
+
+        error.classList.remove(
+            "hidden"
+        );
+
         return;
+
     }
 
+
     if (button) {
-        button.disabled = true;
-        button.textContent = "Signing in...";
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Signing in...";
+
     }
+
 
     try {
 
-        await window.firebaseAdminAuth.login(user, pass);
+        await window.firebaseAdminAuth.login(
+            user,
+            pass
+        );
+
 
         document
-            .getElementById("admin-login-page")
-            .classList.add("hidden");
+            .getElementById(
+                "admin-login-page"
+            )
+            .classList.add(
+                "hidden"
+            );
+
 
         document
-            .getElementById("d3repayon-container")
-            .classList.remove("hidden");
+            .getElementById(
+                "d3repayon-container"
+            )
+            .classList.remove(
+                "hidden"
+            );
+
 
         renderHistory();
+
         renderSavedCustomers();
 
-        showToast("Firebase admin login successful.");
+
+        showToast(
+            "Firebase admin login successful."
+        );
+
 
     } catch (firebaseError) {
 
-        console.error("Firebase admin login failed:", firebaseError);
+        console.error(
+            "Firebase admin login failed:",
+            firebaseError
+        );
+
 
         error.textContent =
             "Invalid Firebase admin email or password.";
-        error.classList.remove("hidden");
+
+
+        error.classList.remove(
+            "hidden"
+        );
+
 
     } finally {
 
         if (button) {
-            button.disabled = false;
-            button.textContent = "Login to Dashboard";
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "Login to Dashboard";
+
         }
+
     }
 
 }
@@ -1497,27 +1697,54 @@ async function verifyAdminLogin(event) {
 async function logoutDashboard() {
 
     try {
-        if (window.firebaseAdminAuth) {
+
+        if (
+            window.firebaseAdminAuth
+        ) {
+
             await window.firebaseAdminAuth.logout();
+
         }
+
     } catch (error) {
-        console.error("Firebase logout failed:", error);
+
+        console.error(
+            "Firebase logout failed:",
+            error
+        );
+
     }
 
-    document
-        .getElementById("d3repayon-container")
-        .classList.add("hidden");
 
     document
-        .getElementById("landing-page")
-        .classList.remove("hidden");
+        .getElementById(
+            "d3repayon-container"
+        )
+        .classList.add(
+            "hidden"
+        );
+
 
     document
-        .getElementById("admin-user")
+        .getElementById(
+            "landing-page"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "admin-user"
+        )
         .value = "";
 
+
     document
-        .getElementById("admin-pass")
+        .getElementById(
+            "admin-pass"
+        )
         .value = "";
 
 }
@@ -1533,25 +1760,33 @@ function getFormData() {
 
         name:
             document
-                .getElementById("input-name")
+                .getElementById(
+                    "input-name"
+                )
                 .value
                 .trim(),
 
         mobile:
             document
-                .getElementById("input-mobile")
+                .getElementById(
+                    "input-mobile"
+                )
                 .value
                 .trim(),
 
         amount:
             document
-                .getElementById("input-amount")
+                .getElementById(
+                    "input-amount"
+                )
                 .value
                 .trim(),
 
         upi:
             document
-                .getElementById("input-upi")
+                .getElementById(
+                    "input-upi"
+                )
                 .value
                 .trim()
 
@@ -1585,19 +1820,28 @@ function validateForm(data) {
 
     }
 
+
     const amountNumber =
-        Number(data.amount);
+        Number(
+            data.amount
+        );
+
 
     if (
-        !Number.isFinite(amountNumber) ||
+        !Number.isFinite(
+            amountNumber
+        ) ||
         amountNumber <= 0
     ) {
 
-        alert("Please enter a valid amount.");
+        alert(
+            "Please enter a valid amount."
+        );
 
         return false;
 
     }
+
 
     return true;
 
@@ -1610,48 +1854,68 @@ function validateForm(data) {
 
 function saveCustomerDetails() {
 
-    const data = getFormData();
+    const data =
+        getFormData();
 
-    if (!validateForm(data)) {
+
+    if (
+        !validateForm(data)
+    ) {
+
         return;
+
     }
 
 
     loadSavedCustomers();
 
 
-    /*
-       Avoid exact duplicates.
-    */
-
     const existingIndex =
-        savedCustomers.findIndex(function(item) {
+        savedCustomers.findIndex(
+            function(item) {
 
-            return (
-                item.name.toLowerCase() ===
-                    data.name.toLowerCase() &&
-                item.mobile === data.mobile &&
-                item.upi.toLowerCase() ===
-                    data.upi.toLowerCase()
-            );
+                return (
 
-        });
+                    item.name.toLowerCase() ===
+                        data.name.toLowerCase()
+
+                    &&
+
+                    item.mobile ===
+                        data.mobile
+
+                    &&
+
+                    item.upi.toLowerCase() ===
+                        data.upi.toLowerCase()
+
+                );
+
+            }
+        );
 
 
     const customer = {
 
         id:
             existingIndex >= 0
-                ? savedCustomers[existingIndex].id
-                : "customer_" + Date.now(),
+                ? savedCustomers[
+                    existingIndex
+                ].id
+                : "customer_" +
+                  Date.now(),
 
-        name: data.name,
+        name:
+            data.name,
 
-        mobile: data.mobile,
+        mobile:
+            data.mobile,
 
-        amount: data.amount,
+        amount:
+            data.amount,
 
-        upi: data.upi,
+        upi:
+            data.upi,
 
         savedAt:
             new Date().toISOString()
@@ -1659,27 +1923,38 @@ function saveCustomerDetails() {
     };
 
 
-    if (existingIndex >= 0) {
+    if (
+        existingIndex >= 0
+    ) {
 
-        savedCustomers[existingIndex] =
+        savedCustomers[
+            existingIndex
+        ] =
             customer;
 
     } else {
 
-        savedCustomers.unshift(customer);
+        savedCustomers.unshift(
+            customer
+        );
 
     }
 
 
     localStorage.setItem(
         SAVED_CUSTOMERS_KEY,
-        JSON.stringify(savedCustomers)
+        JSON.stringify(
+            savedCustomers
+        )
     );
 
 
     renderSavedCustomers();
 
-    showToast("Customer details saved successfully.");
+
+    showToast(
+        "Customer details saved successfully."
+    );
 
 }
 
@@ -1691,27 +1966,38 @@ function saveCustomerDetails() {
 function renderSavedCustomers() {
 
     const container =
-        document.getElementById("saved-customers");
+        document.getElementById(
+            "saved-customers"
+        );
+
 
     if (!container) {
+
         return;
+
     }
 
 
     loadSavedCustomers();
 
 
-    if (savedCustomers.length === 0) {
+    if (
+        savedCustomers.length === 0
+    ) {
 
         container.innerHTML = `
+
             <div style="
                 font-size:11px;
                 color:#94a3b8;
                 text-align:center;
                 padding:8px;
             ">
+
                 No saved customers yet.
+
             </div>
+
         `;
 
         return;
@@ -1719,47 +2005,51 @@ function renderSavedCustomers() {
     }
 
 
-    /*
-       Show newest 20 saved customers.
-    */
-
     container.innerHTML =
         savedCustomers
-            .slice(0, 20)
-            .map(function(item) {
+            .slice(
+                0,
+                20
+            )
+            .map(
+                function(item) {
 
-                const safeId =
-                    encodeURIComponent(item.id);
+                    const safeId =
+                        encodeURIComponent(
+                            item.id
+                        );
 
-                return `
 
-                    <div class="saved-item">
+                    return `
 
-                        <div class="saved-info">
+                        <div class="saved-item">
 
-                            <div class="saved-name">
-                                ${escapeHtml(item.name)}
+                            <div class="saved-info">
+
+                                <div class="saved-name">
+                                    ${escapeHtml(item.name)}
+                                </div>
+
+                                <div class="saved-meta">
+                                    ${escapeHtml(item.mobile)}
+                                    • ₹${escapeHtml(item.amount)}
+                                </div>
+
                             </div>
 
-                            <div class="saved-meta">
-                                ${escapeHtml(item.mobile)}
-                                • ₹${escapeHtml(item.amount)}
-                            </div>
+                            <button
+                                class="load-saved-btn"
+                                onclick="loadSavedCustomer('${safeId}')"
+                            >
+                                Load
+                            </button>
 
                         </div>
 
-                        <button
-                            class="load-saved-btn"
-                            onclick="loadSavedCustomer('${safeId}')"
-                        >
-                            Load
-                        </button>
+                    `;
 
-                    </div>
-
-                `;
-
-            })
+                }
+            )
             .join("");
 
 }
@@ -1769,24 +2059,34 @@ function renderSavedCustomers() {
    LOAD SAVED CUSTOMER
 ========================================================= */
 
-function loadSavedCustomer(encodedId) {
+function loadSavedCustomer(
+    encodedId
+) {
 
     const id =
-        decodeURIComponent(encodedId);
+        decodeURIComponent(
+            encodedId
+        );
+
 
     loadSavedCustomers();
 
+
     const customer =
-        savedCustomers.find(function(item) {
+        savedCustomers.find(
+            function(item) {
 
-            return item.id === id;
+                return item.id === id;
 
-        });
+            }
+        );
 
 
     if (!customer) {
 
-        showToast("Saved customer not found.");
+        showToast(
+            "Saved customer not found."
+        );
 
         return;
 
@@ -1794,55 +2094,132 @@ function loadSavedCustomer(encodedId) {
 
 
     document
-        .getElementById("input-name")
-        .value = customer.name;
+        .getElementById(
+            "input-name"
+        )
+        .value =
+        customer.name;
+
 
     document
-        .getElementById("input-mobile")
-        .value = customer.mobile;
+        .getElementById(
+            "input-mobile"
+        )
+        .value =
+        customer.mobile;
+
 
     document
-        .getElementById("input-amount")
-        .value = customer.amount;
+        .getElementById(
+            "input-amount"
+        )
+        .value =
+        customer.amount;
+
 
     document
-        .getElementById("input-upi")
-        .value = customer.upi;
+        .getElementById(
+            "input-upi"
+        )
+        .value =
+        customer.upi;
 
 
-    showToast("Customer details loaded.");
+    showToast(
+        "Customer details loaded."
+    );
 
 }
 
 
+/* =========================================================
+   REMEMBER CURRENT FORM
+========================================================= */
+
 function saveCurrentFormDetails() {
-    const data = getFormData();
+
+    const data =
+        getFormData();
+
 
     try {
+
         localStorage.setItem(
             "lastCustomerDetails",
             JSON.stringify(data)
         );
-    } catch (error) {
-        // Ignore storage errors; link generation can still continue.
-    }
-}
 
-function restoreCurrentFormDetails() {
-    try {
-        const saved = JSON.parse(
-            localStorage.getItem("lastCustomerDetails") || "null"
+    } catch (error) {
+
+        console.warn(
+            "Could not save current form:",
+            error
         );
 
-        if (!saved) return;
-
-        document.getElementById("input-name").value = saved.name || "";
-        document.getElementById("input-mobile").value = saved.mobile || "";
-        document.getElementById("input-amount").value = saved.amount || "";
-        document.getElementById("input-upi").value = saved.upi || "";
-    } catch (error) {
-        // Ignore malformed saved data.
     }
+
+}
+
+
+function restoreCurrentFormDetails() {
+
+    try {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem(
+                    "lastCustomerDetails"
+                ) || "null"
+            );
+
+
+        if (!saved) {
+
+            return;
+
+        }
+
+
+        document
+            .getElementById(
+                "input-name"
+            )
+            .value =
+            saved.name || "";
+
+
+        document
+            .getElementById(
+                "input-mobile"
+            )
+            .value =
+            saved.mobile || "";
+
+
+        document
+            .getElementById(
+                "input-amount"
+            )
+            .value =
+            saved.amount || "";
+
+
+        document
+            .getElementById(
+                "input-upi"
+            )
+            .value =
+            saved.upi || "";
+
+    } catch (error) {
+
+        console.warn(
+            "Could not restore form:",
+            error
+        );
+
+    }
+
 }
 
 
@@ -1852,17 +2229,24 @@ function restoreCurrentFormDetails() {
 
 function generateLink() {
 
-    const data = getFormData();
+    const data =
+        getFormData();
 
-    if (!validateForm(data)) {
+
+    if (
+        !validateForm(data)
+    ) {
+
         return;
+
     }
 
-    // Automatically save the latest details.
+
     saveCurrentFormDetails();
 
+
     /*
-       Generate stronger random ID.
+       Stronger random ID
     */
 
     const uniqueId =
@@ -1875,41 +2259,64 @@ function generateLink() {
 
 
     /*
-       Keep the same payment.html structure
-       your current payment page expects.
+       Payment page URL
     */
 
     const generatedUrl =
         `${PRODUCTION_PAYMENT_URL}/payment.html` +
-        `?id=${encodeURIComponent(uniqueId)}` +
-        `&amount=${encodeURIComponent(data.amount)}` +
-        `&upi=${encodeURIComponent(data.upi)}` +
-        `&name=${encodeURIComponent(data.name)}` +
-        `&mobile=${encodeURIComponent(data.mobile)}`;
+
+        `?id=${encodeURIComponent(
+            uniqueId
+        )}` +
+
+        `&amount=${encodeURIComponent(
+            data.amount
+        )}` +
+
+        `&upi=${encodeURIComponent(
+            data.upi
+        )}` +
+
+        `&name=${encodeURIComponent(
+            data.name
+        )}` +
+
+        `&mobile=${encodeURIComponent(
+            data.mobile
+        )}`;
 
 
     const newItem = {
 
-        id: uniqueId,
+        id:
+            uniqueId,
 
-        name: data.name,
+        name:
+            data.name,
 
-        mobile: data.mobile,
+        mobile:
+            data.mobile,
 
-        amount: data.amount,
+        amount:
+            data.amount,
 
-        upi: data.upi,
+        upi:
+            data.upi,
 
         details:
             `${data.name} (${data.mobile}) - ₹${data.amount}`,
 
-        link: generatedUrl,
+        link:
+            generatedUrl,
 
-        visited: false,
+        visited:
+            false,
 
-        copied: false,
+        copied:
+            false,
 
-        status: "Pending",
+        status:
+            "Pending",
 
         createdAt:
             new Date().toISOString()
@@ -1920,12 +2327,16 @@ function generateLink() {
     loadHistory();
 
 
-    linkHistory.unshift(newItem);
+    linkHistory.unshift(
+        newItem
+    );
 
 
     localStorage.setItem(
         HISTORY_KEY,
-        JSON.stringify(linkHistory)
+        JSON.stringify(
+            linkHistory
+        )
     );
 
 
@@ -1933,33 +2344,40 @@ function generateLink() {
 
 
     /*
-       IMPORTANT:
-       We intentionally DO NOT clear the inputs.
+       DO NOT clear form fields.
     */
 
 
-    showToast("Payment link generated successfully.");
+    showToast(
+        "Payment link generated successfully."
+    );
 
 
     /*
-       Automatically copy generated link.
-       If clipboard is unavailable, the link is still
-       available from the history table.
+       Automatically copy link.
     */
 
-    copyText(generatedUrl)
-        .then(function() {
+    copyText(
+        generatedUrl
+    )
+        .then(
+            function() {
 
-            showToast(
-                "Payment link generated and copied."
-            );
+                showToast(
+                    "Payment link generated and copied."
+                );
 
-        })
-        .catch(function() {
+            }
+        )
+        .catch(
+            function() {
 
-            // Clipboard permission may be unavailable.
+                console.warn(
+                    "Clipboard permission unavailable."
+                );
 
-        });
+            }
+        );
 
 }
 
@@ -1975,50 +2393,82 @@ function copyText(text) {
         window.isSecureContext
     ) {
 
-        return navigator.clipboard.writeText(text);
+        return navigator.clipboard.writeText(
+            text
+        );
 
     }
 
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(
+        function(
+            resolve,
+            reject
+        ) {
 
-        try {
+            try {
 
-            const input =
-                document.createElement("textarea");
+                const input =
+                    document.createElement(
+                        "textarea"
+                    );
 
-            input.value = text;
 
-            input.style.position = "fixed";
-            input.style.left = "-9999px";
+                input.value =
+                    text;
 
-            document.body.appendChild(input);
 
-            input.focus();
-            input.select();
+                input.style.position =
+                    "fixed";
 
-            const successful =
-                document.execCommand("copy");
 
-            document.body.removeChild(input);
+                input.style.left =
+                    "-9999px";
 
-            if (successful) {
 
-                resolve();
+                document.body.appendChild(
+                    input
+                );
 
-            } else {
 
-                reject();
+                input.focus();
+
+                input.select();
+
+
+                const successful =
+                    document.execCommand(
+                        "copy"
+                    );
+
+
+                document.body.removeChild(
+                    input
+                );
+
+
+                if (successful) {
+
+                    resolve();
+
+                } else {
+
+                    reject(
+                        new Error(
+                            "Copy failed"
+                        )
+                    );
+
+                }
+
+            } catch (error) {
+
+                reject(error);
 
             }
 
-        } catch (error) {
-
-            reject(error);
-
         }
-
-    });
+    );
 
 }
 
@@ -2031,31 +2481,40 @@ function copyHistoryLink(index) {
 
     loadHistory();
 
-    const item = linkHistory[index];
+
+    const item =
+        linkHistory[index];
+
 
     if (!item) {
+
         return;
+
     }
 
 
-    copyText(item.link)
+    copyText(
+        item.link
+    )
+        .then(
+            function() {
 
-        .then(function() {
+                showToast(
+                    "Payment link copied successfully."
+                );
 
-            showToast(
-                "Payment link copied successfully."
-            );
+            }
+        )
+        .catch(
+            function() {
 
-        })
+                alert(
+                    "Could not copy automatically.\n\n" +
+                    item.link
+                );
 
-        .catch(function() {
-
-            alert(
-                "Could not copy automatically.\n\n" +
-                item.link
-            );
-
-        });
+            }
+        );
 
 }
 
@@ -2074,7 +2533,9 @@ function refreshData() {
 
     renderSavedCustomers();
 
-    showToast("Data refreshed successfully.");
+    showToast(
+        "Data refreshed successfully."
+    );
 
 }
 
@@ -2087,10 +2548,12 @@ function renderHistory() {
 
     loadHistory();
 
+
     const tbody =
         document.getElementById(
             "history-table-body"
         );
+
 
     const total =
         document.getElementById(
@@ -2099,7 +2562,9 @@ function renderHistory() {
 
 
     if (!tbody) {
+
         return;
+
     }
 
 
@@ -2112,7 +2577,9 @@ function renderHistory() {
     }
 
 
-    if (linkHistory.length === 0) {
+    if (
+        linkHistory.length === 0
+    ) {
 
         tbody.innerHTML = `
 
@@ -2149,136 +2616,175 @@ function renderHistory() {
 
     tbody.innerHTML =
         linkHistory
-            .map(function(item, index) {
+            .map(
+                function(
+                    item,
+                    index
+                ) {
 
-                const name =
-                    item.name ||
-                    getNameFromDetails(item.details);
-
-                const mobile =
-                    item.mobile || "";
-
-                const amount =
-                    item.amount ||
-                    getAmountFromDetails(item.details);
-
-                const initial =
-                    (name || "C")
-                        .charAt(0)
-                        .toUpperCase();
+                    const name =
+                        item.name ||
+                        getNameFromDetails(
+                            item.details
+                        );
 
 
-                const created =
-                    item.createdAt
-                        ? formatDate(item.createdAt)
-                        : "-";
+                    const mobile =
+                        item.mobile ||
+                        "";
 
 
-                const status =
-                    item.status || "Pending";
+                    const amount =
+                        item.amount ||
+                        getAmountFromDetails(
+                            item.details
+                        );
 
 
-                const statusClass =
-                    status.startsWith("UTR:")
-                        ? "badge badge-utr"
-                        : "badge badge-pending";
+                    const initial =
+                        (
+                            name ||
+                            "C"
+                        )
+                            .charAt(0)
+                            .toUpperCase();
 
 
-                return `
+                    const created =
+                        item.createdAt
+                            ? formatDate(
+                                item.createdAt
+                            )
+                            : "-";
 
-                    <tr>
 
-                        <td>
+                    const status =
+                        item.status ||
+                        "Pending";
 
-                            <div class="customer-cell">
 
-                                <div class="avatar">
-                                    ${escapeHtml(initial)}
-                                </div>
+                    const statusClass =
+                        status.startsWith(
+                            "UTR:"
+                        )
+                            ? "badge badge-utr"
+                            : "badge badge-pending";
 
-                                <div>
 
-                                    <div class="customer-name">
-                                        ${escapeHtml(name || "Customer")}
+                    return `
+
+                        <tr>
+
+                            <td>
+
+                                <div class="customer-cell">
+
+                                    <div class="avatar">
+                                        ${escapeHtml(initial)}
                                     </div>
 
-                                    <div class="customer-meta">
-                                        ${escapeHtml(mobile)}
-                                        ${mobile ? " • " : ""}
-                                        ₹${escapeHtml(amount || "0")}
+                                    <div>
+
+                                        <div class="customer-name">
+                                            ${escapeHtml(
+                                                name ||
+                                                "Customer"
+                                            )}
+                                        </div>
+
+                                        <div class="customer-meta">
+                                            ${escapeHtml(mobile)}
+                                            ${mobile ? " • " : ""}
+                                            ₹${escapeHtml(
+                                                amount ||
+                                                "0"
+                                            )}
+                                        </div>
+
                                     </div>
 
                                 </div>
 
-                            </div>
-
-                        </td>
+                            </td>
 
 
-                        <td>
+                            <td>
 
-                            <button
-                                class="copy-link-btn"
-                                onclick="copyHistoryLink(${index})"
-                            >
-                                🔗 Copy Link
-                            </button>
+                                <button
+                                    class="copy-link-btn"
+                                    onclick="copyHistoryLink(${index})"
+                                >
+                                    🔗 Copy Link
+                                </button>
 
-                        </td>
-
-
-                        <td>
-
-                            <span class="badge ${
-                                item.visited
-                                    ? "badge-yes"
-                                    : "badge-no"
-                            }">
-
-                                ${item.visited ? "Yes" : "No"}
-
-                            </span>
-
-                        </td>
+                            </td>
 
 
-                        <td>
+                            <td>
 
-                            <span class="badge ${
-                                item.copied
-                                    ? "badge-yes"
-                                    : "badge-no"
-                            }">
+                                <span class="badge ${
+                                    item.visited
+                                        ? "badge-yes"
+                                        : "badge-no"
+                                }">
 
-                                ${item.copied ? "Yes" : "No"}
+                                    ${
+                                        item.visited
+                                            ? "Yes"
+                                            : "No"
+                                    }
 
-                            </span>
+                                </span>
 
-                        </td>
-
-
-                        <td>
-
-                            <span class="${statusClass}">
-
-                                ${escapeHtml(status)}
-
-                            </span>
-
-                        </td>
+                            </td>
 
 
-                        <td class="date-cell">
+                            <td>
 
-                            ${escapeHtml(created)}
+                                <span class="badge ${
+                                    item.copied
+                                        ? "badge-yes"
+                                        : "badge-no"
+                                }">
 
-                        </td>
+                                    ${
+                                        item.copied
+                                            ? "Yes"
+                                            : "No"
+                                    }
 
-                    </tr>
+                                </span>
 
-                `;
+                            </td>
 
-            })
+
+                            <td>
+
+                                <span class="${statusClass}">
+
+                                    ${escapeHtml(
+                                        status
+                                    )}
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="date-cell">
+
+                                ${escapeHtml(
+                                    created
+                                )}
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            )
             .join("");
 
 }
@@ -2288,21 +2794,35 @@ function renderHistory() {
    DATE FORMAT
 ========================================================= */
 
-function formatDate(dateString) {
+function formatDate(
+    dateString
+) {
 
     try {
 
         const date =
-            new Date(dateString);
+            new Date(
+                dateString
+            );
+
 
         return date.toLocaleString(
             undefined,
             {
-                year: "numeric",
-                month: "short",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit"
+                year:
+                    "numeric",
+
+                month:
+                    "short",
+
+                day:
+                    "2-digit",
+
+                hour:
+                    "2-digit",
+
+                minute:
+                    "2-digit"
             }
         );
 
@@ -2319,14 +2839,22 @@ function formatDate(dateString) {
    EXTRACT OLD DETAILS
 ========================================================= */
 
-function getNameFromDetails(details) {
+function getNameFromDetails(
+    details
+) {
 
     if (!details) {
+
         return "Customer";
+
     }
 
+
     const match =
-        details.match(/^(.+?)\s+\(/);
+        details.match(
+            /^(.+?)\s+\(/
+        );
+
 
     return match
         ? match[1]
@@ -2335,14 +2863,22 @@ function getNameFromDetails(details) {
 }
 
 
-function getAmountFromDetails(details) {
+function getAmountFromDetails(
+    details
+) {
 
     if (!details) {
+
         return "0";
+
     }
 
+
     const match =
-        details.match(/₹([\d.]+)/);
+        details.match(
+            /₹([\d.]+)/
+        );
+
 
     return match
         ? match[1]
@@ -2352,30 +2888,45 @@ function getAmountFromDetails(details) {
 
 
 /* =========================================================
+   FIREBASE REALTIME DASHBOARD UPDATE
+========================================================= */
+
+window.addEventListener(
+    "paymentHistoryCloudUpdated",
+    function(event) {
+
+        console.log(
+            "Firebase history update received:",
+            event.detail
+        );
+
+
+        /*
+           tracking.js has already merged
+           Firebase data into localStorage.
+        */
+
+        loadHistory();
+
+        renderHistory();
+
+    }
+);
+
+
+/* =========================================================
    CLEAR HISTORY
 ========================================================= */
 
-// =========================================================
-// FIREBASE REALTIME DASHBOARD UPDATE
-// =========================================================
-// tracking.js dispatches this event whenever Firebase data changes.
-// Reload the latest merged history and redraw the table immediately.
-window.addEventListener("paymentHistoryCloudUpdated", function(event) {
-
-    console.log("Firebase history update received:", event.detail);
-
-    // tracking.js has already merged Firebase data into localStorage.
-    loadHistory();
-    renderHistory();
-
-});
-
-
 function clearHistory() {
 
-    if (linkHistory.length === 0) {
+    if (
+        linkHistory.length === 0
+    ) {
 
-        showToast("History is already empty.");
+        showToast(
+            "History is already empty."
+        );
 
         return;
 
@@ -2389,7 +2940,9 @@ function clearHistory() {
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
@@ -2403,7 +2956,10 @@ function clearHistory() {
 
     renderHistory();
 
-    showToast("Payment link history cleared.");
+
+    showToast(
+        "Payment link history cleared."
+    );
 
 }
 
@@ -2414,12 +2970,29 @@ function clearHistory() {
 
 function escapeHtml(value) {
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
@@ -2428,25 +3001,28 @@ function escapeHtml(value) {
    AUTO REFRESH LOCAL DATA
 ========================================================= */
 
-setInterval(function() {
+setInterval(
+    function() {
 
-    /*
-       This only refreshes localStorage.
-       It cannot receive updates from another device.
-    */
+        const oldLength =
+            linkHistory.length;
 
-    const oldLength =
-        linkHistory.length;
 
-    loadHistory();
+        loadHistory();
 
-    if (linkHistory.length !== oldLength) {
 
-        renderHistory();
+        if (
+            linkHistory.length !==
+            oldLength
+        ) {
 
-    }
+            renderHistory();
 
-}, 3000);
+        }
+
+    },
+    3000
+);
 
 
 /* =========================================================
@@ -2468,9 +3044,12 @@ document.addEventListener(
                     "d3repayon-container"
                 );
 
+
             if (
                 dashboard &&
-                !dashboard.classList.contains("hidden")
+                !dashboard.classList.contains(
+                    "hidden"
+                )
             ) {
 
                 generateLink();
@@ -2484,11 +3063,26 @@ document.addEventListener(
 
 </script>
 
-<!-- Firebase admin authentication -->
-<script type="module" src="./admin-auth.js"></script>
 
-<!-- Firebase realtime tracking -->
-<script type="module" src="./tracking-secure.js"></script>
+<!-- =====================================================
+     FIREBASE ADMIN AUTHENTICATION
+===================================================== -->
+
+<script
+    type="module"
+    src="./admin-auth.js"
+></script>
+
+
+<!-- =====================================================
+     FIREBASE REALTIME TRACKING
+===================================================== -->
+
+<script
+    type="module"
+    src="./tracking.js"
+></script>
+
 
 </body>
 </html>
