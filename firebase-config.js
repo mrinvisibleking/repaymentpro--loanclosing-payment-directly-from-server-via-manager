@@ -1,49 +1,67 @@
-// Firebase configuration for shared cross-device payment tracking.
-// Replace the YOUR_* placeholders with the Web App configuration
-// from your Firebase project.
+// firebase-config.js
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
 import {
   getDatabase,
   ref,
   set,
   update,
   onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+
+// ============================================
+// FIREBASE CONFIGURATION
+// ============================================
+
+export const firebaseConfig = {
+  apiKey: "AIzaSyA35EKHWLM7-7WrTAOGQRgshY-k9Ug-AQA",
+  authDomain: "repayment-tracking.firebaseapp.com",
+  databaseURL: "https://repayment-tracking-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "repayment-tracking",
+  storageBucket: "repayment-tracking.firebasestorage.app",
+  messagingSenderId: "617173160765",
+  appId: "1:617173160765:web:73124d9e1b8df1858f2b54",
+  measurementId: "G-T4J6PY187V"
 };
 
-const isFirebaseConfigured =
-  Object.values(firebaseConfig).every(
-    value =>
-      typeof value === "string" &&
-      value.length > 0 &&
-      !value.includes("YOUR_")
+
+// ============================================
+// INITIALIZE FIREBASE
+// ============================================
+
+const app = initializeApp(firebaseConfig);
+
+
+// ============================================
+// REALTIME DATABASE
+// ============================================
+
+export const database = getDatabase(app);
+
+
+// ============================================
+// FIREBASE CONFIGURED STATUS
+// ============================================
+
+export const isFirebaseConfigured =
+  Boolean(
+    firebaseConfig.apiKey &&
+    firebaseConfig.projectId &&
+    firebaseConfig.databaseURL
   );
 
-let app = null;
-let database = null;
 
-if (isFirebaseConfigured) {
-  app = initializeApp(firebaseConfig);
-  database = getDatabase(app);
-}
+// ============================================
+// EXPORT FIREBASE FUNCTIONS
+// ============================================
 
 export {
-  app,
-  database,
   ref,
   set,
   update,
-  onValue,
-  isFirebaseConfigured,
-  firebaseConfig
+  onValue
 };
