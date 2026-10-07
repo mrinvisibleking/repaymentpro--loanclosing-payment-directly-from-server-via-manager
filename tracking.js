@@ -1033,19 +1033,44 @@ async function upsertMissingLocalRecords() {
 
     try {
 
-      await set(
-        ref(
-          database,
-          `${TRACKING_ROOT}/${item.id}`
-        ),
-        {
+      const updatedAt =
+        new Date().toISOString();
 
-          ...item,
+      const record = {
+        ...item,
+        updatedAt
+      };
 
-          updatedAt:
-            new Date().toISOString()
+      const updates = {
+        [`${TRACKING_ROOT}/${item.id}`]:
+          record
+      };
 
-        }
+      /*
+         New links also need a customer-readable status
+         record so expiry can be validated from any device.
+      */
+      if (item.expiresAt) {
+
+        updates[
+          `paymentLinkStatus/${item.id}`
+        ] = {
+          expiresAt:
+            item.expiresAt,
+          expired:
+            false,
+          revoked:
+            Boolean(item.revoked),
+          createdAt:
+            item.createdAt,
+          updatedAt
+        };
+
+      }
+
+      await update(
+        ref(database),
+        updates
       );
 
 
