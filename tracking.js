@@ -586,17 +586,11 @@ async function clearAllCloudHistory() {
 
   if (
     !currentUser ||
-    currentUser.uid !==
-      "pC1CqXm1gRUwX2m4XbdbcNNN0p93"
+    currentUser.uid !== "pC1CqXm1gRUwX2m4XbdbcNNN0p93"
   ) {
     throw new Error("Admin Firebase login required.");
   }
 
-  /*
-     Stop the realtime listener and the local-record sync timer
-     before deleting anything. Otherwise the listener can recreate
-     records while Clear History is running.
-  */
   if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;
@@ -608,127 +602,116 @@ async function clearAllCloudHistory() {
   }
 
   try {
-
-    /*
-       Get a fresh admin ID token. We use the Firebase REST API for
-       each child deletion because the database rules grant write
-       permission at $linkId, not at the paymentLinks root.
-    */
-    const token =
-      await currentUser.getIdToken(true);
+    const token = await currentUser.getIdToken(true);
 
     const baseUrl =
-      String(
-        firebaseConfig.databaseURL || ""
-      ).replace(/\/$/, "");
+      String(firebaseConfig.databaseURL || "").replace(/\/$/, "");
 
     if (!baseUrl) {
       throw new Error("Firebase databaseURL is missing.");
     }
 
-    async function deleteChildren(rootPath) {
+    async function deleteRootChildren(rootPath) {
 
-      const snapshot =
-        await get(
-          ref(
-            database,
-            rootPath
-          )
-        );
+      const snapshot = await get(ref(database, rootPath));
 
       if (!snapshot.exists()) {
         return;
       }
 
-      const records =
-        snapshot.val() || {};
+      const records = snapshot.val() || {};
+      const ids = Object.keys(records);
 
-      const ids =
-        Object.keys(records);
+      for (const id of ids) {
 
-      if (!ids.length) {
-        return;
+        const url =
+          baseUrl +
+          "/" +
+          rootPath +
+          "/" +
+          encodeURIComponent(id) +
+          ".json?auth=" +
+          encodeURIComponent(token);
+
+        const response = await fetch(url, {
+          method: "DELETE",
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache"
+          }
+        });
+
+        if (!response.ok) {
+          const body = await response.text();
+          throw new Error(
+            "Firebase DELETE failed for " +
+            rootPath +
+            "/" +
+            id +
+            " (" +
+            response.status +
+            "): " +
+            body
+          );
+        }
       }
 
-      const results =
-        await Promise.all(
-          ids.map(
-            async function(id) {
+      // Verify that Firebase really removed the branch.
+      const verifyResponse = await fetch(
+        baseUrl +
+          "/" +
+          rootPath +
+          ".json?auth=" +
+          encodeURIComponent(token) +
+          "&_=" +
+          Date.now(),
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache"
+          }
+        }
+      );
 
-              const url =
-                baseUrl +
-                "/" +
-                rootPath +
-                "/" +
-                encodeURIComponent(id) +
-                ".json?auth=" +
-                encodeURIComponent(token);
-
-              const response =
-                await fetch(
-                  url,
-                  {
-                    method: "DELETE",
-                    cache: "no-store"
-                  }
-                );
-
-              if (!response.ok) {
-                const body =
-                  await response.text();
-
-                throw new Error(
-                  "Delete failed for " +
-                  rootPath +
-                  "/" +
-                  id +
-                  " (" +
-                  response.status +
-                  "): " +
-                  body
-                );
-              }
-
-              return true;
-            }
-          )
+      if (!verifyResponse.ok) {
+        throw new Error(
+          "Firebase clear verification failed for " +
+          rootPath +
+          " (" +
+          verifyResponse.status +
+          ")."
         );
+      }
 
-      return results;
+      const remaining = await verifyResponse.json();
+
+      if (remaining !== null) {
+        throw new Error(
+          "Firebase still contains data in " +
+          rootPath +
+          " after deletion."
+        );
+      }
     }
 
-    await deleteChildren(
-      "paymentLinks"
-    );
+    await deleteRootChildren("paymentLinks");
+    await deleteRootChildren("paymentLinkStatus");
 
-    await deleteChildren(
-      "paymentLinkStatus"
-    );
-
-    /*
-       Clear local state only after Firebase deletion succeeds.
-    */
+    // Only clear browser history after Firebase is confirmed empty.
     cloudRecords = {};
 
-    localStorage.removeItem(
-      HISTORY_KEY
-    );
+    localStorage.removeItem(HISTORY_KEY);
 
     linkHistory = [];
 
     window.dispatchEvent(
       new CustomEvent(
         "paymentHistoryCloudUpdated",
-        {
-          detail: []
-        }
+        { detail: [] }
       )
     );
 
-    /*
-       Restart the admin listener. Firebase should now return an
-       empty paymentLinks branch.
-    */
     startAdminSync();
 
     return true;
@@ -740,17 +723,11 @@ async function clearAllCloudHistory() {
       error
     );
 
-    /*
-       Always restore realtime synchronization after a failed clear.
-    */
     startAdminSync();
 
     throw error;
-
   }
-
 }
-
 
 // ============================================================
 // ADMIN REALTIME SYNC
