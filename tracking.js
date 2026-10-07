@@ -592,9 +592,11 @@ async function clearAllCloudHistory() {
     throw new Error("Admin Firebase login required.");
   }
 
-  const wasSyncRunning =
-    Boolean(unsubscribe);
-
+  /*
+     Stop the realtime listener and the local-record sync timer
+     before deleting anything. Otherwise the listener can recreate
+     records while Clear History is running.
+  */
   if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;
@@ -608,76 +610,104 @@ async function clearAllCloudHistory() {
   try {
 
     /*
-       IMPORTANT:
-       Do NOT delete the paymentLinks root itself.
-       The Firebase rules allow the admin to delete each
-       $linkId record, while the root branch may not have
-       root-level .write permission.
+       Get a fresh admin ID token. We use the Firebase REST API for
+       each child deletion because the database rules grant write
+       permission at $linkId, not at the paymentLinks root.
     */
+    const token =
+      await currentUser.getIdToken(true);
 
-    const paymentSnapshot =
-      await get(
-        ref(
-          database,
-          TRACKING_ROOT
-        )
-      );
+    const baseUrl =
+      String(
+        firebaseConfig.databaseURL || ""
+      ).replace(/\/$/, "");
 
-    const paymentRecords =
-      paymentSnapshot.exists()
-        ? paymentSnapshot.val() || {}
-        : {};
-
-    const paymentIds =
-      Object.keys(paymentRecords);
-
-    for (const id of paymentIds) {
-
-      await remove(
-        ref(
-          database,
-          TRACKING_ROOT +
-            "/" +
-            encodeURIComponent(id)
-        )
-      );
-
+    if (!baseUrl) {
+      throw new Error("Firebase databaseURL is missing.");
     }
+
+    async function deleteChildren(rootPath) {
+
+      const snapshot =
+        await get(
+          ref(
+            database,
+            rootPath
+          )
+        );
+
+      if (!snapshot.exists()) {
+        return;
+      }
+
+      const records =
+        snapshot.val() || {};
+
+      const ids =
+        Object.keys(records);
+
+      if (!ids.length) {
+        return;
+      }
+
+      const results =
+        await Promise.all(
+          ids.map(
+            async function(id) {
+
+              const url =
+                baseUrl +
+                "/" +
+                rootPath +
+                "/" +
+                encodeURIComponent(id) +
+                ".json?auth=" +
+                encodeURIComponent(token);
+
+              const response =
+                await fetch(
+                  url,
+                  {
+                    method: "DELETE",
+                    cache: "no-store"
+                  }
+                );
+
+              if (!response.ok) {
+                const body =
+                  await response.text();
+
+                throw new Error(
+                  "Delete failed for " +
+                  rootPath +
+                  "/" +
+                  id +
+                  " (" +
+                  response.status +
+                  "): " +
+                  body
+                );
+              }
+
+              return true;
+            }
+          )
+        );
+
+      return results;
+    }
+
+    await deleteChildren(
+      "paymentLinks"
+    );
+
+    await deleteChildren(
+      "paymentLinkStatus"
+    );
 
     /*
-       Clear public status records one-by-one for the
-       same Firebase rules reason.
+       Clear local state only after Firebase deletion succeeds.
     */
-
-    const statusSnapshot =
-      await get(
-        ref(
-          database,
-          "paymentLinkStatus"
-        )
-      );
-
-    const statusRecords =
-      statusSnapshot.exists()
-        ? statusSnapshot.val() || {}
-        : {};
-
-    const statusIds =
-      Object.keys(statusRecords);
-
-    for (const id of statusIds) {
-
-      await remove(
-        ref(
-          database,
-          "paymentLinkStatus" +
-            "/" +
-            encodeURIComponent(id)
-        )
-      );
-
-    }
-
     cloudRecords = {};
 
     localStorage.removeItem(
@@ -695,9 +725,11 @@ async function clearAllCloudHistory() {
       )
     );
 
-    if (wasSyncRunning) {
-      startAdminSync();
-    }
+    /*
+       Restart the admin listener. Firebase should now return an
+       empty paymentLinks branch.
+    */
+    startAdminSync();
 
     return true;
 
@@ -708,9 +740,10 @@ async function clearAllCloudHistory() {
       error
     );
 
-    if (wasSyncRunning) {
-      startAdminSync();
-    }
+    /*
+       Always restore realtime synchronization after a failed clear.
+    */
+    startAdminSync();
 
     throw error;
 
