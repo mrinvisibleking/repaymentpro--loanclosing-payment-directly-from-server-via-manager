@@ -128,6 +128,10 @@ export {
 
   onAuthStateChanged,
 
-  signOut
+  signOut,
+
+  setPersistence,
+
+  browserLocalPersistence
 
 };
