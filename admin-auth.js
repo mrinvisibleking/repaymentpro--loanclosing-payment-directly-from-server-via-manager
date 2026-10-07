@@ -2,7 +2,9 @@ import {
   auth,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
 } from "./firebase-config.js";
 
 
@@ -22,6 +24,12 @@ async function login(
   email,
   password
 ) {
+
+  await setPersistence(
+    auth,
+    browserLocalPersistence
+  );
+
 
   const result =
     await signInWithEmailAndPassword(
@@ -141,6 +149,16 @@ onAuthStateChanged(
       user.uid ===
       ADMIN_UID
     ) {
+
+      /* Restore the dashboard UI after page refresh. */
+      if (
+        typeof window.restoreAdminSession ===
+          "function"
+      ) {
+
+        window.restoreAdminSession();
+
+      }
 
       if (
         window.paymentTracker &&
