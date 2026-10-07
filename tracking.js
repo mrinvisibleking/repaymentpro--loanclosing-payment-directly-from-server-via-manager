@@ -447,6 +447,75 @@ async function validatePaymentLink(id) {
 }
 
 
+async function waitForAdminAuth(timeoutMs = 10000) {
+
+  if (
+    auth.currentUser &&
+    auth.currentUser.uid === ADMIN_UID
+  ) {
+    return auth.currentUser;
+  }
+
+  return new Promise(function(resolve, reject) {
+
+    let finished = false;
+    let unsubscribe = null;
+
+    const finish = function(callback) {
+
+      if (finished) {
+        return;
+      }
+
+      finished = true;
+
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
+
+      clearTimeout(timer);
+
+      callback();
+
+    };
+
+    const timer =
+      setTimeout(function() {
+
+        finish(function() {
+          reject(
+            new Error(
+              "Firebase admin authentication timeout."
+            )
+          );
+        });
+
+      }, timeoutMs);
+
+    unsubscribe =
+      onAuthStateChanged(
+        auth,
+        function(user) {
+
+          if (
+            user &&
+            user.uid === ADMIN_UID
+          ) {
+
+            finish(function() {
+              resolve(user);
+            });
+
+          }
+
+        }
+      );
+
+  });
+}
+
+
 async function registerLink(item) {
 
   if (
@@ -458,8 +527,27 @@ async function registerLink(item) {
     return false;
   }
 
-  const currentUser =
-    auth.currentUser;
+  let currentUser;
+
+  try {
+
+    /*
+       Firebase restores browser-local admin sessions
+       asynchronously after page load. Wait for that
+       restoration before trying to write the new link.
+    */
+    currentUser =
+      await waitForAdminAuth(10000);
+
+  } catch (error) {
+
+    console.error(
+      "Firebase admin authentication was not ready:",
+      error
+    );
+
+    return false;
+  }
 
   if (
     !currentUser ||
