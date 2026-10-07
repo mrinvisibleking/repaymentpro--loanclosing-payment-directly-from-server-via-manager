@@ -582,10 +582,6 @@ async function clearAllCloudHistory() {
     throw new Error("Firebase is not configured.");
   }
 
-  /*
-     The dashboard is only shown to the Firebase admin.
-     Check the real Firebase Auth session before deleting.
-  */
   const currentUser = auth.currentUser;
 
   if (
@@ -596,11 +592,6 @@ async function clearAllCloudHistory() {
     throw new Error("Admin Firebase login required.");
   }
 
-  /*
-     Stop the realtime listener first.
-     Otherwise the listener can immediately rebuild
-     the dashboard while deletion is in progress.
-  */
   const wasSyncRunning =
     Boolean(unsubscribe);
 
@@ -617,42 +608,84 @@ async function clearAllCloudHistory() {
   try {
 
     /*
-       Delete the ENTIRE paymentLinks branch in one Firebase
-       operation. This is more reliable than deleting records
-       one-by-one.
-
-       Also remove paymentLinkStatus so revoked/expired status
-       records from cleared links do not remain in Firebase.
+       IMPORTANT:
+       Do NOT delete the paymentLinks root itself.
+       The Firebase rules allow the admin to delete each
+       $linkId record, while the root branch may not have
+       root-level .write permission.
     */
-    await Promise.all([
-      remove(
+
+    const paymentSnapshot =
+      await get(
         ref(
           database,
           TRACKING_ROOT
         )
-      ),
+      );
 
-      remove(
+    const paymentRecords =
+      paymentSnapshot.exists()
+        ? paymentSnapshot.val() || {}
+        : {};
+
+    const paymentIds =
+      Object.keys(paymentRecords);
+
+    for (const id of paymentIds) {
+
+      await remove(
+        ref(
+          database,
+          TRACKING_ROOT +
+            "/" +
+            encodeURIComponent(id)
+        )
+      );
+
+    }
+
+    /*
+       Clear public status records one-by-one for the
+       same Firebase rules reason.
+    */
+
+    const statusSnapshot =
+      await get(
         ref(
           database,
           "paymentLinkStatus"
         )
-      )
-    ]);
+      );
 
-    /*
-       Clear all local copies only after Firebase deletion
-       succeeds.
-    */
+    const statusRecords =
+      statusSnapshot.exists()
+        ? statusSnapshot.val() || {}
+        : {};
+
+    const statusIds =
+      Object.keys(statusRecords);
+
+    for (const id of statusIds) {
+
+      await remove(
+        ref(
+          database,
+          "paymentLinkStatus" +
+            "/" +
+            encodeURIComponent(id)
+        )
+      );
+
+    }
+
     cloudRecords = {};
 
     localStorage.removeItem(
       HISTORY_KEY
     );
 
-    /*
-       Tell the dashboard immediately that history is empty.
-    */
+    linkHistory = [];
+
     window.dispatchEvent(
       new CustomEvent(
         "paymentHistoryCloudUpdated",
@@ -662,10 +695,6 @@ async function clearAllCloudHistory() {
       )
     );
 
-    /*
-       Start realtime sync again.
-       Firebase is now empty, so the dashboard remains empty.
-    */
     if (wasSyncRunning) {
       startAdminSync();
     }
@@ -674,9 +703,11 @@ async function clearAllCloudHistory() {
 
   } catch (error) {
 
-    /*
-       Always restore realtime sync if deletion fails.
-    */
+    console.error(
+      "Firebase clear history failed:",
+      error
+    );
+
     if (wasSyncRunning) {
       startAdminSync();
     }
