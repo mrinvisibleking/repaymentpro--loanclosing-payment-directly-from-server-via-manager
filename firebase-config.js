@@ -1,8 +1,4 @@
-// firebase-config.js
-
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
 import {
   getDatabase,
@@ -12,12 +8,16 @@ import {
   onValue
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
+import {
+  getAuth,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-// ============================================
-// FIREBASE CONFIGURATION
-// ============================================
 
-export const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyA35EKHWLM7-7WrTAOGQRgshY-k9Ug-AQA",
   authDomain: "repayment-tracking.firebaseapp.com",
   databaseURL: "https://repayment-tracking-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -29,39 +29,29 @@ export const firebaseConfig = {
 };
 
 
-// ============================================
-// INITIALIZE FIREBASE
-// ============================================
-
 const app = initializeApp(firebaseConfig);
-
-
-// ============================================
-// REALTIME DATABASE
-// ============================================
 
 export const database = getDatabase(app);
 
+export const auth = getAuth(app);
 
-// ============================================
-// FIREBASE CONFIGURED STATUS
-// ============================================
+export const isFirebaseConfigured = Boolean(
+  firebaseConfig.apiKey &&
+  firebaseConfig.projectId &&
+  firebaseConfig.databaseURL
+);
 
-export const isFirebaseConfigured =
-  Boolean(
-    firebaseConfig.apiKey &&
-    firebaseConfig.projectId &&
-    firebaseConfig.databaseURL
-  );
-
-
-// ============================================
-// EXPORT FIREBASE FUNCTIONS
-// ============================================
 
 export {
+  firebaseConfig,
   ref,
   set,
   update,
-  onValue
+  onValue,
+
+  getAuth,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
 };
