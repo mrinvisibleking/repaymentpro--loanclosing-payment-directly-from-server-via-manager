@@ -3071,48 +3071,39 @@ window.addEventListener(
    CLEAR HISTORY
 ========================================================= */
 
-function clearHistory() {
+async function clearHistory() {
 
-    if (
-        linkHistory.length === 0
-    ) {
-
-        showToast(
-            "History is already empty."
-        );
-
+    if (linkHistory.length === 0) {
+        showToast("History is already empty.");
         return;
-
     }
 
+    const confirmed = confirm(
+        "Are you sure you want to clear ALL payment link history?\\n\\n" +
+        "This will remove the history from Firebase too."
+    );
 
-    const confirmed =
-        confirm(
-            "Are you sure you want to clear all payment link history?"
-        );
+    if (!confirmed) return;
 
+    try {
+        if (
+            !window.paymentTracker ||
+            typeof window.paymentTracker.clearAllCloudHistory !== "function"
+        ) {
+            throw new Error("Firebase clear function is unavailable.");
+        }
 
-    if (!confirmed) {
+        await window.paymentTracker.clearAllCloudHistory();
 
-        return;
+        linkHistory = [];
+        localStorage.removeItem(HISTORY_KEY);
+        renderHistory();
 
+        showToast("All payment link history cleared.");
+    } catch (error) {
+        console.error("Could not clear Firebase history:", error);
+        showToast("Could not clear history. Please try again.");
     }
-
-
-    linkHistory = [];
-
-
-    localStorage.removeItem(
-        HISTORY_KEY
-    );
-
-
-    renderHistory();
-
-
-    showToast(
-        "Payment link history cleared."
-    );
 
 }
 
