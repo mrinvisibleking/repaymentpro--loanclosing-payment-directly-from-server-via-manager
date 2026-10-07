@@ -23,6 +23,7 @@ import {
   update,
   onValue,
   remove,
+  get,
   isFirebaseConfigured,
   firebaseConfig,
   auth,
@@ -583,28 +584,101 @@ async function clearAllCloudHistory() {
 
   const currentUser = auth.currentUser;
 
-  if (!currentUser || currentUser.uid !== "pC1CqXm1gRUwX2m4XbdbcNNN0p93") {
+  if (
+    !currentUser ||
+    currentUser.uid !== "pC1CqXm1gRUwX2m4XbdbcNNN0p93"
+  ) {
     throw new Error("Admin Firebase login required.");
   }
 
-  const ids = Object.keys(cloudRecords || {});
+  /*
+     Temporarily stop the realtime listener while deleting.
+     Otherwise each individual delete can trigger the listener
+     and rebuild local history before the next delete finishes.
+  */
 
-  for (const id of ids) {
-    await remove(
-      ref(database, TRACKING_ROOT + "/" + encodeURIComponent(id))
-    );
+  const wasSyncRunning = Boolean(unsubscribe);
+
+  if (unsubscribe) {
+    unsubscribe();
+    unsubscribe = null;
   }
 
-  cloudRecords = {};
-  localStorage.removeItem(HISTORY_KEY);
+  if (missingRecordTimer) {
+    clearInterval(missingRecordTimer);
+    missingRecordTimer = null;
+  }
 
-  window.dispatchEvent(
-    new CustomEvent("paymentHistoryCloudUpdated", { detail: [] })
-  );
+  try {
 
-  return true;
+    /*
+       Read Firebase directly so we delete every record,
+       even if the dashboard's current cloudRecords object
+       is stale or incomplete.
+    */
+
+    const snapshot = await get(
+      ref(database, TRACKING_ROOT)
+    );
+
+    const records =
+      snapshot.exists()
+        ? (snapshot.val() || {})
+        : {};
+
+    const ids = Object.keys(records);
+
+    for (const id of ids) {
+
+      await remove(
+        ref(
+          database,
+          TRACKING_ROOT + "/" + encodeURIComponent(id)
+        )
+      );
+
+    }
+
+    cloudRecords = {};
+
+    localStorage.removeItem(
+      HISTORY_KEY
+    );
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "paymentHistoryCloudUpdated",
+        { detail: [] }
+      )
+    );
+
+    /*
+       Start the admin realtime listener again.
+       It should receive an empty paymentLinks object.
+    */
+
+    if (wasSyncRunning) {
+      startAdminSync();
+    }
+
+    return true;
+
+  } catch (error) {
+
+    /*
+       Restore realtime sync even if one delete fails.
+    */
+
+    if (wasSyncRunning) {
+      startAdminSync();
+    }
+
+    throw error;
+
+  }
 
 }
+
 
 // ============================================================
 // ADMIN REALTIME SYNC
