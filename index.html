@@ -2498,15 +2498,63 @@ window.restoreAdminSession = function() {
 
 async function logoutDashboard() {
 
+    /*
+       Hide the dashboard immediately so Logout always changes
+       the screen, even if Firebase takes a moment to finish sign-out.
+    */
+    const dashboard =
+        document.getElementById(
+            "d3repayon-container"
+        );
+
+    const landing =
+        document.getElementById(
+            "landing-page"
+        );
+
+    const loginPage =
+        document.getElementById(
+            "admin-login-page"
+        );
+
+    if (dashboard) {
+        dashboard.classList.add("hidden");
+    }
+
+    if (loginPage) {
+        loginPage.classList.add("hidden");
+    }
+
+    if (landing) {
+        landing.classList.remove("hidden");
+    }
+
+    const userInput =
+        document.getElementById(
+            "admin-user"
+        );
+
+    const passInput =
+        document.getElementById(
+            "admin-pass"
+        );
+
+    if (userInput) userInput.value = "";
+    if (passInput) passInput.value = "";
+
     try {
 
         if (
-            window.firebaseAdminAuth
+            window.firebaseAdminAuth &&
+            typeof window.firebaseAdminAuth.logout ===
+                "function"
         ) {
-
             await window.firebaseAdminAuth.logout();
-
         }
+
+        showToast(
+            "Logged out successfully."
+        );
 
     } catch (error) {
 
@@ -2515,39 +2563,30 @@ async function logoutDashboard() {
             error
         );
 
+        /*
+           The UI is already back at the landing page.
+           Tell Firebase to sign out one more time if possible.
+        */
+        try {
+            if (
+                window.firebaseAdminAuth &&
+                typeof window.firebaseAdminAuth.logout ===
+                    "function"
+            ) {
+                await window.firebaseAdminAuth.logout();
+            }
+        } catch (retryError) {
+            console.error(
+                "Firebase logout retry failed:",
+                retryError
+            );
+        }
+
+        showToast(
+            "Logged out."
+        );
+
     }
-
-
-    document
-        .getElementById(
-            "d3repayon-container"
-        )
-        .classList.add(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "landing-page"
-        )
-        .classList.remove(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "admin-user"
-        )
-        .value = "";
-
-
-    document
-        .getElementById(
-            "admin-pass"
-        )
-        .value = "";
 
 }
 
