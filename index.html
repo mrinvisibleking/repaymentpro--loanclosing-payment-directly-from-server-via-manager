@@ -2077,6 +2077,29 @@ function loadHistory() {
 
         }
 
+        /*
+           Always show the newest generated link first.
+           createdAt is the fixed creation timestamp, so
+           realtime tracking updates do not change the order.
+        */
+        linkHistory.sort(
+            function(a, b) {
+
+                const timeA =
+                    Date.parse(
+                        a.createdAt || ""
+                    ) || 0;
+
+                const timeB =
+                    Date.parse(
+                        b.createdAt || ""
+                    ) || 0;
+
+                return timeB - timeA;
+
+            }
+        );
+
     } catch (error) {
 
         console.error(
