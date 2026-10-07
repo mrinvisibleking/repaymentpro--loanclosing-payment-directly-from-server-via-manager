@@ -3997,16 +3997,56 @@ function escapeHtml(value) {
 setInterval(
     function() {
 
-        const oldLength =
-            linkHistory.length;
+        const before =
+            JSON.stringify(
+                linkHistory.map(
+                    function(item) {
+                        return {
+                            id: item.id,
+                            visited: Boolean(item.visited),
+                            visitedAt: item.visitedAt || "",
+                            copied: Boolean(item.copied),
+                            copiedAt: item.copiedAt || "",
+                            status: item.status || "Pending",
+                            utr: item.utr || "",
+                            utrSubmittedAt: item.utrSubmittedAt || "",
+                            updatedAt: item.updatedAt || ""
+                        };
+                    }
+                )
+            );
 
 
         loadHistory();
 
 
+        const after =
+            JSON.stringify(
+                linkHistory.map(
+                    function(item) {
+                        return {
+                            id: item.id,
+                            visited: Boolean(item.visited),
+                            visitedAt: item.visitedAt || "",
+                            copied: Boolean(item.copied),
+                            copiedAt: item.copiedAt || "",
+                            status: item.status || "Pending",
+                            utr: item.utr || "",
+                            utrSubmittedAt: item.utrSubmittedAt || "",
+                            updatedAt: item.updatedAt || ""
+                        };
+                    }
+                )
+            );
+
+
+        /*
+           Re-render when tracking values change, even when
+           the number of history rows stays the same.
+        */
+
         if (
-            linkHistory.length !==
-            oldLength
+            before !== after
         ) {
 
             renderHistory();

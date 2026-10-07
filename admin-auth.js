@@ -81,6 +81,10 @@ async function login(
 
   }
 
+  window.dispatchEvent(
+    new CustomEvent("firebaseAdminReady")
+  );
+
 
   return result.user;
 
@@ -180,6 +184,10 @@ onAuthStateChanged(
         window.paymentTracker.startAdminSync();
 
       }
+
+      window.dispatchEvent(
+        new CustomEvent("firebaseAdminReady")
+      );
 
     }
 

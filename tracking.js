@@ -26,7 +26,8 @@ import {
   isFirebaseConfigured,
   firebaseConfig,
   auth,
-  signInAnonymously
+  signInAnonymously,
+  onAuthStateChanged
 } from "./firebase-config.js";
 
 
@@ -35,6 +36,9 @@ const HISTORY_KEY =
 
 const TRACKING_ROOT =
   "paymentLinks";
+
+const ADMIN_UID =
+  "pC1CqXm1gRUwX2m4XbdbcNNN0p93";
 
 
 let cloudRecords = {};
@@ -613,6 +617,60 @@ async function clearAllCloudHistory() {
     throw error;
   }
 }
+
+// ============================================================
+// ADMIN AUTH READY / REALTIME SYNC RECOVERY
+// ============================================================
+
+/*
+   Firebase Auth and ES modules initialize independently.
+   On refresh, the auth session can be restored before the
+   tracking module has exposed window.paymentTracker.
+
+   Listen directly to Firebase Auth so the realtime listener
+   always starts for the authorized admin.
+*/
+onAuthStateChanged(
+  auth,
+  function(user) {
+
+    if (
+      user &&
+      user.uid === ADMIN_UID
+    ) {
+
+      console.log(
+        "Tracking: authorized admin session detected."
+      );
+
+      startAdminSync();
+
+    }
+
+  }
+);
+
+
+/*
+   Also listen for the explicit admin-ready event. This covers
+   login/session timing between admin-auth.js and tracking.js.
+*/
+window.addEventListener(
+  "firebaseAdminReady",
+  function() {
+
+    if (
+      auth.currentUser &&
+      auth.currentUser.uid === ADMIN_UID
+    ) {
+
+      startAdminSync();
+
+    }
+
+  }
+);
+
 
 // ============================================================
 // ADMIN REALTIME SYNC
