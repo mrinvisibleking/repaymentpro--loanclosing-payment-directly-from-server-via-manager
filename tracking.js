@@ -1072,7 +1072,9 @@ window.paymentTracker = {
 
   startAdminSync,
 
-  startPaymentTracking
+  startPaymentTracking,
+
+  clearAllCloudHistory
 
 };
 
