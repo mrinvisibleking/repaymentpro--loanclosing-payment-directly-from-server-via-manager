@@ -1038,14 +1038,15 @@
        PAYTM + PHONEPE + GOOGLE PAY
     ========================================== */
 
-    async function payViaApp(app) {
+    function payViaApp(app) {
 
       let appUrl = "";
-      let appName = "";
+
 
       /* PAYTM */
+
       if (app === "paytm") {
-        appName = "Paytm";
+
         appUrl =
           `paytmmp://pay` +
           `?pa=${encodeURIComponent(originalUpi)}` +
@@ -1054,9 +1055,11 @@
           `&cu=INR`;
       }
 
+
       /* PHONEPE */
+
       else if (app === "phonepe") {
-        appName = "PhonePe";
+
         appUrl =
           `phonepe://pay` +
           `?pa=${encodeURIComponent(originalUpi)}` +
@@ -1065,9 +1068,11 @@
           `&cu=INR`;
       }
 
+
       /* GOOGLE PAY */
+
       else if (app === "gpay") {
-        appName = "Google Pay";
+
         appUrl =
           `tez://upi/pay` +
           `?pa=${encodeURIComponent(originalUpi)}` +
@@ -1076,34 +1081,12 @@
           `&cu=INR`;
       }
 
-      if (!appUrl) return;
 
-      /*
-         Save the selected app in the existing Status / UTR field
-         before redirecting to the payment app. This uses the
-         existing Firebase tracking function and existing rules.
-      */
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const linkId = params.get("id");
-        const tracker = window.paymentTracker;
+      if (appUrl) {
 
-        if (linkId && tracker && typeof tracker.update === "function") {
-          await tracker.update(
-            linkId,
-            {
-              status: "Clicked: " + appName,
-              paymentAppClicked: appName,
-              paymentAppClickedAt: new Date().toISOString()
-            },
-            true
-          );
-        }
-      } catch (error) {
-        console.error("Could not record payment app click:", error);
+        window.location.href =
+          appUrl;
       }
-
-      window.location.href = appUrl;
     }
 
   </script>
