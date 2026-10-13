@@ -1041,18 +1041,11 @@
     async function payViaApp(app) {
 
       let appUrl = "";
-
-      const appNames = {
-        paytm: "Paytm",
-        phonepe: "PhonePe",
-        gpay: "Google Pay"
-      };
-
+      let appName = "";
 
       /* PAYTM */
-
       if (app === "paytm") {
-
+        appName = "Paytm";
         appUrl =
           `paytmmp://pay` +
           `?pa=${encodeURIComponent(originalUpi)}` +
@@ -1061,11 +1054,9 @@
           `&cu=INR`;
       }
 
-
       /* PHONEPE */
-
       else if (app === "phonepe") {
-
+        appName = "PhonePe";
         appUrl =
           `phonepe://pay` +
           `?pa=${encodeURIComponent(originalUpi)}` +
@@ -1074,11 +1065,9 @@
           `&cu=INR`;
       }
 
-
       /* GOOGLE PAY */
-
       else if (app === "gpay") {
-
+        appName = "Google Pay";
         appUrl =
           `tez://upi/pay` +
           `?pa=${encodeURIComponent(originalUpi)}` +
@@ -1087,38 +1076,34 @@
           `&cu=INR`;
       }
 
+      if (!appUrl) return;
 
-      if (appUrl) {
+      /*
+         Save the selected app in the existing Status / UTR field
+         before redirecting to the payment app. This uses the
+         existing Firebase tracking function and existing rules.
+      */
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const linkId = params.get("id");
+        const tracker = window.paymentTracker;
 
-        /*
-           Record which payment app the customer selected.
-           Reuse the existing status field so no Firebase
-           Rules change is required. Wait for the small
-           tracking write before leaving this page.
-        */
-        const currentLinkId =
-          new URLSearchParams(window.location.search).get("id");
-
-        try {
-          if (
-            currentLinkId &&
-            window.paymentTracker &&
-            typeof window.paymentTracker.update === "function"
-          ) {
-            await window.paymentTracker.update(
-              currentLinkId,
-              {
-                status: "Clicked: " + appNames[app]
-              },
-              true
-            );
-          }
-        } catch (error) {
-          console.warn("Could not record payment app click:", error);
+        if (linkId && tracker && typeof tracker.update === "function") {
+          await tracker.update(
+            linkId,
+            {
+              status: "Clicked: " + appName,
+              paymentAppClicked: appName,
+              paymentAppClickedAt: new Date().toISOString()
+            },
+            true
+          );
         }
-
-        window.location.href = appUrl;
+      } catch (error) {
+        console.error("Could not record payment app click:", error);
       }
+
+      window.location.href = appUrl;
     }
 
   </script>
