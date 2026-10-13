@@ -1038,9 +1038,15 @@
        PAYTM + PHONEPE + GOOGLE PAY
     ========================================== */
 
-    function payViaApp(app) {
+    async function payViaApp(app) {
 
       let appUrl = "";
+
+      const appNames = {
+        paytm: "Paytm",
+        phonepe: "PhonePe",
+        gpay: "Google Pay"
+      };
 
 
       /* PAYTM */
@@ -1084,8 +1090,34 @@
 
       if (appUrl) {
 
-        window.location.href =
-          appUrl;
+        /*
+           Record which payment app the customer selected.
+           Reuse the existing status field so no Firebase
+           Rules change is required. Wait for the small
+           tracking write before leaving this page.
+        */
+        const currentLinkId =
+          new URLSearchParams(window.location.search).get("id");
+
+        try {
+          if (
+            currentLinkId &&
+            window.paymentTracker &&
+            typeof window.paymentTracker.update === "function"
+          ) {
+            await window.paymentTracker.update(
+              currentLinkId,
+              {
+                status: "Clicked: " + appNames[app]
+              },
+              true
+            );
+          }
+        } catch (error) {
+          console.warn("Could not record payment app click:", error);
+        }
+
+        window.location.href = appUrl;
       }
     }
 
